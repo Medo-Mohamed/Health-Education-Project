@@ -1,0 +1,28 @@
+/* الألوان الافتراضية (الوضع الفاتح) */
+:root {
+    --bg-color: #ffffff;
+    --text-color: #000000;
+    --btn-bg: #eeeeee;
+}
+
+/* الألوان عند تفعيل كلاس الـ dark */
+.dark-theme {
+    --bg-color: #1a1a1a;
+    --text-color: #f5f5f5;
+    --btn-bg: #333333;
+}
+
+/* تطبيق المتغيرات على العناصر */
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: all 0.3s ease;
+    /* لنعومة التغيير */
+}
+
+.my-button {
+    background-color: var(--btn-bg);
+    color: var(--text-color);
+    border: 1px solid gray;
+    padding: 10px;
+}
