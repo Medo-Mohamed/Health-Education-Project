@@ -1,5 +1,6 @@
-function Routers({ children }: { children: React.ReactNode }) {
-  return <div>{children}</div>;
-}
-
-export default Routers;
+export const Links = [
+  {
+    path: "/test",
+    element: <h2>Test Page</h2>,
+  },
+];
