@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { BsList } from "react-icons/bs";
 import { GoX } from "react-icons/go";
 import { useDispatch, useSelector } from "react-redux";
@@ -7,19 +6,28 @@ import { IoMdPerson } from "react-icons/io";
 import { CiLight } from "react-icons/ci";
 import { IoMoon } from "react-icons/io5";
 import { changeTheme } from "../../Redux-Store/ThemesControle/ThemeSlice";
+import { useEffect } from "react";
 
-function Left() {
-  const [isClicked, setIsClicked] = useState(false);
-  const handleClick = () => {
+function Left({
+  isClicked,
+  setIsClicked,
+}: {
+  isClicked: boolean;
+  setIsClicked: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
+  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation();
     setIsClicked(!isClicked);
-    console.log("تم النقر على الأيقونة!");
   };
   const handleResize = () => {
     if (window.innerWidth >= 1024) {
       setIsClicked(false);
     }
   };
-  window.addEventListener("resize", handleResize);
+  useEffect(() => {
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  });
   const User = useSelector((state: RootState) => state.User);
   const Theme = useSelector((state: RootState) => state.Theme.value);
   const Dispatch = useDispatch();

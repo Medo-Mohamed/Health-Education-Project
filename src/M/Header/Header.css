@@ -1,0 +1,17 @@
+.hoverAction,
+.parentHoverAction span {
+  background-color: var(--btn-bg);
+}
+.hoverAction:hover,
+.parentHoverAction:hover span {
+  background-color: var(--bg-hover-color);
+}
+.my-logo path {
+  fill: var(--text-color) !important;
+}
+.shadow-logo {
+  filter: drop-shadow(0 0 17px var(--shadow-color));
+}
+.shadow-logo:hover {
+  filter: drop-shadow(0 0 17px var(--shadow-hover-color));
+}

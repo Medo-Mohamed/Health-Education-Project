@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  status: "success",
+  status: "failed",
   data: {
     user: {
       id: "u987654321",
