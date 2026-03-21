@@ -12,6 +12,16 @@ const Paths = [
   {
     path: "/",
     element: <App />,
+    children: [
+      {
+        path: "team",
+        element: <div>About Team</div>,
+      },
+      {
+        path: "company",
+        element: <div>About Company</div>,
+      },
+    ],
   },
   ...LinksM,
 ];
