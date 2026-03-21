@@ -1,0 +1,8 @@
+.hoverAction,
+.parentHoverAction span {
+  background-color: var(--btn-bg);
+}
+.hoverAction:hover,
+.parentHoverAction:hover span {
+  background-color: var(--bg-hover-color);
+}
