@@ -1,14 +1,16 @@
 import { Outlet } from "react-router-dom";
 import "./App.css";
-import Check from "./Components/Check";
+
 import Header from "./Header/Header";
+import Footer from "./Footer/Footer";
 
 function App() {
   return (
     <div>
       <Header />
-      <Check />
+      {/* <Check /> */}
       <Outlet />
+      <Footer />
     </div>
   );
 }

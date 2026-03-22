@@ -6,6 +6,28 @@
   --bg-hover-color: #a6c2ff;
   --shadow-color: rgba(0, 0, 0, 0.5);
   --shadow-hover-color: rgba(0, 0, 0, 0.9);
+  --footer-bg: #f8f8f8;
+  --clean-gradient:
+    radial-gradient(at 0% 0%, rgb(180, 210, 215) 0px, transparent 50%),
+    radial-gradient(
+      at 100% 30%,
+      rgba(245, 215, 190, 0.482) 0px,
+      transparent 60%
+    ),
+    radial-gradient(
+      at 50% 50%,
+      rgba(255, 255, 255, 0.636) 0px,
+      transparent 50%
+    ),
+    radial-gradient(
+      at 20% 100%,
+      rgba(200, 220, 225, 0.804) 0px,
+      transparent 40%
+    );
+  --bg-color-landing: #f3f6f7;
+  --p-text-color: #364153;
+  --button-hover-bg-start: #00c3ff;
+  --button-bg-start: #2fbbe6;
 }
 
 /* الألوان عند تفعيل كلاس الـ dark */
@@ -15,7 +37,17 @@
   --btn-bg: #333333;
   --bg-hover-color: #001d5c;
   --shadow-color: rgba(255, 255, 255, 0.5);
-  --shadow-hover-color: rgba(255, 255, 255, 0.9);
+  --shadow-hover-color: rgba(193, 193, 193, 0.9);
+  --footer-bg: #2c2c2c;
+  --clean-gradient:
+    radial-gradient(at 0% 0%, hsla(43, 85%, 82%, 0.25) 0px, transparent 50%),
+    radial-gradient(at 50% 40%, hsla(262, 70%, 45%, 0.4) 0px, transparent 60%),
+    radial-gradient(at 100% 0%, hsla(270, 60%, 40%, 0.2) 0px, transparent 50%),
+    radial-gradient(at 90% 100%, hsla(320, 65%, 42%, 0.15) 0px, transparent 50%);
+  --bg-color-landing: #120b2e;
+  --p-text-color: #cccccc;
+  --button-hover-bg-start: #4c4c9f;
+  --button-bg-start: #353570;
 }
 
 /* تطبيق المتغيرات على العناصر */
@@ -31,4 +63,9 @@ body {
   color: var(--text-color);
   border: 1px solid gray;
   padding: 10px;
+}
+
+footer {
+  background-color: var(--footer-bg);
+  color: var(--text-color);
 }

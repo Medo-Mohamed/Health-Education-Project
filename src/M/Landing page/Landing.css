@@ -1,0 +1,32 @@
+#landing {
+  padding-top: 70px;
+  /* min-height: 100vh; */
+
+  background-color: var(--bg-color-landing);
+  background-image: var(--clean-gradient);
+  background-attachment: fixed;
+  background-size: cover;
+}
+.description {
+  color: var(--p-text-color);
+  font-size: 1.2rem;
+}
+.start-btn {
+  background-color: var(--button-bg-start);
+}
+.start-btn:hover {
+  background-color: var(--button-hover-bg-start);
+}
+.crs {
+  color: var(--p-text-color);
+  animation: cursor-blink 1s step-start infinite;
+}
+@keyframes cursor-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}

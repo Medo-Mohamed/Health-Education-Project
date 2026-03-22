@@ -7,12 +7,17 @@ import store from "./store.tsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Links as LinksM } from "./M/Routers.tsx";
 import ThemeHandler from "./G-Component/ThemeHandler.tsx";
+import Landing from "./M/Landing page/Landing.tsx";
 
 const Paths = [
   {
     path: "/",
     element: <App />,
     children: [
+      {
+        index: true,
+        element: <Landing />,
+      },
       {
         path: "team",
         element: <div>About Team</div>,

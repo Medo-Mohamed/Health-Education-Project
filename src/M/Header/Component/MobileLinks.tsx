@@ -1,22 +1,13 @@
 import { Link } from "react-router-dom";
 import { links } from "./Middel.tsx";
-import { useEffect } from "react";
+
 function MobileLinks({
   isClicked,
-  setIsClicked,
+  closeMobileBar,
 }: {
   isClicked: boolean;
-  setIsClicked: (clicked: boolean) => void;
+  closeMobileBar: () => void;
 }) {
-  function handleLinkClick() {
-    setIsClicked(false);
-  }
-  useEffect(() => {
-    window.addEventListener("click", handleLinkClick);
-    return () => {
-      window.removeEventListener("click", handleLinkClick);
-    };
-  }, []);
   return (
     <div
       className={`absolute top-full left-0 w-full overflow-hidden transition-all duration-400 ease-in-out ${
@@ -37,7 +28,7 @@ function MobileLinks({
                   key={link.name}
                   to={link.path}
                   className="border p-3 rounded-full hoverAction"
-                  onClick={handleLinkClick}
+                  onClick={closeMobileBar}
                 >
                   {link.name}
                 </Link>
@@ -50,7 +41,7 @@ function MobileLinks({
                     key={child.name}
                     to={child.path!}
                     className="border p-3 rounded-full hoverAction"
-                    onClick={handleLinkClick}
+                    onClick={closeMobileBar}
                   >
                     {child.name}
                   </Link>
@@ -60,7 +51,7 @@ function MobileLinks({
                 <span
                   key={child.name}
                   className="border p-3 rounded-full hoverAction cursor-pointer"
-                  onClick={handleLinkClick}
+                  onClick={closeMobileBar}
                 >
                   {child.name}
                 </span>

@@ -6,9 +6,18 @@ import MobileLinks from "./Component/MobileLinks";
 import { useState } from "react";
 function Header() {
   const [isClicked, setIsClicked] = useState(false);
+  function handelOpenMobileBar() {
+    setIsClicked(!isClicked);
+    // window.scrollTo({ top: 0, behavior: "smooth" });
+    window.addEventListener("click", handelCloseMobileBar);
+  }
+  function handelCloseMobileBar() {
+    setIsClicked(false);
+    window.removeEventListener("click", handelCloseMobileBar);
+  }
   return (
-    <header className="App-header relative">
-      <div className="min-h-17.5 container border p-0.5 flex items-center justify-around">
+    <header className="App-header fixed top-0 left-0 w-full z-50 bg-transparent backdrop-blur-lg">
+      <div className="min-h-17.5 container p-0.5 flex items-center justify-around">
         <div className="text-2xl font-bold tracking-widest flex items-center gap-1 shadow-logo bg-transparent cursor-pointer">
           <MyIcon
             className="inline-block mr-1 my-logo w-11 h-11"
@@ -17,9 +26,16 @@ function Header() {
           HEP
         </div>
         <Middel />
-        <Left isClicked={isClicked} setIsClicked={setIsClicked} />
+        <Left
+          isClicked={isClicked}
+          openMobileBar={handelOpenMobileBar}
+          closeMobileBar={handelCloseMobileBar}
+        />
       </div>
-      <MobileLinks isClicked={isClicked} setIsClicked={setIsClicked} />
+      <MobileLinks
+        isClicked={isClicked}
+        closeMobileBar={handelCloseMobileBar}
+      />
     </header>
   );
 }

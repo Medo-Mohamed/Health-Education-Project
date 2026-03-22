@@ -10,24 +10,30 @@ import { useEffect } from "react";
 
 function Left({
   isClicked,
-  setIsClicked,
+  openMobileBar,
+  closeMobileBar,
 }: {
   isClicked: boolean;
-  setIsClicked: React.Dispatch<React.SetStateAction<boolean>>;
+  openMobileBar: () => void;
+  closeMobileBar: () => void;
 }) {
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
     e.stopPropagation();
-    setIsClicked(!isClicked);
+    if (isClicked) {
+      closeMobileBar();
+    } else {
+      openMobileBar();
+    }
   };
   const handleResize = () => {
     if (window.innerWidth >= 1024) {
-      setIsClicked(false);
+      closeMobileBar();
     }
   };
   useEffect(() => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  });
+  }, []);
   const User = useSelector((state: RootState) => state.User);
   const Theme = useSelector((state: RootState) => state.Theme.value);
   const Dispatch = useDispatch();
