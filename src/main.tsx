@@ -8,6 +8,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Links as LinksM } from "./M/Routers.tsx";
 import ThemeHandler from "./G-Component/ThemeHandler.tsx";
 import Landing from "./M/Landing page/Landing.tsx";
+import NotFound from "./M/NOT FOUND PAGE/NotFound.tsx";
 
 const Paths = [
   {
@@ -25,6 +26,10 @@ const Paths = [
       {
         path: "company",
         element: <div>About Company</div>,
+      },
+      {
+        path: "*",
+        element: <NotFound />,
       },
     ],
   },
