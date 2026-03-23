@@ -7,7 +7,7 @@ import { CiLight } from "react-icons/ci";
 import { IoMoon } from "react-icons/io5";
 import { changeTheme } from "../../Redux-Store/ThemesControle/ThemeSlice";
 import { useEffect } from "react";
-
+import { openLoginModal } from "../../../H/Redux-Store/LoginSlice";
 function Left({
   isClicked,
   openMobileBar,
@@ -52,7 +52,7 @@ function Left({
         </div>
       ) : (
         <div className="flex gap-1.5">
-          <button className="border p-2 rounded gap-1.5 flex items-center bg-green-600 hover:bg-green-700 transition-colors duration-300">
+          <button onClick={() => Dispatch(openLoginModal())} className="border p-2 rounded gap-1.5 flex items-center bg-green-600 hover:bg-green-700 transition-colors duration-300">
             <IoMdPerson />
             Login
           </button>
