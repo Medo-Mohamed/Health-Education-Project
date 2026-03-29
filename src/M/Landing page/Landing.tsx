@@ -11,15 +11,7 @@ function Landing() {
     <div id="landing" className="min-h-screen flex flex-col">
       <div className="flex-1 element-center">
         <div className="container grid md:grid-cols-2 items-center gap-8 min-h-full grid-cols-1 p-4">
-          <div className="image-content">
-            <img
-              src={isDarkMode ? nightImg : LightImg}
-              alt="Health and Education"
-              draggable="false"
-              className="object-contain"
-            />
-          </div>
-          <div className="text-content" dir="rtl">
+          <div className="text-content order-1" dir="rtl">
             <h2 className="text-3xl font-extrabold border-b-2 border-r-2 border-primary inline-block mb-4 p-2 border-dashed">
               مـنـصـة الـتـثـقـيــف الـصـحـــي
             </h2>
@@ -38,6 +30,14 @@ function Landing() {
                 ابدأ الآن
               </button>
             </div>
+          </div>
+          <div className="image-content order-0 md:order-2 element-center">
+            <img
+              src={isDarkMode ? nightImg : LightImg}
+              alt="Health and Education"
+              draggable="false"
+              className="object-contain"
+            />
           </div>
         </div>
       </div>

@@ -1,0 +1,31 @@
+.register-container {
+  background: url("../../assets/llxvisuals-eSLJG0y5S4U-unsplash.jpg");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+.form-background-dark {
+  /* background: rgba(255, 255, 255, 0.847);
+  box-shadow: 0 0 30px 3px rgb(255, 255, 255); */
+  background: rgba(0, 0, 0, 0.847);
+  box-shadow: 0 0 30px 3px rgba(0, 0, 0, 1);
+}
+.form-background-dark input {
+  background: rgba(255, 255, 255, 0.847);
+  box-shadow: 0 0 10px 0px rgb(255, 255, 255);
+  color: black;
+  outline: none;
+  border: none;
+}
+
+.form-background-light {
+  background: rgba(255, 255, 255, 0.847);
+  box-shadow: 0 0 30px 3px rgb(255, 255, 255);
+}
+.form-background-light input {
+  background: rgba(0, 0, 0, 0.847);
+  box-shadow: 0 0 10px 0px rgb(0, 0, 0);
+  color: rgb(255, 255, 255);
+  outline: none;
+  border: none;
+}

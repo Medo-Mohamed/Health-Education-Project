@@ -4,6 +4,7 @@ import MyIcon from "../../assets/logo.svg?react";
 import "./Header.css";
 import MobileLinks from "./Component/MobileLinks";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 function Header() {
   const [isClicked, setIsClicked] = useState(false);
   function handelOpenMobileBar() {
@@ -18,12 +19,14 @@ function Header() {
   return (
     <header className="App-header fixed top-0 left-0 w-full z-50 bg-transparent backdrop-blur-lg">
       <div className="min-h-17.5 container p-0.5 flex items-center justify-around">
-        <div className="text-2xl font-bold tracking-widest flex items-center gap-1 shadow-logo bg-transparent cursor-pointer">
-          <MyIcon
-            className="inline-block mr-1 my-logo w-11 h-11"
-            style={{ fill: "red" }}
-          />
-          HEP
+        <div className="text-2xl font-bold tracking-widest shadow-logo bg-transparent cursor-pointer">
+          <Link to="/" className="flex items-center gap-1">
+            <MyIcon
+              className="inline-block mr-1 my-logo w-11 h-11"
+              style={{ fill: "red" }}
+            />
+            HEP
+          </Link>
         </div>
         <Middel />
         <Left

@@ -11,30 +11,31 @@ const Words = [
 ];
 
 function LitterAnimate() {
+  let Timer: number;
   const [currentWord, setCurrentWord] = useState("");
   async function animateWords(index: number) {
     if (index < Words.length) {
       const word = Words[index];
       let i = 0;
       await new Promise((resolve) => {
-        const timer = setInterval(() => {
+        Timer = setInterval(() => {
           if (i < word.length) {
             setCurrentWord(word.slice(0, i + 1));
             i++;
           } else {
-            clearInterval(timer);
+            clearInterval(Timer);
             resolve(null);
           }
         }, 50);
       });
       await new Promise((resolve) => setTimeout(resolve, 1000));
       await new Promise((resolve) => {
-        const timer = setInterval(() => {
+        Timer = setInterval(() => {
           if (i >= 0) {
             setCurrentWord(word.slice(0, i + 1));
             i--;
           } else {
-            clearInterval(timer);
+            clearInterval(Timer);
             setCurrentWord("");
             resolve(null);
           }
@@ -51,6 +52,7 @@ function LitterAnimate() {
       loop();
     };
     loop();
+    return () => clearInterval(Timer);
   }, []);
   return <span>{currentWord}</span>;
 }

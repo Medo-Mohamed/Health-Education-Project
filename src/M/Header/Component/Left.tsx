@@ -1,13 +1,17 @@
 import { BsList } from "react-icons/bs";
 import { GoX } from "react-icons/go";
 import { useDispatch, useSelector } from "react-redux";
-import type { RootState } from "../../../store";
+import type { AppDispatch, RootState } from "../../../store";
 import { IoMdPerson } from "react-icons/io";
 import { CiLight } from "react-icons/ci";
 import { IoMoon } from "react-icons/io5";
 import { changeTheme } from "../../Redux-Store/ThemesControle/ThemeSlice";
 import { useEffect } from "react";
-import { openLoginModal } from "../../../H/Redux-Store/LoginSlice";
+import {
+  logOutUser,
+  openLoginModal,
+} from "../../Redux-Store/UserControle/UserSlice";
+
 function Left({
   isClicked,
   openMobileBar,
@@ -36,25 +40,31 @@ function Left({
   }, []);
   const User = useSelector((state: RootState) => state.User);
   const Theme = useSelector((state: RootState) => state.Theme.value);
-  const Dispatch = useDispatch();
+  const Dispatch = useDispatch<AppDispatch>();
   return (
     <div className="flex items-center gap-4">
-      {User.status == "success" ? (
+      {User.status == "idle" ? (
         <div className="flex items-center gap-2">
           <div
             className="w-8 h-8 rounded-full "
             style={{
-              backgroundImage: `url(${User.data.user.avatar_url})`,
+              backgroundImage: `url(${User.data.user?.avatar_url})`,
               backgroundSize: "cover",
             }}
           ></div>
-          <span className="text-2xl">{User.data.user.username}</span>
+          <span className="text-2xl">{User.data.user?.username}</span>
+          {/* to test now */}
+          <button onClick={() => Dispatch(logOutUser())} className="bg-red-400 p-2">تسجيل الخروج</button>
+          {/*== to test now ==*/}
         </div>
       ) : (
         <div className="flex gap-1.5">
-          <button onClick={() => Dispatch(openLoginModal())} className="border p-2 rounded gap-1.5 flex items-center bg-green-600 hover:bg-green-700 transition-colors duration-300">
+          <button
+            onClick={() => Dispatch(openLoginModal())}
+            className="border p-2 rounded gap-1.5 flex items-center bg-green-600 hover:bg-green-700 transition-colors duration-300"
+          >
             <IoMdPerson />
-            Login
+            <div className="hidden md:block">تسجيل الدخول</div>
           </button>
           {/* <button className="border p-2 rounded hoverAction">Register</button> */}
         </div>

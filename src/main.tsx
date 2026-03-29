@@ -9,6 +9,8 @@ import { Links as LinksM } from "./M/Routers.tsx";
 import ThemeHandler from "./G-Component/ThemeHandler.tsx";
 import Landing from "./M/Landing page/Landing.tsx";
 import NotFound from "./M/NOT FOUND PAGE/NotFound.tsx";
+import Register from "./M/Register/Register.tsx";
+import UserKeepLogin from "./G-Component/UserKeepLogin.tsx";
 
 const Paths = [
   {
@@ -28,6 +30,10 @@ const Paths = [
         element: <div>About Company</div>,
       },
       {
+        path: "register",
+        element: <Register />,
+      },
+      {
         path: "*",
         element: <NotFound />,
       },
@@ -40,7 +46,10 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <Provider store={store}>
       <ThemeHandler />
-      <RouterProvider router={router} />
+      <UserKeepLogin />
+      <div dir="rtl">
+        <RouterProvider router={router} />
+      </div>
     </Provider>
   </StrictMode>,
 );
