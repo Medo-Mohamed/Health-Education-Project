@@ -28,6 +28,8 @@
   --p-text-color: #364153;
   --button-hover-bg-start: #00c3ff;
   --button-bg-start: #2fbbe6;
+  --bg-input: #464646;
+  --color-inpute: #ffffff;
 }
 
 /* الألوان عند تفعيل كلاس الـ dark */
@@ -48,6 +50,8 @@
   --p-text-color: #cccccc;
   --button-hover-bg-start: #4c4c9f;
   --button-bg-start: #353570;
+  --bg-input: #dfdfdf;
+  --color-inpute: #313131;
 }
 
 /* تطبيق المتغيرات على العناصر */

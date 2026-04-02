@@ -1,11 +1,22 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./Register.css";
-import axios from "axios";
-import type { RootState } from "../../store";
-import { useSelector } from "react-redux";
+import type { AppDispatch, RootState } from "../../store";
+import { useDispatch, useSelector } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
 import { MdDeleteOutline } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
+import AxiosApi from "../../AxiosApi";
+import { fetchUser } from "../Redux-Store/UserControle/UserDisplatSlice";
+import type { AxiosError } from "axios";
 const Register = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
+  const UserStates = useSelector((state: RootState) => state.User);
+  useEffect(() => {
+    if (UserStates.status === "idle") {
+      navigate("/");
+    }
+  }, [UserStates.status, navigate]); // سيعمل فقط عندما تتغير الحالة
   const [formData, setFormData] = useState({
     username: "",
     password: "",
@@ -13,18 +24,33 @@ const Register = () => {
     last_name: "",
     email: "",
     phone_numbers: [{ id: uuidv4(), number: "" }], // مصفوفة لتبدأ برقم واحد على الأقل
-    country: "",
+    governorate: "",
     city: "",
   });
+  interface ErrorState {
+    username: string;
+    password: string;
+    first_name: string;
+    last_name: string;
+    email: string;
+    phone_numbers: string[];
+  }
 
-  const [error, setError] = useState("");
+  const [error, setError] = useState<ErrorState | string>({
+    username: "",
+    password: "",
+    first_name: "",
+    last_name: "",
+    email: "",
+    phone_numbers: [],
+  });
   const [success, setSuccess] = useState(false);
 
   // التعامل مع تغيير الحقول العادية
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
-    console.log(e.target.name, e.target.value);
+    // console.log(e.target.name, e.target.value);
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
@@ -62,17 +88,58 @@ const Register = () => {
       phone_numbers: formData.phone_numbers.map((p) => p.number), // إرسال الأرقام غير الفارغة فقط
 
       location: {
-        country: formData.country,
+        governorate: formData.governorate,
         city: formData.city,
       },
     };
-
+    console.log("Submitting payload:", payload);
     try {
-      const response = await axios.post("/api/auth/register", payload);
+      const response = await AxiosApi.post(
+        "/auth/withoutlogin/register",
+        payload,
+      );
       setSuccess(true);
       console.log("User created:", response.data);
-    } catch (err: any) {
-      setError(err.response?.data?.message || "حدث خطأ أثناء التسجيل");
+      setTimeout(() => {
+        // navigate("/login");
+        dispatch(
+          fetchUser({
+            username: formData.username,
+            password: formData.password,
+            rememberMe: false,
+          }),
+        );
+      }, 2000); // الانتقال بعد 2 ثانية للسماح للمستخدم برؤية رسالة النجاح
+    } catch (err: unknown) {
+      const error = err as AxiosError<Record<string, unknown>>;
+      console.log("Error creating user:", error.response?.data);
+      if (typeof error.response?.data === "object" && error.response?.data) {
+        const responseData = error.response.data as Record<string, unknown>;
+        const validationErrors: ErrorState = {
+          username: (responseData.username as string) || "",
+          password: (responseData.password as string) || "",
+          first_name: (responseData.first_name as string) || "",
+          last_name: (responseData.last_name as string) || "",
+          email: (responseData.email as string) || "",
+          phone_numbers: [],
+        };
+        if (
+          Object.keys(responseData).find((key) => key.includes("phone_numbers"))
+        ) {
+          const phoneErrorsArray: string[] = [];
+          console.log("Processing phone number errors");
+          for (let i = 0; i < formData.phone_numbers.length; i++) {
+            console.log(`Checking phone number ${i} for errors`);
+            phoneErrorsArray[i] =
+              (responseData["phone_numbers." + i] as string) || "";
+          }
+          validationErrors.phone_numbers = phoneErrorsArray;
+        }
+        console.log("Validation errors:", validationErrors);
+        setError(validationErrors);
+      } else {
+        setError("حدث خطأ ما أثناء التسجيل");
+      }
     }
   };
   const formBackground = useSelector((state: RootState) =>
@@ -91,7 +158,7 @@ const Register = () => {
             إنشاء حساب جديد
           </h2>
 
-          {error && (
+          {typeof error === "string" && error && (
             <div className="bg-red-100 text-red-600 p-3 rounded mb-4">
               {error}
             </div>
@@ -112,10 +179,14 @@ const Register = () => {
                   </label>
                   <input
                     type="text"
-                    name="full_name"
+                    name="first_name"
                     onChange={handleChange}
+                    required
                     className="mt-1 block w-full border  rounded-md p-2 shadow-sm focus:ring-blue-500 focus:border-blue-500"
                   />
+                  {typeof error === "object" && error.first_name && (
+                    <p className="text-red-500 text-sm">{error.first_name}</p>
+                  )}
                 </div>
                 <div>
                   <label className="block text-sm font-medium ">
@@ -125,8 +196,12 @@ const Register = () => {
                     type="text"
                     name="last_name"
                     onChange={handleChange}
+                    required
                     className="mt-1 block w-full border  rounded-md p-2 shadow-sm focus:ring-blue-500 focus:border-blue-500"
                   />
+                  {typeof error === "object" && error.last_name && (
+                    <p className="text-red-500 text-sm">{error.last_name}</p>
+                  )}
                 </div>
               </div>
             </div>
@@ -143,6 +218,9 @@ const Register = () => {
                 onChange={handleChange}
                 className="mt-1 block w-full border  rounded-md p-2 shadow-sm"
               />
+              {typeof error === "object" && error.username && (
+                <p className="text-red-500 text-sm">{error.username}</p>
+              )}
             </div>
 
             {/* كلمة المرور */}
@@ -157,6 +235,9 @@ const Register = () => {
                 onChange={handleChange}
                 className="mt-1 block w-full border  rounded-md p-2 shadow-sm"
               />
+              {typeof error === "object" && error.password && (
+                <p className="text-red-500 text-sm">{error.password}</p>
+              )}
             </div>
 
             {/* البريد الإلكتروني (اختياري) */}
@@ -170,6 +251,9 @@ const Register = () => {
                 onChange={handleChange}
                 className="mt-1 block w-full border  rounded-md p-2 shadow-sm"
               />
+              {typeof error === "object" && error.email && (
+                <p className="text-red-500 text-sm">{error.email}</p>
+              )}
             </div>
 
             {/* أرقام الهاتف */}
@@ -178,22 +262,29 @@ const Register = () => {
                 أرقام الهاتف (مطلوب واحد على الأقل)
               </label>
               {formData.phone_numbers.map((phone, index) => (
-                <div key={phone.id} className="flex items-center gap-1 ">
-                  <input
-                    type="text"
-                    value={phone.number}
-                    required={index === 0}
-                    placeholder="01xxxxxxxxx"
-                    onChange={(e) => handlePhoneChange(index, e.target.value)}
-                    className="mt-1 block w-full border  rounded-md p-2 shadow-sm mb-2 flex-1"
-                  />
-                  {formData.phone_numbers.length > 1 && (
-                    <div
-                      onClick={() => removePhoneField(phone.id)}
-                      className="text-red-600 cursor-pointer text-2xl"
-                    >
-                      <MdDeleteOutline />
-                    </div>
+                <div key={phone.id}>
+                  <div className="flex items-center gap-1 ">
+                    <input
+                      type="text"
+                      value={phone.number}
+                      required={index === 0}
+                      placeholder="01xxxxxxxxx"
+                      onChange={(e) => handlePhoneChange(index, e.target.value)}
+                      className="mt-1 block w-full border  rounded-md p-2 shadow-sm mb-2 flex-1"
+                    />
+                    {formData.phone_numbers.length > 1 && (
+                      <div
+                        onClick={() => removePhoneField(phone.id)}
+                        className="text-red-600 cursor-pointer text-2xl"
+                      >
+                        <MdDeleteOutline />
+                      </div>
+                    )}
+                  </div>
+                  {typeof error === "object" && error.phone_numbers[index] && (
+                    <p className="text-red-500 text-sm pb-1">
+                      {error.phone_numbers[index]}
+                    </p>
                   )}
                 </div>
               ))}
@@ -212,7 +303,7 @@ const Register = () => {
                 <label className="block text-sm font-medium ">المحافظة</label>
                 <input
                   type="text"
-                  name="country"
+                  name="governorate"
                   onChange={handleChange}
                   className="mt-1 block w-full border  rounded-md p-2 shadow-sm"
                 />

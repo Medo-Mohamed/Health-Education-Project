@@ -3,7 +3,7 @@ import "./App.css";
 
 import Header from "./Header/Header";
 import Footer from "./Footer/Footer";
-import AxiosApi from "../AxiosApi";
+
 
 function App() {
   return (

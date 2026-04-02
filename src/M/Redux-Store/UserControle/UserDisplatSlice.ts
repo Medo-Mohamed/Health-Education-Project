@@ -76,7 +76,7 @@ interface UserState {
 }
 
 const initialState: UserState = {
-  status: "unAuthenticated",
+  status: "idle",
   load: false,
   data: { user: null },
   error: null,

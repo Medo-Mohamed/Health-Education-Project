@@ -11,9 +11,11 @@
   box-shadow: 0 0 30px 3px rgba(0, 0, 0, 1);
 }
 .form-background-dark input {
-  background: rgba(255, 255, 255, 0.847);
-  box-shadow: 0 0 10px 0px rgb(255, 255, 255);
-  color: black;
+  /* background: rgba(255, 255, 255, 0.847); */
+  /* box-shadow: 0 0 10px 0px rgb(255, 255, 255); */
+  /* color: black; */
+  background-color: var(--bg-input);
+  color: var(--color-inpute);
   outline: none;
   border: none;
 }
@@ -23,9 +25,11 @@
   box-shadow: 0 0 30px 3px rgb(255, 255, 255);
 }
 .form-background-light input {
-  background: rgba(0, 0, 0, 0.847);
+  /* background: rgba(0, 0, 0, 0.847);
   box-shadow: 0 0 10px 0px rgb(0, 0, 0);
-  color: rgb(255, 255, 255);
+  color: rgb(255, 255, 255); */
+  background-color: var(--bg-input);
+  color: var(--color-inpute);
   outline: none;
   border: none;
 }

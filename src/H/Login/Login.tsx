@@ -1,11 +1,12 @@
-import React, { useState } from "react";
+import React, {  useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import type { AppDispatch, RootState } from "../../store";
 import {
   closeLoginModal,
   fetchUser,
-} from "../../M/Redux-Store/UserControle/UserSlice";
+} from "../../M/Redux-Store/UserControle/UserDisplatSlice";
+import { Link } from "react-router-dom";
 
 export default function Login() {
   const dispatch = useDispatch<AppDispatch>();
@@ -26,6 +27,8 @@ export default function Login() {
     );
   };
 
+  // no effect needed; state is reset when modal is closed or submission is handled
+
   if (!UserStates.showLoginModal) return null;
 
   return (
@@ -45,7 +48,12 @@ export default function Login() {
         {/* زر الإغلاق */}
         <button
           type="button"
-          onClick={() => dispatch(closeLoginModal())}
+          onClick={() => {
+            dispatch(closeLoginModal());
+            setEmail("");
+            setPassword("");
+            setRememberMe(false);
+          }}
           className="absolute top-4 right-4 text-gray-500 hover:text-red-500 dark:text-gray-400 dark:hover:text-red-400 transition-colors z-20"
         >
           <svg
@@ -176,12 +184,13 @@ export default function Login() {
 
         <div className="mt-8 text-center text-sm font-medium">
           <span className="opacity-70">ليس لديك حساب؟ </span>
-          <a
-            href="#"
+          <Link
+            to={"/register"}
+            onClick={() => dispatch(closeLoginModal())}
             className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
           >
             سجل الآن
-          </a>
+          </Link>
         </div>
       </div>
     </div>

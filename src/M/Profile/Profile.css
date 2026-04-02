@@ -1,0 +1,11 @@
+.profileContainer input,
+.profileContainer textarea {
+  background-color: var(--bg-input);
+  color: var(--color-inpute);
+}
+.profileContainer {
+  background: var(--clean-gradient);
+}
+.show-password-btn {
+  color: var(--color-inpute);
+}
