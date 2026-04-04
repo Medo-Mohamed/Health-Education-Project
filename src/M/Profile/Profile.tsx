@@ -3,11 +3,12 @@ import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState, AppDispatch } from "../../store";
 import { IoMdCreate, IoMdSave, IoMdAdd, IoMdTrash } from "react-icons/io";
+
 import {
   getDataForProfile,
   updateUserProfile,
   type UserForDisplay,
-} from "../Redux-Store/UserControle/UserUpdateSlice";
+} from "../Redux-Store/UserControle/UserDisplatSlice";
 import { useNavigate } from "react-router-dom";
 import { HiEye, HiEyeOff } from "react-icons/hi";
 import Loading from "./Component/Loading";
@@ -22,8 +23,8 @@ interface UserForDisplayForm extends UserForDisplay {
 const ModernProfilePage = () => {
   const [showPassword, setShowPassword] = useState({ old: false, new: false });
   const dispatch = useDispatch<AppDispatch>();
-  const userInfo = useSelector((state: RootState) => state.UserUpdate.User);
-  const userError = useSelector((state: RootState) => state.UserUpdate.error);
+  const userInfo = useSelector((state: RootState) => state.User.data.user);
+  const userError = useSelector((state: RootState) => state.User.error);
   const UserCheck = useSelector((state: RootState) => state.User.status);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState<UserForDisplayForm | null>(

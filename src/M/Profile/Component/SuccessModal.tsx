@@ -3,14 +3,17 @@ import { useSelector, useDispatch } from "react-redux";
 import { HiCheckCircle } from "react-icons/hi"; // أيقونة النجاح
 import type { AppDispatch, RootState } from "../../../store";
 // استورد الأكشن المسؤول عن إعادة ضبط الحالة (مثلاً resetUpdateState)
-import { closeSucssePage } from "../../Redux-Store/UserControle/UserUpdateSlice";
-import { RefreshUser } from "../../Redux-Store/UserControle/UserDisplatSlice";
+// import { closeSucssePage } from "../../Redux-Store/UserControle/UserUpdateSlice";
+import {
+  RefreshUser,
+  closeSucssePage,
+} from "../../Redux-Store/UserControle/UserDisplatSlice";
 
 function SuccessModal() {
   const dispatch = useDispatch<AppDispatch>();
   // نفترض أن لديك حالة تسمى isSuccess في الـ Redux
   const isSuccess = useSelector<RootState>(
-    (state: RootState) => state.UserUpdate.success,
+    (state: RootState) => state.User.success,
   );
 
   useEffect(() => {

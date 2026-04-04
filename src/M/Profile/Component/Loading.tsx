@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import type { RootState } from "../../../store";
 
 function Loading() {
-  const isLoading = useSelector((state: RootState) => state.UserUpdate.loading);
+  const isLoading = useSelector((state: RootState) => state.User.loading);
 
   // تأثير لمنع التمرير (Scroll) في الصفحة أثناء التحميل
   useEffect(() => {
