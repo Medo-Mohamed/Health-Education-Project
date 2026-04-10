@@ -179,7 +179,7 @@ export interface UserForDisplay {
   avatar_url: string;
   bio?: string;
   phone_numbers: string[];
-  role: "dev" | "user";
+  role: "dev" | "user" | "admin";
   location?: {
     city?: string;
     governorate?: string;
@@ -203,7 +203,7 @@ interface UserState {
     user: UserForDisplay | null;
   };
   error: any;
-  status: "idle" | "unAuthenticated";
+  status: "idle" | "unAuthenticated" | "loading";
   showLoginModal: boolean;
   logIn_or_lostPassword: {
     state: "login" | "lostPassword";
@@ -213,7 +213,7 @@ interface UserState {
 }
 
 const initialState: UserState = {
-  status: "unAuthenticated",
+  status: "loading",
   loading: false,
   data: { user: null },
   error: null,
@@ -257,8 +257,8 @@ export const UserSlice = createSlice({
         state.logIn_or_lostPassword.stage = undefined;
       }
     },
-    clearState: () => {
-      return initialState;
+    clearState: (state) => {
+      return { ...initialState, status: state.status };
     },
   },
 

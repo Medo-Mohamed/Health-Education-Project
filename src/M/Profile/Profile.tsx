@@ -6,13 +6,13 @@ import { IoMdCreate, IoMdSave, IoMdAdd, IoMdTrash } from "react-icons/io";
 
 import {
   getDataForProfile,
+  RefreshUser,
   updateUserProfile,
   type UserForDisplay,
 } from "../Redux-Store/UserControle/UserDisplatSlice";
 import { useNavigate } from "react-router-dom";
 import { HiEye, HiEyeOff } from "react-icons/hi";
-import Loading from "./Component/Loading";
-import SuccessModal from "./Component/SuccessModal";
+import { open } from "../Redux-Store/SuccessFaildState/SFS";
 
 interface UserForDisplayForm extends UserForDisplay {
   avatar_file?: File; // لإدارة الملف الجديد عند رفع صورة جديدة
@@ -26,6 +26,7 @@ const ModernProfilePage = () => {
   const userInfo = useSelector((state: RootState) => state.User.data.user);
   const userError = useSelector((state: RootState) => state.User.error);
   const UserCheck = useSelector((state: RootState) => state.User.status);
+  const succsess = useSelector((state: RootState) => state.User.success);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState<UserForDisplayForm | null>(
     Object.assign({ newPassword: "", oldPassword: "" }, userInfo),
@@ -33,9 +34,30 @@ const ModernProfilePage = () => {
 
   const navigate = useNavigate();
   useEffect(() => {
-    // console.log("UserCheck value:", UserCheck);
+    if (succsess) {
+      dispatch(
+        open({
+          state: "success",
+          title: "نجح التعديل",
+          descreption: "تم التعديل الخاص بالمعلومات الشخصية",
+        }),
+      );
+      dispatch(RefreshUser());
+    }
+
+    if (
+      (typeof userError === "object" && userError) ||
+      (typeof userError === "string" && userError)
+    )
+      dispatch(
+        open({
+          state: "faild",
+          title: typeof userError === "string" ? userError : "",
+          descreption: "",
+        }),
+      );
     if (UserCheck === "unAuthenticated") navigate("/");
-  }, [UserCheck, navigate]);
+  }, [UserCheck, dispatch, navigate, succsess, userError]);
 
   // تحديث الحالة المحلية عند تغير بيانات Redux
   useEffect(() => {
@@ -197,8 +219,6 @@ const ModernProfilePage = () => {
     >
       {/* بطاقة الرأس */}
       <div className="relative rounded-3xl shadow-xl overflow-hidden border border-gray-100 dark:border-slate-700 profileContainer">
-        <Loading />
-        <SuccessModal />
         <div className="h-32 bg-linear-to-r from-indigo-500 to-purple-600 opacity-30"></div>
         <div className="px-8 pb-8">
           <div className="relative flex flex-col md:flex-row justify-between items-center md:items-end -mt-12 gap-4">

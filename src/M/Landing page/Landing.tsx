@@ -4,9 +4,11 @@ import nightImg from "../../assets/nightMode2.png";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../store";
 import LitterAnimate from "./Component/LitterAnimate";
+import { useNavigate } from "react-router-dom";
 function Landing() {
   const isDarkMode =
     useSelector((state: RootState) => state.Theme.value) === "dark";
+  const navigate = useNavigate();
   return (
     <div id="landing" className="min-h-screen flex flex-col">
       <div className="flex-1 element-center">
@@ -26,7 +28,10 @@ function Landing() {
               <span className="text-1xl font-normal text-gray-400 crs">|</span>
             </div>
             <div className="element-center">
-              <button className="w-full md:w-70 p-4 transition-colors duration-300 rounded-full text-2xl font-bold start-btn cursor-pointer">
+              <button
+                className="w-full md:w-70 p-4 transition-colors duration-300 rounded-full text-2xl font-bold start-btn cursor-pointer"
+                onClick={() => navigate("/listlinks")}
+              >
                 ابدأ الآن
               </button>
             </div>

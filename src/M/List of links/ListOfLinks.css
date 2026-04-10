@@ -1,0 +1,7 @@
+.boxColors {
+  background-color: var(--box-container);
+  border: var(--box-container-border);
+}
+.sepretor {
+  background-color: var(--box-container-border);
+}

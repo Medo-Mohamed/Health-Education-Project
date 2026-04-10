@@ -12,6 +12,7 @@ import NotFound from "./M/NOT FOUND PAGE/NotFound.tsx";
 import Register from "./M/Register/Register.tsx";
 import UserKeepLogin from "./G-Component/UserKeepLogin.tsx";
 import ProfilePage from "./M/Profile/Profile.tsx";
+import ListOfLinks from "./M/List of links/ListOfLinks.tsx";
 
 const Paths = [
   {
@@ -21,6 +22,10 @@ const Paths = [
       {
         index: true,
         element: <Landing />,
+      },
+      {
+        path: "listlinks",
+        element: <ListOfLinks />,
       },
       {
         path: "team",
@@ -36,7 +41,7 @@ const Paths = [
       },
       {
         path: "profile",
-        element: <ProfilePage />, 
+        element: <ProfilePage />,
       },
       {
         path: "*",

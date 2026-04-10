@@ -30,6 +30,8 @@
   --button-bg-start: #2fbbe6;
   --bg-input: #464646;
   --color-inpute: #ffffff;
+  --box-container: #6da2ff7d;
+  --box-container-border: #6da2ff3b;
 }
 
 /* الألوان عند تفعيل كلاس الـ dark */
@@ -52,6 +54,8 @@
   --button-bg-start: #353570;
   --bg-input: #dfdfdf;
   --color-inpute: #313131;
+  --box-container: #1d293d;
+  --box-container-border: #314158;
 }
 
 /* تطبيق المتغيرات على العناصر */

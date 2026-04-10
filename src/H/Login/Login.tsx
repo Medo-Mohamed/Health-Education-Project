@@ -1,7 +1,10 @@
 import { useDispatch, useSelector } from "react-redux";
 
 import type { AppDispatch, RootState } from "../../store";
-import { closeLoginModal } from "../../M/Redux-Store/UserControle/UserDisplatSlice";
+import {
+  clearState,
+  closeLoginModal,
+} from "../../M/Redux-Store/UserControle/UserDisplatSlice";
 import { Link } from "react-router-dom";
 import LoginForm from "./Components/LoginForm";
 import GetPasswordBackForm from "./Components/GetPasswordBackForm";
@@ -9,8 +12,6 @@ import GetPasswordBackForm from "./Components/GetPasswordBackForm";
 export default function Login() {
   const dispatch = useDispatch<AppDispatch>();
   const UserStates = useSelector((state: RootState) => state.User);
-
-  // no effect needed; state is reset when modal is closed or submission is handled
 
   if (!UserStates.showLoginModal) return null;
 
@@ -32,7 +33,8 @@ export default function Login() {
         <button
           type="button"
           onClick={() => {
-            dispatch(closeLoginModal());
+            // dispatch(closeLoginModal());
+            dispatch(clearState());
           }}
           className="absolute top-4 right-4 text-gray-500 hover:text-red-500 dark:text-gray-400 dark:hover:text-red-400 transition-colors z-20"
         >
