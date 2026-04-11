@@ -5,6 +5,7 @@ import {
   clearState,
   searchUserByUsername,
 } from "../../../Redux-Store/UserSearch/UserSearch";
+import { Link } from "react-router-dom";
 
 function UserSearchPage() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -50,20 +51,23 @@ function UserSearchPage() {
           <p>جاري التحميل...</p>
         ) : (
           UserSearch.info.data.map((user) => (
-            <div
+            <Link
               key={user._id}
-              className="flex items-center gap-3 p-4 bg-white border rounded-2xl shadow-sm"
+              to="/profile_view"
+              state={{ user }}
+              className="flex items-center gap-3 p-4 bg-white border rounded-2xl shadow-sm hover:bg-gray-50 transition block"
             >
-              <div className="w-12 h-12 bg-gray-200 rounded-full overflow-hidden">
+              <div className="w-12 h-12 bg-gray-200 rounded-full overflow-hidden shrink-0">
                 <img
                   src={user.avatar_url || "/default-avatar.png"}
                   alt={user.username}
+                  className="w-full h-full object-cover"
                 />
               </div>
-              <span className="font-semibold text-gray-800">
+              <span className="font-semibold text-gray-800 truncate">
                 {user.username}
               </span>
-            </div>
+            </Link>
           ))
         )}
       </div>

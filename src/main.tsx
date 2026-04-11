@@ -12,6 +12,7 @@ import NotFound from "./M/NOT FOUND PAGE/NotFound.tsx";
 import Register from "./M/Register/Register.tsx";
 import UserKeepLogin from "./G-Component/UserKeepLogin.tsx";
 import ProfilePage from "./M/Profile/Profile.tsx";
+import ModernProfilePage from "./H/Profile_view/Profile_Page.tsx";
 import ListOfLinks from "./M/List of links/ListOfLinks.tsx";
 
 const Paths = [
@@ -42,6 +43,10 @@ const Paths = [
       {
         path: "profile",
         element: <ProfilePage />,
+      },
+      {
+        path: "profile_view",
+        element: <ModernProfilePage />,
       },
       {
         path: "*",
