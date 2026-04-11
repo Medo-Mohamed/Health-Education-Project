@@ -5,3 +5,6 @@
 .sepretor {
   background-color: var(--box-container-border);
 }
+.list-of-users-finded {
+  background-color: var(--finded-users-bg);
+}

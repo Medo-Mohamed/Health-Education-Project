@@ -1,15 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import AxiosApi from "../../../AxiosApi";
 
-//   try {
-//     const response = await AxiosApi.post("/auth/withlogin/logout");
-//     console.log("Logout response:", response.data);
-//     return response.data;
-//   } catch (err: any) {
-//     console.error("Error logging out:", err.response?.data || err);
-//     return Promise.reject(err.response?.data?.message || "حدث خطأ ما");
-//   }
-
 export const searchUserByUsername = createAsyncThunk(
   "/searchusers",
   async (payload: { searchTerm: string; page?: number }) => {
@@ -75,6 +66,13 @@ export const UserSearchSlice = createSlice({
       .addCase(searchUserByUsername.rejected, (state, action) => {
         state.state = "faild";
         state.error = action.error.message as string;
+        state.info = {
+          success: false,
+          data: [],
+          currentPage: 0,
+          totalPages: 0,
+          totalResults: 0,
+        };
       })
       .addCase(searchUserByUsername.fulfilled, (state, action) => {
         state.state = "success";

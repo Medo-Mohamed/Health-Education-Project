@@ -32,6 +32,7 @@
   --color-inpute: #ffffff;
   --box-container: #6da2ff7d;
   --box-container-border: #6da2ff3b;
+  --finded-users-bg:  rgba(0, 0, 0, 0.1);
 }
 
 /* الألوان عند تفعيل كلاس الـ dark */
@@ -56,6 +57,7 @@
   --color-inpute: #313131;
   --box-container: #1d293d;
   --box-container-border: #314158;
+  --finded-users-bg: rgba(255, 255, 255, 0.1);
 }
 
 /* تطبيق المتغيرات على العناصر */

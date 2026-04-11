@@ -5,6 +5,7 @@ import {
   clearState,
   searchUserByUsername,
 } from "../../../Redux-Store/UserSearch/UserSearch";
+import { FaUserCircle } from "react-icons/fa";
 
 function UserSearchPage() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -45,24 +46,32 @@ function UserSearchPage() {
       </form>
 
       {/* عرض النتائج */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
         {UserSearch.state === "loading" ? (
           <p>جاري التحميل...</p>
         ) : (
           UserSearch.info.data.map((user) => (
             <div
               key={user._id}
-              className="flex items-center gap-3 p-4 bg-white border rounded-2xl shadow-sm"
+              className="flex items-center gap-3 p-4 border rounded-2xl shadow-sm hover:scale-101 cursor-pointer duration-300 transition-all list-of-users-finded"
             >
-              <div className="w-12 h-12 bg-gray-200 rounded-full overflow-hidden">
-                <img
-                  src={user.avatar_url || "/default-avatar.png"}
-                  alt={user.username}
-                />
+              <div className="w-12 h-12 rounded-full overflow-hidden element-center">
+                {user.avatar_url ? (
+                  <img
+                    src={user.avatar_url || "/default-avatar.png"}
+                    alt={user.username}
+                    draggable="false"
+                  />
+                ) : (
+                  <FaUserCircle className="w-full h-full " />
+                )}
               </div>
-              <span className="font-semibold text-gray-800">
-                {user.username}
-              </span>
+              <div className="flex-col items-center">
+                <h2 className="font-semibold text-xl">
+                  {user.first_name} {user.last_name}
+                </h2>
+                <span className="text-sm">{user.username}</span>
+              </div>
             </div>
           ))
         )}
@@ -81,7 +90,7 @@ function UserSearchPage() {
                 }),
               )
             }
-            className="px-4 py-2 bg-gray-200 rounded-lg disabled:opacity-50"
+            className="px-4 py-2 rounded-lg disabled:opacity-50"
           >
             السابق
           </button>
@@ -102,7 +111,7 @@ function UserSearchPage() {
                 }),
               )
             }
-            className="px-4 py-2 bg-gray-200 rounded-lg disabled:opacity-50"
+            className="px-4 py-2 rounded-lg disabled:opacity-50"
           >
             التالي
           </button>
