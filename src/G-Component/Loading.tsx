@@ -4,10 +4,17 @@ import type { RootState } from "../store";
 
 function Loading() {
   const isLoading = useSelector((state: RootState) => state.User.loading);
-
+  const isGLoading = useSelector(
+    (state: RootState) => state.SuccFaildComponent.state,
+  );
   // تأثير لمنع التمرير (Scroll) في الصفحة أثناء التحميل
   useEffect(() => {
-    if (isLoading) {
+    // if (isLoading) {
+    //   document.body.style.overflow = "hidden"; // منع السكرول
+    // } else {
+    //   document.body.style.overflow = "unset"; // إعادة السكرول
+    // }
+    if (isGLoading) {
       document.body.style.overflow = "hidden"; // منع السكرول
     } else {
       document.body.style.overflow = "unset"; // إعادة السكرول
@@ -17,10 +24,10 @@ function Loading() {
     return () => {
       document.body.style.overflow = "unset";
     };
-  }, [isLoading]);
+  }, [isLoading, isGLoading]);
 
   // إذا لم يكن هناك تحميل، لا تظهر شيئاً
-  if (!isLoading) return null;
+  // if (!isLoading && isGLoading !== "loading") return null;
 
   return (
     <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/40 backdrop-blur-sm">

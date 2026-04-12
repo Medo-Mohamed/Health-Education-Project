@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 interface IS {
-  state: "success" | "faild" | "none";
+  state: "success" | "faild" | "none" | "loading";
   showComponent: boolean;
   title: string;
   descreption: string;
@@ -16,7 +16,16 @@ export const SFS_Slice = createSlice({
   name: "SFS",
   initialState,
   reducers: {
-    open: (state, action) => {
+    open: (
+      state,
+      action: {
+        payload: {
+          state: "success" | "faild" | "none";
+          title?: string;
+          descreption?: string;
+        };
+      },
+    ) => {
       state.showComponent = true;
       // required
       state.state = action.payload.state;
@@ -26,9 +35,12 @@ export const SFS_Slice = createSlice({
     close: () => {
       return initialState;
     },
+    loading: (state) => {
+      state.state = "loading";
+    },
   },
 });
 
-export const { open, close } = SFS_Slice.actions;
+export const { open, close, loading } = SFS_Slice.actions;
 
 export default SFS_Slice.reducer;

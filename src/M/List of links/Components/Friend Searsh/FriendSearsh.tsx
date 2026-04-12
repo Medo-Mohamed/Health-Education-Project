@@ -55,16 +55,9 @@ function UserSearchPage() {
             <Link
               key={user._id}
               to="/profile_view"
-              state={{ user }}
-              className="flex items-center gap-3 p-4 bg-white border rounded-2xl shadow-sm hover:bg-gray-50 transition block"
+              state={{ id: user._id }}
               className="flex items-center gap-3 p-4 border rounded-2xl shadow-sm hover:scale-101 cursor-pointer duration-300 transition-all list-of-users-finded"
             >
-              <div className="w-12 h-12 bg-gray-200 rounded-full overflow-hidden shrink-0">
-                <img
-                  src={user.avatar_url || "/default-avatar.png"}
-                  alt={user.username}
-                  className="w-full h-full object-cover"
-                />
               <div className="w-12 h-12 rounded-full overflow-hidden element-center">
                 {user.avatar_url ? (
                   <img
@@ -82,7 +75,7 @@ function UserSearchPage() {
                 </h2>
                 <span className="text-sm">{user.username}</span>
               </div>
-            </div>
+            </Link>
           ))
         )}
       </div>

@@ -1,5 +1,5 @@
 @import "tailwindcss";
-
+/* @plugin "@tailwindcss/forms"; */
 @theme {
   /* Color controler */
   /* breakPoint controler */
@@ -19,5 +19,4 @@
   .container {
     @apply m-auto;
   }
-
 }

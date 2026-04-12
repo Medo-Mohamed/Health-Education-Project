@@ -5,11 +5,16 @@ import Header from "./Header/Header";
 import Footer from "./Footer/Footer";
 import Loading from "../G-Component/Loading";
 import ResponseStateModal from "../G-Component/ResponseStateModal";
+import { useSelector } from "react-redux";
+import type { RootState } from "../store";
 
 function App() {
+  const isGLoading = useSelector(
+    (state: RootState) => state.SuccFaildComponent.state,
+  );
   return (
     <div>
-      <Loading />
+      {isGLoading === "loading" && <Loading />}
       <ResponseStateModal />
       <Header />
       <Outlet />
