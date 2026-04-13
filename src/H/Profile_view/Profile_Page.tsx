@@ -1,11 +1,13 @@
 import "../../M/Profile/Profile.css";
-import { useLocation } from "react-router-dom";
+// import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../store";
 import AxiosApi from "../../AxiosApi";
 import { loading, open } from "../../M/Redux-Store/SuccessFaildState/SFS";
 import { MdSunny } from "react-icons/md";
+import { useParams } from "react-router-dom";
+import { RiUserFollowFill, RiUserUnfollowFill } from "react-icons/ri";
 const colorsList = [
   { name: "Red", class: "bg-red-600" },
   { name: "Blue", class: "bg-blue-600" },
@@ -33,14 +35,16 @@ interface UserInfo {
   phone_numbers: string[];
   email?: string;
   last_login: string;
+  isFollowing: boolean;
 }
 
 const ModernProfilePage = () => {
-  const location = useLocation();
+  const { userId } = useParams();
+  // const location = useLocation();
   const AuthUser = useSelector((state: RootState) => state.User);
   const dispatch = useDispatch<AppDispatch>();
   // نعتمد على المستخدم الممرر من صفحة البحث
-  const userId = location.state?.id as string;
+  // const userId = location.state?.id as string;
   // console.log(userId);
   const [User, setUser] = useState<UserInfo | null>(null);
   async function fetchUserData() {
@@ -67,9 +71,7 @@ const ModernProfilePage = () => {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       fetchUserData();
     }
-  }, [userId, dispatch]);
-  // if (!userInfo)
-  // return <div className="p-20 text-center">جاري التحميل...</div>;
+  }, []);
   return (
     <div
       className="max-w-5xl mx-auto my-10 px-4 font-sans container pt-18.75 pb-10 "
@@ -80,7 +82,7 @@ const ModernProfilePage = () => {
         <div className="h-32 bg-linear-to-r from-indigo-500 to-purple-600 opacity-30"></div>
         <div className="px-8 pb-8">
           <div className="relative flex flex-col md:flex-row justify-between items-center md:items-start -mt-12 gap-4">
-            <div className="flex flex-col md:flex-row items-center md:items-start gap-5 w-full">
+            <div className="flex flex-col md:flex-row items-center md:items-start gap-2 md:gap-5 w-full">
               {/* صورة المستخدم */}
               <div className="relative group shrink-0">
                 <div className="w-28 h-28 rounded-2xl border-4 border-white dark:border-slate-800 bg-gray-200 overflow-hidden shadow-lg mt-2 md:mt-0">
@@ -106,6 +108,44 @@ const ModernProfilePage = () => {
                 <p className=" text-base mb-3" dir="ltr">
                   @{User?.username}
                 </p>
+              </div>
+              {/* متابعة وإلغاء متابعة المستخدمين  */}
+              <div className="text-center md:text-right pt-2 md:pt-14">
+                <div
+                  className="fit-box text-3xl p-1 rounded-full group bg-black/20 cursor-pointer hover:bg-black/70"
+                  onClick={async () => {
+                    const routeF = User?.isFollowing
+                      ? "unfollowuser"
+                      : "followuser";
+                    dispatch(loading());
+                    try {
+                      const res = await AxiosApi.post(
+                        `/auth/withlogin/${routeF}/${User?.id}`,
+                      );
+                      dispatch(
+                        open({
+                          state: "success",
+                          title: res.data?.message || "",
+                        }),
+                      );
+                    } catch (error: any) {
+                      dispatch(
+                        open({
+                          state: "faild",
+                          title: "حدث خطأ",
+                          descreption: error.response?.data?.message,
+                        }),
+                      );
+                    }
+                    await fetchUserData();
+                  }}
+                >
+                  {User?.isFollowing ? (
+                    <RiUserUnfollowFill className="group-hover:text-red-200" />
+                  ) : (
+                    <RiUserFollowFill className="group-hover:text-green-200" />
+                  )}
+                </div>
               </div>
 
               {AuthUser.status === "idle" &&

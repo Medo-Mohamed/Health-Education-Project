@@ -45,7 +45,7 @@ const Paths = [
         element: <ProfilePage />,
       },
       {
-        path: "profile_view",
+        path: "profile_view/:userId",
         element: <ModernProfilePage />,
       },
       {

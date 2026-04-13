@@ -54,7 +54,7 @@ function UserSearchPage() {
           UserSearch.info.data.map((user) => (
             <Link
               key={user._id}
-              to="/profile_view"
+              to={`/profile_view/${user._id}`}
               state={{ id: user._id }}
               className="flex items-center gap-3 p-4 border rounded-2xl shadow-sm hover:scale-101 cursor-pointer duration-300 transition-all list-of-users-finded"
             >
