@@ -12,9 +12,52 @@ import NotFound from "./M/NOT FOUND PAGE/NotFound.tsx";
 import Register from "./M/Register/Register.tsx";
 import UserKeepLogin from "./G-Component/UserKeepLogin.tsx";
 import ProfilePage from "./M/Profile/Profile.tsx";
-import ModernProfilePage from "./H/Profile_view/Profile_Page.tsx";
+import ModernProfilePage from "./M/List of links/Profile_view/Profile_Page.tsx";
 import ListOfLinks from "./M/List of links/ListOfLinks.tsx";
-
+import { FaCog, FaUserEdit } from "react-icons/fa";
+import { GiShadowFollower } from "react-icons/gi";
+import TablesGrid from "./M/List of links/Topic Table/Components/TablesGrid.tsx";
+import FriendSearsh from "./M/List of links/Components/Friend Searsh/FriendSearsh.tsx";
+import TopicApp from "./M/List of links/Topic Table/TopicApp.tsx";
+import { HiMiniTableCells } from "react-icons/hi2";
+import TopicTableDetails from "./M/List of links/Topic Table/Components/TopicTableDetails.tsx";
+export const MENU_DATA = [
+  {
+    path: "search",
+    title: "البحث عن المستخدمين",
+    icon: <FaUserEdit size={20} />,
+    element: <FriendSearsh comesFrom="searchUsers" key={"searchUsers"} />,
+  },
+  {
+    path: "following",
+    title: "أُتابع",
+    icon: <GiShadowFollower size={20} />,
+    element: <FriendSearsh comesFrom="followingUsers" key={"followingUsers"} />,
+  },
+  {
+    path: "topics",
+    title: "جداول",
+    icon: <HiMiniTableCells size={20} />,
+    element: <TopicApp />,
+    children: [
+      {
+        // path: "alltopics",
+        index: true,
+        element: <TablesGrid />,
+      },
+      {
+        path: "topictabledetails/:id",
+        element: <TopicTableDetails />,
+      },
+    ],
+  },
+  {
+    path: "settings",
+    title: "الإعدادات",
+    icon: <FaCog size={20} />,
+    element: <div>إعدادات الحساب الشخصي</div>,
+  },
+];
 const Paths = [
   {
     path: "/",
@@ -27,6 +70,7 @@ const Paths = [
       {
         path: "listlinks",
         element: <ListOfLinks />,
+        children: [...MENU_DATA],
       },
       {
         path: "team",

@@ -3,24 +3,35 @@ import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../../../store";
 import {
   clearState,
+  getFollowingUsers,
   searchUserByUsername,
 } from "../../../Redux-Store/UserSearch/UserSearch";
 import { Link } from "react-router-dom";
 import { FaUserCircle } from "react-icons/fa";
+import { close, loading } from "../../../Redux-Store/SuccessFaildState/SFS";
 
-function UserSearchPage() {
+function UserSearchPage({ comesFrom }: { comesFrom: string }) {
   const [searchTerm, setSearchTerm] = useState("");
   const UserSearch = useSelector((state: RootState) => state.UserSearch);
   const dispatch = useDispatch<AppDispatch>();
+
+  if (UserSearch.state === "loading") dispatch(loading());
+  else dispatch(close());
+
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    dispatch(searchUserByUsername({ searchTerm }));
+    if (comesFrom === "searchUsers")
+      dispatch(searchUserByUsername({ searchTerm }));
+    else if (comesFrom === "followingUsers")
+      dispatch(getFollowingUsers({ searchTerm }));
     console.log(UserSearch);
   };
 
   useEffect(() => {
     dispatch(clearState());
-  }, [dispatch]);
+    if (comesFrom === "followingUsers")
+      dispatch(getFollowingUsers({ searchTerm: "" }));
+  }, [comesFrom, dispatch]);
 
   return (
     <div className=" max-w-4xl mx-auto" dir="rtl">

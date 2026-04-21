@@ -1,10 +1,9 @@
-import "../../M/Profile/Profile.css";
-// import { useLocation } from "react-router-dom";
+import "../../Profile/Profile.css";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import type { AppDispatch, RootState } from "../../store";
-import AxiosApi from "../../AxiosApi";
-import { loading, open } from "../../M/Redux-Store/SuccessFaildState/SFS";
+import type { AppDispatch, RootState } from "../../../store";
+import AxiosApi from "../../../AxiosApi";
+import { loading, open } from "../../Redux-Store/SuccessFaildState/SFS";
 import { MdSunny } from "react-icons/md";
 import { useParams } from "react-router-dom";
 import { RiUserFollowFill, RiUserUnfollowFill } from "react-icons/ri";
@@ -337,7 +336,7 @@ const ModernProfilePage = () => {
                             : `https://${link.url}`
                         }
                         className={`p-2 rounded-xl transition-colors element-center opacity-90 hover:opacity-100 text-white
-                          ${colorsList[index].class}`}
+                          ${colorsList[index % 4].class}`}
                       >
                         <span className="font-bold ">
                           {link.platform.toUpperCase() || "رابط"}

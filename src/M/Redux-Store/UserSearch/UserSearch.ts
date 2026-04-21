@@ -20,6 +20,25 @@ export const searchUserByUsername = createAsyncThunk(
   },
 );
 
+export const getFollowingUsers = createAsyncThunk(
+  "/getFollowingUsers",
+  async (payload: { searchTerm: string; page?: number }) => {
+    try {
+      const response = await AxiosApi.get("/auth/withlogin/getfollowinglist", {
+        params: {
+          searchTerm: payload.searchTerm,
+          page: payload.page || 1,
+        },
+      });
+      console.log("followes response:", response.data);
+      return response.data;
+    } catch (error: any) {
+      console.log(error.response?.data?.message || "حدث خطأ ما");
+      return Promise.reject(error.response?.data?.message || "حدث خطأ ما");
+    }
+  },
+);
+
 export type UserSearchInfo = {
   success: boolean;
   data: {
@@ -51,7 +70,7 @@ const initialState: UserSearch = {
   error: "",
 };
 export const UserSearchSlice = createSlice({
-  name: "theme",
+  name: "UserSearch",
   initialState: initialState,
   reducers: {
     clearState: () => {
@@ -75,6 +94,25 @@ export const UserSearchSlice = createSlice({
         };
       })
       .addCase(searchUserByUsername.fulfilled, (state, action) => {
+        state.state = "success";
+        state.info = action.payload as UserSearchInfo;
+        state.error = "";
+      })
+      .addCase(getFollowingUsers.pending, (state) => {
+        state.state = "loading";
+      })
+      .addCase(getFollowingUsers.rejected, (state, action) => {
+        state.state = "faild";
+        state.error = action.error.message as string;
+        state.info = {
+          success: false,
+          data: [],
+          currentPage: 0,
+          totalPages: 0,
+          totalResults: 0,
+        };
+      })
+      .addCase(getFollowingUsers.fulfilled, (state, action) => {
         state.state = "success";
         state.info = action.payload as UserSearchInfo;
         state.error = "";
