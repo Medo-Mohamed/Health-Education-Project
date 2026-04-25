@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useDispatch } from "react-redux";
-import type { AppDispatch } from "../../../../store";
-import { loading, open } from "../../../Redux-Store/SuccessFaildState/SFS";
-import { createTopicTable } from "../../../Redux-Store/TopicTablesControle/TopicTables";
-import AxiosApi from "../../../../AxiosApi";
+import type { AppDispatch } from "../../../../../store";
+import { loading, open } from "../../../../Redux-Store/SuccessFaildState/SFS";
+import { createTopicTable } from "../../../../Redux-Store/TopicTablesControle/TopicTables";
+import AxiosApi from "../../../../../AxiosApi";
 import type { Table } from "./TopicTableDetails";
 
 const CreateTopicModal = ({

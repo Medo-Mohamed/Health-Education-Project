@@ -12,15 +12,18 @@ import NotFound from "./M/NOT FOUND PAGE/NotFound.tsx";
 import Register from "./M/Register/Register.tsx";
 import UserKeepLogin from "./G-Component/UserKeepLogin.tsx";
 import ProfilePage from "./M/Profile/Profile.tsx";
-import ModernProfilePage from "./M/List of links/Profile_view/Profile_Page.tsx";
+import ModernProfilePage from "./M/List of links/Components/Profile_view/Profile_Page.tsx";
 import ListOfLinks from "./M/List of links/ListOfLinks.tsx";
 import { FaCog, FaUserEdit } from "react-icons/fa";
 import { GiShadowFollower } from "react-icons/gi";
-import TablesGrid from "./M/List of links/Topic Table/Components/TablesGrid.tsx";
+import TablesGrid from "./M/List of links/Components/Topic Table/Components/TablesGrid.tsx";
 import FriendSearsh from "./M/List of links/Components/Friend Searsh/FriendSearsh.tsx";
-import TopicApp from "./M/List of links/Topic Table/TopicApp.tsx";
+import TopicApp from "./M/List of links/Components/Topic Table/TopicApp.tsx";
 import { HiMiniTableCells } from "react-icons/hi2";
-import TopicTableDetails from "./M/List of links/Topic Table/Components/TopicTableDetails.tsx";
+import TopicTableDetails from "./M/List of links/Components/Topic Table/Components/TopicTableDetails.tsx";
+import FileIndex from "./M/List of links/Components/File Controle/FileIndex.tsx";
+import { ImFilesEmpty } from "react-icons/im";
+import DisplayFiles from "./M/List of links/Components/File Controle/Components/DisplayFiles.tsx";
 export const MENU_DATA = [
   {
     path: "search",
@@ -49,6 +52,23 @@ export const MENU_DATA = [
         path: "topictabledetails/:id",
         element: <TopicTableDetails />,
       },
+    ],
+  },
+  {
+    path: "files",
+    title: "الملفات",
+    icon: <ImFilesEmpty size={20} />,
+    element: <FileIndex />,
+    children: [
+      {
+        // path: "alltopics",
+        index: true,
+        element: <DisplayFiles />,
+      },
+      // {
+      //   path: "topictabledetails/:id",
+      //   element: <TopicTableDetails />,
+      // },
     ],
   },
   {

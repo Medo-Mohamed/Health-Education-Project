@@ -1,9 +1,9 @@
-import "../../Profile/Profile.css";
+import "../../../Profile/Profile.css";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import type { AppDispatch, RootState } from "../../../store";
-import AxiosApi from "../../../AxiosApi";
-import { loading, open } from "../../Redux-Store/SuccessFaildState/SFS";
+import type { AppDispatch, RootState } from "../../../../store";
+import AxiosApi from "../../../../AxiosApi";
+import { loading, open } from "../../../Redux-Store/SuccessFaildState/SFS";
 import { MdSunny } from "react-icons/md";
 import { useParams } from "react-router-dom";
 import { RiUserFollowFill, RiUserUnfollowFill } from "react-icons/ri";

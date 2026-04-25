@@ -1,8 +1,8 @@
 import { PlusIcon } from "@heroicons/react/24/outline"; // تأكد من تثبيت heroicons أو استخدم علامة + عادية
 import { useDispatch, useSelector } from "react-redux";
-import type { AppDispatch, RootState } from "../../../../store";
+import type { AppDispatch, RootState } from "../../../../../store";
 import { useEffect, useState } from "react";
-import { getAllTablesSummary } from "../../../Redux-Store/TopicTablesControle/TopicTables";
+import { getAllTablesSummary } from "../../../../Redux-Store/TopicTablesControle/TopicTables";
 import CreateTopicModal from "./CreateTopicModal";
 import { NavLink, useLocation } from "react-router-dom";
 const TablesGrid = () => {

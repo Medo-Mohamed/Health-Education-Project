@@ -10,13 +10,13 @@ import {
   TrashIcon,
 } from "@heroicons/react/24/outline";
 import { useNavigate, useParams } from "react-router-dom";
-import AxiosApi from "../../../../AxiosApi";
+import AxiosApi from "../../../../../AxiosApi";
 import EditRowModal from "./EditRowModal";
 import {
   loading,
   open,
   close,
-} from "../../../Redux-Store/SuccessFaildState/SFS";
+} from "../../../../Redux-Store/SuccessFaildState/SFS";
 // استيراد أدوات السحب والقيود
 import {
   DndContext,
@@ -42,7 +42,7 @@ import {
   restrictToParentElement,
 } from "@dnd-kit/modifiers";
 import { useDispatch, useSelector } from "react-redux";
-import type { AppDispatch, RootState } from "../../../../store";
+import type { AppDispatch, RootState } from "../../../../../store";
 import CreateTopicModal from "./CreateTopicModal";
 
 interface Row {
