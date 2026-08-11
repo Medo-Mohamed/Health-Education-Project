@@ -14,7 +14,7 @@ import UserKeepLogin from "./G-Component/UserKeepLogin.tsx";
 import ProfilePage from "./M/Profile/Profile.tsx";
 import ModernProfilePage from "./M/List of links/Components/Profile_view/Profile_Page.tsx";
 import ListOfLinks from "./M/List of links/ListOfLinks.tsx";
-import { FaCog, FaUserEdit } from "react-icons/fa";
+import { FaCog, FaRegNewspaper, FaUserEdit } from "react-icons/fa";
 import { GiShadowFollower } from "react-icons/gi";
 import TablesGrid from "./M/List of links/Components/Topic Table/Components/TablesGrid.tsx";
 import FriendSearsh from "./M/List of links/Components/Friend Searsh/FriendSearsh.tsx";
@@ -24,6 +24,15 @@ import TopicTableDetails from "./M/List of links/Components/Topic Table/Componen
 import FileIndex from "./M/List of links/Components/File Controle/FileIndex.tsx";
 import { ImFilesEmpty } from "react-icons/im";
 import DisplayFiles from "./M/List of links/Components/File Controle/Components/DisplayFiles.tsx";
+import PostIndex from "./M/List of links/Components/Posts/PostIndex.tsx";
+import DisplayPosts from "./M/List of links/Components/Posts/Components/DisplayPosts.tsx";
+import PlaceApp from "./M/List of links/Components/Places/PlaceApp.tsx";
+import { MdPlace } from "react-icons/md";
+import { MyPlacesPage } from "./M/List of links/Components/Places/Components/MyPlacesPage.tsx";
+import { CreatePlacePage } from "./M/List of links/Components/Places/Components/CreatePlacePage.tsx";
+import { PlaceDetailsPage } from "./M/List of links/Components/Places/Components/PlaceDetailsPage.tsx";
+import EditStaffPermissionsPage from "./M/List of links/Components/Places/Components/EditStaffPermissionsPage.tsx";
+import { Toaster } from "react-hot-toast";
 export const MENU_DATA = [
   {
     path: "search",
@@ -69,6 +78,43 @@ export const MENU_DATA = [
       //   path: "topictabledetails/:id",
       //   element: <TopicTableDetails />,
       // },
+    ],
+  },
+  {
+    path: "posts",
+    title: "المنشورات",
+    icon: <FaRegNewspaper size={20} />,
+    element: <PostIndex />,
+    children: [
+      {
+        // path: "alltopics",
+        index: true,
+        element: <DisplayPosts />,
+      },
+    ],
+  },
+  {
+    path: "places",
+    title: "الاماكن",
+    icon: <MdPlace size={20} />,
+    element: <PlaceApp />,
+    children: [
+      {
+        index: true,
+        element: <MyPlacesPage />,
+      },
+      {
+        path: "create/:parentId?",
+        element: <CreatePlacePage />,
+      },
+      {
+        path: "place-details-page/:id",
+        element: <PlaceDetailsPage />,
+      },
+      {
+        path: ":placeId/staff/:userId/permissions",
+        element: <EditStaffPermissionsPage />,
+      },
     ],
   },
   {
@@ -124,6 +170,11 @@ const router = createBrowserRouter([...Paths]);
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <Provider store={store}>
+      <Toaster
+        position="top-center"
+        reverseOrder={false}
+        toastOptions={{ duration: 4000 }}
+      />
       <ThemeHandler />
       <UserKeepLogin />
       <div dir="rtl">

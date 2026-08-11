@@ -13,6 +13,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { HiEye, HiEyeOff } from "react-icons/hi";
 import { open } from "../Redux-Store/SuccessFaildState/SFS";
+import { MdSunny } from "react-icons/md";
 
 interface UserForDisplayForm extends UserForDisplay {
   avatar_file?: File; // لإدارة الملف الجديد عند رفع صورة جديدة
@@ -314,6 +315,21 @@ const ModernProfilePage = () => {
                 </>
               )}
             </div>
+
+            {userInfo?.role !== "user" && (
+              <div
+                className={`absolute -top-18 -left-7 element-center ${userInfo?.role === "admin" ? "text-yellow-500" : "text-red-400"}`}
+              >
+                <MdSunny size={100} />
+                <span className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] text-black font-extrabold -rotate-30">
+                  {userInfo?.role === "admin"
+                    ? "مشرف"
+                    : userInfo?.role === "dev"
+                      ? "مسئول"
+                      : ""}
+                </span>
+              </div>
+            )}
           </div>
 
           {/* الحقول */}

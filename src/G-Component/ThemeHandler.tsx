@@ -7,18 +7,18 @@ function ThemeHandler() {
   const Theme = useSelector((state: RootState) => state.Theme.value);
   const dispatch = useDispatch();
   useEffect(() => {
-    const savedTheme = localStorage.getItem("app-theme");
+    const savedTheme = localStorage.getItem("theme");
     console.log(savedTheme);
     if (savedTheme && savedTheme !== Theme) dispatch(changeTheme());
   }, []);
   useEffect(() => {
     const body = document.body;
     if (Theme === "dark") {
-      body.classList.add("dark-theme");
+      body.classList.add("dark");
     } else {
-      body.classList.remove("dark-theme");
+      body.classList.remove("dark");
     }
-    localStorage.setItem("app-theme", Theme);
+    localStorage.setItem("theme", Theme);
   }, [Theme]);
   return <></>;
 }
