@@ -1,0 +1,650 @@
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import AxiosApi from "../../../../../../AxiosApi";
+import { toast } from "react-hot-toast";
+import {
+  Save,
+  ShieldCheck,
+  ShieldAlert,
+  Loader2,
+  CheckCircle2,
+  GitFork,
+  Clock,
+  Calendar,
+} from "lucide-react";
+import {
+  DEFAULT_ROLE_PERMISSIONS,
+  PlacePermission,
+  PlaceRole,
+  ROLES_LIST,
+  type IPlacePermission,
+  type IPlaceRole,
+} from "../../types";
+
+// ==========================================
+// 1. التعريفات المطبقة على السيرفر
+// ==========================================
+
+// 3. خريطة الصلاحيات الافتراضية المحدثة
+// eslint-disable-next-line react-refresh/only-export-components
+// export const DEFAULT_ROLE_PERMISSIONS: Record<IPlaceRole, IPlacePermission[]> =
+//   {
+//     [PlaceRole.ADMIN]: [
+//       PlacePermission.CREATE_SUB_PLACE,
+//       PlacePermission.EDIT_PLACE_INFO,
+//       PlacePermission.DELETE_PLACE,
+//       PlacePermission.MANAGE_MEMBERS,
+//       PlacePermission.VIEW_MEMBERS,
+//       PlacePermission.CREATE_PLAN,
+//       PlacePermission.EDIT_PLAN,
+//       PlacePermission.DELETE_PLAN,
+//       PlacePermission.VIEW_PLAN,
+//       PlacePermission.SUBMIT_PLAN,
+//       PlacePermission.APPROVE_PLAN,
+//       PlacePermission.MERGE_PLANS,
+//       PlacePermission.CREATE_EVENT,
+//       PlacePermission.EDIT_EVENT,
+//       PlacePermission.DELETE_EVENT,
+//       PlacePermission.VIEW_PLACE,
+//       PlacePermission.UPLOAD_MEDIA,
+//     ],
+//     [PlaceRole.SUPERVISOR]: [
+//       PlacePermission.EDIT_PLACE_INFO,
+//       PlacePermission.VIEW_MEMBERS,
+//       PlacePermission.CREATE_PLAN,
+//       PlacePermission.EDIT_PLAN,
+//       PlacePermission.DELETE_PLAN,
+//       PlacePermission.VIEW_PLAN,
+//       PlacePermission.SUBMIT_PLAN,
+//       PlacePermission.APPROVE_PLAN,
+//       PlacePermission.MERGE_PLANS,
+//       PlacePermission.CREATE_EVENT,
+//       PlacePermission.EDIT_EVENT,
+//       PlacePermission.VIEW_PLACE,
+//       PlacePermission.UPLOAD_MEDIA,
+//     ],
+//     [PlaceRole.OPERATOR]: [
+//       PlacePermission.CREATE_PLAN,
+//       PlacePermission.EDIT_PLAN,
+//       PlacePermission.VIEW_PLAN,
+//       PlacePermission.SUBMIT_PLAN,
+//       PlacePermission.CREATE_EVENT,
+//       PlacePermission.VIEW_PLACE,
+//       PlacePermission.UPLOAD_MEDIA,
+//     ],
+//     [PlaceRole.VIEWER]: [PlacePermission.VIEW_PLACE, PlacePermission.VIEW_PLAN],
+//   };
+
+// تفاصيل وسياق كل صلاحية للعرض في الشاشة باللغة العربية
+const PERMISSION_DETAILS: Record<
+  IPlacePermission,
+  { title: string; description: string }
+> = {
+  [PlacePermission.CREATE_SUB_PLACE]: {
+    title: "إضافة أماكن فرعية",
+    description: "السماح بإعادة تقسيم المكان وإنشاء أماكن أو قطاعات تابعة.",
+  },
+  [PlacePermission.EDIT_PLACE_INFO]: {
+    title: "تعديل بيانات المكان",
+    description: "تعديل الاسم، المكان الجغرافي، والمعلومات الوصفية للمكان.",
+  },
+  [PlacePermission.DELETE_PLACE]: {
+    title: "حذف المكان",
+    description: "صلاحية حساسة للغاية: إمكانية حذف المكان بشكل كامل نهائياً.",
+  },
+  [PlacePermission.MANAGE_MEMBERS]: {
+    title: "إدارة الأعضاء والموظفين",
+    description: "تعيين وإزالة موظفين وتعديل أدوارهم الوظيفية داخل المكان.",
+  },
+  [PlacePermission.VIEW_MEMBERS]: {
+    title: "عرض قائمة الأعضاء",
+    description: "الاطلاع على طاقم العمل والموظفين المعينين في هذا المكان.",
+  },
+  [PlacePermission.CREATE_PLAN]: {
+    title: "إنشاء الخطط التشغيلية",
+    description: "صلاحية إضافة وتصميم مسودة خطة مستهدفة جديدة للمكان.",
+  },
+  [PlacePermission.EDIT_PLAN]: {
+    title: "تعديل الخطط التشغيلية",
+    description: "إمكانية تحديث وتغيير أهداف ومراحل المسودات والخطط المفتوحة.",
+  },
+  [PlacePermission.DELETE_PLAN]: {
+    title: "حذف الخطط التشغيلية",
+    description:
+      "إلغاء وحذف مسودات الخطط التشغيلية والمستهدفات الخاصة بالمكان.",
+  },
+  [PlacePermission.VIEW_PLAN]: {
+    title: "عرض قراءة الخطط",
+    description: "الاطلاع على الخطط التشغيلية المستهدفة ومتابعة نسب الإنجاز.",
+  },
+  [PlacePermission.SUBMIT_PLAN]: {
+    title: "رفع الخطط للمراجعة",
+    description: "تحويل مسودة الخطة إلى حالة قيد المراجعة اعتماداً من المشرف.",
+  },
+  [PlacePermission.APPROVE_PLAN]: {
+    title: "اعتماد أو رفض الخطط",
+    description: "الموافقة النهائية على الخطط المرفوعة أو رفضها وتحديد حالتها.",
+  },
+  [PlacePermission.MERGE_PLANS]: {
+    title: "دمج الخطط التشغيلية",
+    description: "دمج خطط متعددة من عدة أعضاء في خطة واحدة معتمدة للمكان.",
+  },
+  [PlacePermission.CREATE_EVENT]: {
+    title: "إنشاء الفعاليات والندوات",
+    description: "تسجيل ندوة جديدة أو أنشطة ميدانية داخل نطاق المكان.",
+  },
+  [PlacePermission.EDIT_EVENT]: {
+    title: "تعديل الفعاليات",
+    description: "تحديث تفاصيل الفعاليات المقامة وبيانات الحضور.",
+  },
+  [PlacePermission.DELETE_EVENT]: {
+    title: "حذف الفعاليات",
+    description: "إلغاء وحذف الفعاليات والأنشطة الميدانية الموثقة.",
+  },
+  [PlacePermission.VIEW_PLACE]: {
+    title: "استعراض المكان",
+    description: "الاطلاع على المكان والأنشطة الخاصة به (الصلاحية الأساسية).",
+  },
+  [PlacePermission.UPLOAD_MEDIA]: {
+    title: "رفع التوثيق والوسائط",
+    description: "إرفاق الصور والمستندات والوسائط التوثيقية بالأنشطة.",
+  },
+};
+
+// الأدوار وعناوينها
+
+
+interface CustomPermissionItem {
+  permission: IPlacePermission;
+  expires_at: string | null;
+}
+
+interface StaffInfo {
+  _id?: string;
+  first_name?: string;
+  last_name?: string;
+  email?: string;
+  avatar_url?: string;
+}
+
+// ==========================================
+// 2. المكون الرئيسي للصفحة EditStaffPermissionsPage
+// ==========================================
+
+const EditStaffPermissionsPage: React.FC = () => {
+  const { id, userId } = useParams<{ id: string; userId: string }>();
+  // console.log("edit permis");
+  const navigate = useNavigate();
+
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+
+  const [staffInfo, setStaffInfo] = useState<StaffInfo | null>(null);
+  const [selectedRole, setSelectedRole] = useState<IPlaceRole>(
+    PlaceRole.OPERATOR,
+  );
+
+  // حالة انتهاء الدور بالكامل
+  const [roleExpiresAt, setRoleExpiresAt] = useState<string>("");
+  const [hasRoleExpiration, setHasRoleExpiration] = useState<boolean>(false);
+
+  // قائمة الصلاحيات الاستثنائية مع تواريخ الانتهاء الخاصة بها
+  const [customPermissions, setCustomPermissions] = useState<
+    CustomPermissionItem[]
+  >([]);
+
+  const [inheritToChildren, setInheritToChildren] = useState<boolean>(true);
+
+  // 1. جلب البيانات الحقيقية من السيرفر عند التحميل
+  useEffect(() => {
+    const fetchStaffData = async () => {
+      try {
+        setLoading(true);
+        const response = await AxiosApi.get(
+          `/auth/withlogin/places/place-staff/place-staff-permissions/${userId}/${id}/permissions`,
+        );
+
+        if (response.data.success) {
+          const {
+            staff_info,
+            role,
+            role_expires_at,
+            custom_permissions,
+            inherit_to_children,
+          } = response.data.data;
+
+          setStaffInfo(staff_info);
+          setSelectedRole(role);
+
+          if (role_expires_at) {
+            setHasRoleExpiration(true);
+            setRoleExpiresAt(
+              new Date(role_expires_at).toISOString().slice(0, 16),
+            );
+          } else {
+            setHasRoleExpiration(false);
+            setRoleExpiresAt("");
+          }
+
+          // تحويل صيغة custom_permissions القادمة من السيرفر
+          if (Array.isArray(custom_permissions)) {
+            const parsedCustoms = custom_permissions.map((item: any) => {
+              if (typeof item === "string") {
+                return {
+                  permission: item as IPlacePermission,
+                  expires_at: null,
+                };
+              }
+              return {
+                permission: item.permission,
+                expires_at: item.expires_at
+                  ? new Date(item.expires_at).toISOString().slice(0, 16)
+                  : null,
+              };
+            });
+            setCustomPermissions(parsedCustoms);
+          } else {
+            setCustomPermissions([]);
+          }
+
+          setInheritToChildren(inherit_to_children ?? true);
+        }
+      } catch (error: any) {
+        console.error("خطأ في جلب بيانات الصلاحيات:", error);
+        toast.error(
+          error.response?.data?.message ||
+            "تعذر جلب بيانات الصلاحيات من السيرفر",
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id && userId) {
+      fetchStaffData();
+    }
+  }, [id, userId]);
+
+  // الصلاحيات التلقائية القادمة مع الدور المختار
+  const defaultPermsForRole = DEFAULT_ROLE_PERMISSIONS[selectedRole] || [];
+
+  // دالة تبديل الصلاحية المخصصة (إضافة/إزالة)
+  const toggleCustomPermission = (perm: IPlacePermission) => {
+    if (defaultPermsForRole.includes(perm)) return;
+
+    setCustomPermissions((prev) => {
+      const exists = prev.some((item) => item.permission === perm);
+      if (exists) {
+        return prev.filter((item) => item.permission !== perm);
+      } else {
+        return [...prev, { permission: perm, expires_at: null }];
+      }
+    });
+  };
+
+  // دالة تحديث تاريخ انتهاء صلاحية مخصصة محددة
+  const updateCustomPermissionExpiry = (
+    perm: IPlacePermission,
+    expiresAt: string | null,
+  ) => {
+    setCustomPermissions((prev) =>
+      prev.map((item) =>
+        item.permission === perm ? { ...item, expires_at: expiresAt } : item,
+      ),
+    );
+  };
+
+  // دالة الحفظ وإرسال التحديثات للسيرفر
+  const handleSave = async () => {
+    try {
+      setSaving(true);
+
+      const payload = {
+        role: selectedRole,
+        role_expires_at:
+          hasRoleExpiration && roleExpiresAt
+            ? new Date(roleExpiresAt).toISOString()
+            : null,
+        custom_permissions: customPermissions.map((cp) => ({
+          permission: cp.permission,
+          expires_at: cp.expires_at
+            ? new Date(cp.expires_at).toISOString()
+            : null,
+        })),
+        inherit_to_children: inheritToChildren,
+      };
+
+      const response = await AxiosApi.put(
+        `/auth/withlogin/places/place-staff/place-staff-access/${userId}/${id}/permissions`,
+        payload,
+      );
+
+      if (response.data.success) {
+        toast.success(response.data.message || "تم حفظ التعديلات بنجاح");
+        navigate(-1);
+      }
+    } catch (error: any) {
+      console.error("خطأ أثناء حفظ الصلاحيات:", error);
+      toast.error(
+        error.response?.data?.message || "حدث خطأ أثناء حفظ التعديلات",
+      );
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh]">
+        <Loader2 className="w-10 h-10 animate-spin text-blue-600 mb-3" />
+        <p className="text-gray-500 font-medium text-sm">
+          جاري جلب إعدادات الصلاحيات من السيرفر...
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-4xl mx-auto dir-rtl" dir="rtl">
+      {/* الهيدر وزر الحفظ والعودة */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+        <div className="flex items-center gap-3">
+          <div>
+            <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+              <ShieldCheck className="w-6 h-6 text-blue-600" />
+              <span>إدارة صلاحيات الموظف</span>
+            </h1>
+            <p className="text-xs text-gray-500 mt-0.5">
+              تحديد الدور الوظيفي الأساسي والصلاحيات الاستثنائية وتوريث الفروع
+            </p>
+          </div>
+        </div>
+
+        <button
+          onClick={handleSave}
+          disabled={saving}
+          className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl font-bold text-xs transition shadow-sm disabled:opacity-70"
+        >
+          {saving ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            <Save className="w-4 h-4" />
+          )}
+          <span>حفظ التعديلات</span>
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* العمود الجانبي: بطاقة بيانات الموظف والإرشادات */}
+        <div className="lg:col-span-1 space-y-5">
+          <div className="bg-white p-6 rounded-2xl border border-gray-200/80 shadow-sm text-center">
+            {staffInfo?.avatar_url ? (
+              <img
+                src={staffInfo.avatar_url}
+                alt="User Avatar"
+                className="w-20 h-20 rounded-full mx-auto object-cover border-4 border-gray-50 shadow-inner"
+              />
+            ) : (
+              <div className="w-20 h-20 rounded-full mx-auto bg-blue-100 text-blue-700 flex items-center justify-center text-xl font-bold mb-3 shadow-inner">
+                {staffInfo?.first_name?.charAt(0) || "U"}
+              </div>
+            )}
+            <h2 className="text-base font-bold text-gray-900 mt-2">
+              {staffInfo?.first_name} {staffInfo?.last_name}
+            </h2>
+            <p className="text-xs text-gray-500 font-mono mt-1">
+              {staffInfo?.email}
+            </p>
+          </div>
+
+          {/* تفعيل / تعطيل التوارث للأماكن التابعة */}
+          <div className="bg-white p-5 rounded-2xl border border-gray-200/80 shadow-sm space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <GitFork className="w-4 h-4 text-purple-600" />
+                <span className="text-xs font-bold text-gray-900">
+                  توارث الصلاحية للفروع
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setInheritToChildren(!inheritToChildren)}
+                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
+                  inheritToChildren ? "bg-purple-600" : "bg-gray-200"
+                }`}
+              >
+                <span
+                  className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                    inheritToChildren ? "-translate-x-5" : "translate-x-0"
+                  }`}
+                />
+              </button>
+            </div>
+            <p className="text-[11px] text-gray-500 leading-relaxed">
+              عند التفعيل، سيرث الموظف نفس هذه الصلاحيات تلقائياً على جميع
+              الأماكن والقطاعات التابعة لهذا المكان.
+            </p>
+          </div>
+
+          <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4">
+            <h4 className="flex items-center gap-2 text-amber-800 font-bold text-xs mb-1.5">
+              <ShieldAlert className="w-4 h-4" />
+              <span>كيف تعمل الصلاحيات؟</span>
+            </h4>
+            <p className="text-[11px] text-amber-700 leading-relaxed">
+              الدور الأساسي يمنح الموظف حزمة صلاحيات جاهزة. يمكنك تفعيل صلاحيات
+              إضافية بالأسفل لتمنحه استثناءات حساسة (Custom Permissions) وتحديد
+              تاريخ انتهاء لكل منها.
+            </p>
+          </div>
+        </div>
+
+        {/* العمود الرئيسي: تحديد الدور والصلاحيات التفصيلية */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* 1. اختيار الدور الوظيفي (PlaceRole) وتاريخ انتهائه */}
+          <div className="bg-white p-6 rounded-2xl border border-gray-200/80 shadow-sm space-y-4">
+            <h3 className="text-sm font-bold text-gray-900 border-b pb-3">
+              الدور الوظيفي الأساسي
+            </h3>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {ROLES_LIST.map((r) => {
+                const isSelected = selectedRole === r.id;
+                return (
+                  <label
+                    key={r.id}
+                    className={`flex flex-col p-3.5 border rounded-xl cursor-pointer transition-all ${
+                      isSelected
+                        ? "border-blue-600 bg-blue-50/40 ring-1 ring-blue-600"
+                        : "border-gray-200 hover:border-gray-300 bg-white"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <input
+                        type="radio"
+                        name="place_role"
+                        value={r.id}
+                        checked={isSelected}
+                        onChange={() => {
+                          const newRole = r.id as IPlaceRole;
+                          setSelectedRole(newRole);
+                          setCustomPermissions((prev) =>
+                            prev.filter(
+                              (cp) =>
+                                !DEFAULT_ROLE_PERMISSIONS[newRole].includes(
+                                  cp.permission,
+                                ),
+                            ),
+                          );
+                        }}
+                        className="w-4 h-4 text-blue-600 focus:ring-blue-500"
+                      />
+                      <span className="font-bold text-gray-900 text-xs">
+                        {r.label}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-gray-500 pr-6 mt-1 leading-snug">
+                      {r.desc}
+                    </p>
+                  </label>
+                );
+              })}
+            </div>
+
+            {/* انتهاء صلاحية الدور ككل */}
+            <div className="mt-4 pt-3 border-t border-gray-100 space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-xs font-bold text-gray-800">
+                  <Clock className="w-4 h-4 text-amber-600" />
+                  <span>تحديد تاريخ انتهاء للدور الوظيفي بالكامل</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setHasRoleExpiration(!hasRoleExpiration);
+                    if (hasRoleExpiration) setRoleExpiresAt("");
+                  }}
+                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
+                    hasRoleExpiration ? "bg-amber-600" : "bg-gray-200"
+                  }`}
+                >
+                  <span
+                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                      hasRoleExpiration ? "-translate-x-5" : "translate-x-0"
+                    }`}
+                  />
+                </button>
+              </div>
+
+              {hasRoleExpiration && (
+                <div className="flex items-center gap-2 bg-amber-50/50 p-2.5 rounded-xl border border-amber-200/60">
+                  <Calendar className="w-4 h-4 text-amber-600 shrink-0" />
+                  <input
+                    type="datetime-local"
+                    value={roleExpiresAt}
+                    onChange={(e) => setRoleExpiresAt(e.target.value)}
+                    className="text-xs bg-white p-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-amber-500 outline-none w-full"
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* 2. الصلاحيات التفصيلية (Fine-grained Permissions) */}
+          <div className="bg-white p-6 rounded-2xl border border-gray-200/80 shadow-sm space-y-4">
+            <div>
+              <h3 className="text-sm font-bold text-gray-900">
+                الصلاحيات التفصيلية (Fine-grained Permissions)
+              </h3>
+              <p className="text-xs text-gray-500 mt-1">
+                الصلاحيات باللون الأخضر مفعّلة تلقائياً حسب الدور المختار، بينما
+                يتاح لك تفعيل صلاحيات مخصصة باللون الأزرق وتحديد مدة زمنية لكل
+                منها.
+              </p>
+            </div>
+
+            <div className="space-y-3 pt-2">
+              {Object.entries(PlacePermission).map(([, permCode]) => {
+                const isDefault = defaultPermsForRole.includes(permCode);
+                const customItem = customPermissions.find(
+                  (cp) => cp.permission === permCode,
+                );
+                const isCustom = !!customItem;
+                const permMeta = PERMISSION_DETAILS[permCode];
+
+                return (
+                  <div
+                    key={permCode}
+                    className={`p-3.5 rounded-xl border transition ${
+                      isDefault
+                        ? "bg-emerald-50/50 border-emerald-200/70"
+                        : isCustom
+                          ? "bg-blue-50/50 border-blue-200"
+                          : "bg-white border-gray-200 hover:bg-gray-50"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="pl-3">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold text-gray-900">
+                            {permMeta?.title || permCode}
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-gray-500 mt-0.5">
+                          {permMeta?.description}
+                        </p>
+                      </div>
+
+                      <div className="shrink-0">
+                        {isDefault ? (
+                          <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-100/80 px-2.5 py-1 rounded-lg">
+                            <CheckCircle2 className="w-3.5 h-3.5" />
+                            <span>أساسية بالدور</span>
+                          </span>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => toggleCustomPermission(permCode)}
+                            className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
+                              isCustom ? "bg-blue-600" : "bg-gray-200"
+                            }`}
+                          >
+                            <span
+                              className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                                isCustom ? "-translate-x-5" : "translate-x-0"
+                              }`}
+                            />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* تاريخ انتهاء الصلاحية المخصصة إن وجدت */}
+                    {isCustom && (
+                      <div className="mt-3 pt-2.5 border-t border-blue-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <span className="text-[11px] font-bold text-blue-900 flex items-center gap-1">
+                          <Clock className="w-3.5 h-3.5 text-blue-600" />
+                          تاريخ انتهاء الصلاحية الاستثنائية:
+                        </span>
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="datetime-local"
+                            value={customItem.expires_at || ""}
+                            onChange={(e) =>
+                              updateCustomPermissionExpiry(
+                                permCode,
+                                e.target.value || null,
+                              )
+                            }
+                            className="text-[11px] bg-white p-1.5 rounded-lg border border-blue-200 focus:ring-1 focus:ring-blue-500 outline-none text-gray-700"
+                          />
+                          {customItem.expires_at ? (
+                            <button
+                              type="button"
+                              onClick={() =>
+                                updateCustomPermissionExpiry(permCode, null)
+                              }
+                              className="text-[10px] text-red-600 hover:underline bg-white px-2 py-1 rounded border border-red-100"
+                            >
+                              جعله دائم
+                            </button>
+                          ) : (
+                            <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded border border-emerald-200">
+                              دائمة (بدون انتهاء)
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default EditStaffPermissionsPage;

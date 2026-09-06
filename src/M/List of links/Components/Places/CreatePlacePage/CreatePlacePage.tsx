@@ -52,6 +52,7 @@ export const CreatePlacePage: React.FC = () => {
         `/auth/withlogin/places/place-manage/${parentId}/validate-parent`,
       )
         .then((response) => {
+          console.log(response)
           // يتوقع السيرفر إرجاع البيانات بأسلوب { place: IPlace } أو مباشر
           setParentPlace(response.data.place || response.data);
         })

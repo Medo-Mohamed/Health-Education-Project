@@ -200,7 +200,7 @@ export const MyPlacesPage: React.FC = () => {
               <div
                 key={place._id}
                 onClick={() =>
-                  navigate(`/listlinks/places/place-details-page/${place._id}`)
+                  navigate(`/listlinks/places/place-layout/${place._id}`)
                 }
                 className="bg-white border rounded-xl p-5 shadow-sm hover:shadow-md transition cursor-pointer flex flex-col justify-between group"
               >

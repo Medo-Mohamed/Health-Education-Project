@@ -28,11 +28,28 @@ import PostIndex from "./M/List of links/Components/Posts/PostIndex.tsx";
 import DisplayPosts from "./M/List of links/Components/Posts/Components/DisplayPosts.tsx";
 import PlaceApp from "./M/List of links/Components/Places/PlaceApp.tsx";
 import { MdPlace } from "react-icons/md";
-import { MyPlacesPage } from "./M/List of links/Components/Places/Components/MyPlacesPage.tsx";
-import { CreatePlacePage } from "./M/List of links/Components/Places/Components/CreatePlacePage.tsx";
-import { PlaceDetailsPage } from "./M/List of links/Components/Places/Components/PlaceDetailsPage.tsx";
-import EditStaffPermissionsPage from "./M/List of links/Components/Places/Components/EditStaffPermissionsPage.tsx";
+import { MyPlacesPage } from "./M/List of links/Components/Places/PlacesPage/MyPlacesPage.tsx";
+import { CreatePlacePage } from "./M/List of links/Components/Places/CreatePlacePage/CreatePlacePage.tsx";
+import { PlaceLayout } from "./M/List of links/Components/Places/PlaceLayout/PlaceLayout.tsx";
+import EditStaffPermissionsPage from "./M/List of links/Components/Places/PlaceLayout/PlaceStaff/EditStaffPermissionsPage.tsx";
 import { Toaster } from "react-hot-toast";
+import { CreatePlaceEvent } from "./M/List of links/Components/Places/PlaceLayout/PlaceWorkSection/Events/CreatePlaceEventPage.tsx";
+// import { CreatePlacePlanContainer } from "./M/List of links/Components/Places/Components/WorkPlaceSection/components/CreatePlacePlanContainer.tsx";
+// import { PlaceOverview } from "./M/List of links/Components/Places/Components/PlaceOverview.tsx";
+// import { PlaceStaffTab } from "./M/List of links/Components/Places/Components/PlaceStaffTap.tsx";
+// import { PlaceEventsSection } from "./M/List of links/Components/Places/Components/WorkPlaceSection/PlaceEventsSection.tsx";
+import { PlaceOverview } from "./M/List of links/Components/Places/PlaceLayout/PlaceOverview.tsx";
+import { PlaceStaffTab } from "./M/List of links/Components/Places/PlaceLayout/PlaceStaff/PlaceStaffTap.tsx";
+// import PlaceWork, {
+//   PlaceEventsSection,
+// } from "./M/List of links/Components/Places/PlaceLayout/PlaceWorkSection/PlaceWork.tsx";
+// import { CreatePlacePlanContainer } from "./M/List of links/Components/Places/PlaceLayout/PlaceWorkSection/Plans/CreatePlacePlanContainer.tsx";
+import PlaceWorkLayout from "./M/List of links/Components/Places/PlaceLayout/PlaceWorkSection/Layout/PlaceWorkLayout.tsx";
+import PlanManagementLayout from "./M/List of links/Components/Places/PlaceLayout/PlaceWorkSection/Plans/PlanManagementLayout.tsx";
+import PlaceWork from "./M/List of links/Components/Places/PlaceLayout/PlaceWorkSection/PlaceWork.tsx";
+import PlanReviewPage from "./M/List of links/Components/Places/PlaceLayout/PlaceWorkSection/Plans/PlaceReview/PlanReviewPage.tsx";
+import { PlanApprovalPage } from "./M/List of links/Components/Places/PlaceLayout/PlaceWorkSection/Plans/PlaceApprove/PlanApprovalPage.tsx";
+import { CreatePlacePlanContainer } from "./M/List of links/Components/Places/PlaceLayout/PlaceWorkSection/Plans/PlaceCreate/CreatePlacePlanContainer.tsx";
 export const MENU_DATA = [
   {
     path: "search",
@@ -108,13 +125,60 @@ export const MENU_DATA = [
         element: <CreatePlacePage />,
       },
       {
-        path: "place-details-page/:id",
-        element: <PlaceDetailsPage />,
+        path: "place-layout/:id",
+        element: <PlaceLayout />,
+        children: [
+          {
+            index: true,
+            element: <PlaceOverview />,
+          },
+          {
+            path: "staff",
+            element: <PlaceStaffTab />,
+          },
+          {
+            path: "staff/:userId/permissions",
+            element: <EditStaffPermissionsPage />,
+          },
+          {
+            path: "work-section",
+            element: <PlaceWork />,
+            children: [
+              {
+                element: <PlaceWorkLayout />,
+                index: true,
+              },
+              {
+                path: "create-event",
+                element: <CreatePlaceEvent />,
+              },
+              {
+                path: "plan-manegment",
+                element: <PlanManagementLayout />,
+                children: [
+                  {
+                    element: <CreatePlacePlanContainer />,
+                    index: true,
+                  },
+                  {
+                    path: "review",
+                    element: <PlanReviewPage />,
+                  },
+                  {
+                    path: "approval",
+                    element: <PlanApprovalPage />,
+                  },
+                ],
+              },
+            ],
+          },
+        ],
       },
-      {
-        path: ":placeId/staff/:userId/permissions",
-        element: <EditStaffPermissionsPage />,
-      },
+
+      // {
+      //   path: "plans/create/:placeId",
+      //   element: <CreatePlacePlanContainer />,
+      // },
     ],
   },
   {

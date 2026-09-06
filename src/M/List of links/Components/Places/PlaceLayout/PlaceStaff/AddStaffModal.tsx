@@ -9,66 +9,15 @@ import {
   UserCheck,
 } from "lucide-react";
 import toast from "react-hot-toast";
-import AxiosApi from "../../../../../AxiosApi";
-import { PlaceRole } from "./EditStaffPermissionsPage.tsx";
-
-// تعريف ثوابت الصلاحيات
-export const PlacePermission = {
-  CREATE_SUB_PLACE: "place:create_sub",
-  EDIT_PLACE_INFO: "place:edit_info",
-  DELETE_PLACE: "place:delete",
-  MANAGE_MEMBERS: "place:manage_members",
-  VIEW_MEMBERS: "place:view_members",
-  CREATE_EVENT: "place:create_event",
-  EDIT_EVENT: "place:edit_event",
-  DELETE_EVENT: "place:delete_event",
-  VIEW_PLACE: "place:view",
-  UPLOAD_MEDIA: "place:upload_media",
-} as const;
-
-// خريطة الصلاحيات التلقائية لكل دور
-const DEFAULT_ROLE_PERMISSIONS: Record<string, string[]> = {
-  [PlaceRole.ADMIN]: [
-    PlacePermission.CREATE_SUB_PLACE,
-    PlacePermission.EDIT_PLACE_INFO,
-    PlacePermission.DELETE_PLACE,
-    PlacePermission.MANAGE_MEMBERS,
-    PlacePermission.VIEW_MEMBERS,
-    PlacePermission.CREATE_EVENT,
-    PlacePermission.EDIT_EVENT,
-    PlacePermission.DELETE_EVENT,
-    PlacePermission.VIEW_PLACE,
-    PlacePermission.UPLOAD_MEDIA,
-  ],
-  [PlaceRole.SUPERVISOR]: [
-    PlacePermission.EDIT_PLACE_INFO,
-    PlacePermission.VIEW_MEMBERS,
-    PlacePermission.CREATE_EVENT,
-    PlacePermission.EDIT_EVENT,
-    PlacePermission.VIEW_PLACE,
-    PlacePermission.UPLOAD_MEDIA,
-  ],
-  [PlaceRole.OPERATOR]: [
-    PlacePermission.CREATE_EVENT,
-    PlacePermission.VIEW_PLACE,
-    PlacePermission.UPLOAD_MEDIA,
-  ],
-  [PlaceRole.VIEWER]: [PlacePermission.VIEW_PLACE],
-};
-
-// مصفوفة الصلاحيات مع المسميات العربية للواجهة
-const PERMISSION_OPTIONS = [
-  { id: PlacePermission.CREATE_SUB_PLACE, label: "إنشاء مكان فرعي" },
-  { id: PlacePermission.EDIT_PLACE_INFO, label: "تعديل معلومات المكان" },
-  { id: PlacePermission.DELETE_PLACE, label: "حذف المكان" },
-  { id: PlacePermission.MANAGE_MEMBERS, label: "إدارة الأعضاء والصلحيات" },
-  { id: PlacePermission.VIEW_MEMBERS, label: "عرض قائمة الأعضاء" },
-  { id: PlacePermission.CREATE_EVENT, label: "إنشاء الفعاليات" },
-  { id: PlacePermission.EDIT_EVENT, label: "تعديل الفعاليات" },
-  { id: PlacePermission.DELETE_EVENT, label: "حذف الفعاليات" },
-  { id: PlacePermission.VIEW_PLACE, label: "عرض بيانات المكان" },
-  { id: PlacePermission.UPLOAD_MEDIA, label: "رفع وسائط وملفات" },
-];
+import AxiosApi from "../../../../../../AxiosApi.ts";
+// import { PlaceRole } from "./EditStaffPermissionsPage.tsx";
+import {
+  DEFAULT_ROLE_PERMISSIONS,
+  PERMISSION_OPTIONS,
+  PlaceRole,
+  type IPlacePermission,
+  type IPlaceRole,
+} from "../../types.ts";
 
 interface SearchedUser {
   id: string;
@@ -97,7 +46,7 @@ export const AddStaffModal: React.FC<AddStaffModalProps> = ({
   const [selectedUser, setSelectedUser] = useState<SearchedUser | null>(null);
   const [showDropdown, setShowDropdown] = useState(false);
 
-  const [role, setRole] = useState<PlaceRole>(PlaceRole.OPERATOR);
+  const [role, setRole] = useState<IPlaceRole>(PlaceRole.OPERATOR);
   const [customPermissions, setCustomPermissions] = useState<string[]>([]);
   const [inheritToChildren, setInheritToChildren] = useState(true);
 
@@ -105,12 +54,12 @@ export const AddStaffModal: React.FC<AddStaffModalProps> = ({
   const searchRef = useRef<HTMLDivElement>(null);
 
   // إعادة ضبط ومزامنة الصلاحيات المخصصة عند تغيير الدور
-  const handleRoleChange = (newRole: PlaceRole) => {
+  const handleRoleChange = (newRole: IPlaceRole) => {
     setRole(newRole);
     const newDefaultPerms = DEFAULT_ROLE_PERMISSIONS[newRole] || [];
     // الإبقاء فقط على الصلاحيات التي اختارها المستخدم يدويًا والتي لا ينص عليها الدور الجديد تلقائياً
     setCustomPermissions((prev) =>
-      prev.filter((perm) => !newDefaultPerms.includes(perm)),
+      prev.filter((perm) => !newDefaultPerms.includes(perm as IPlacePermission)),
     );
   };
 
@@ -178,7 +127,7 @@ export const AddStaffModal: React.FC<AddStaffModalProps> = ({
   const togglePermission = (permId: string) => {
     const defaultPerms = DEFAULT_ROLE_PERMISSIONS[role] || [];
     // تمنع تعديل الصلاحيات المضمنة تلقائياً في الدور الحالي
-    if (defaultPerms.includes(permId)) return;
+    if (defaultPerms.includes(permId as IPlacePermission)) return;
 
     setCustomPermissions((prev) =>
       prev.includes(permId)
@@ -383,7 +332,7 @@ export const AddStaffModal: React.FC<AddStaffModalProps> = ({
                 return (
                   <div
                     key={item.id}
-                    onClick={() => handleRoleChange(item.id as PlaceRole)}
+                    onClick={() => handleRoleChange(item.id as IPlaceRole)}
                     className={`p-3 rounded-xl border cursor-pointer transition-all ${
                       isSelected
                         ? "border-indigo-500 bg-indigo-50/50 dark:bg-indigo-950/30 ring-2 ring-indigo-500/20"
