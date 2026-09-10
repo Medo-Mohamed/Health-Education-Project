@@ -52,7 +52,7 @@ export const CreatePlacePage: React.FC = () => {
         `/auth/withlogin/places/place-manage/${parentId}/validate-parent`,
       )
         .then((response) => {
-          console.log(response)
+          // console.log(response)
           // يتوقع السيرفر إرجاع البيانات بأسلوب { place: IPlace } أو مباشر
           setParentPlace(response.data.place || response.data);
         })
@@ -143,8 +143,9 @@ export const CreatePlacePage: React.FC = () => {
       );
       const createdPlaceId = response.data?.place?._id || response.data?._id;
       // console.log("تم إنشاء المكان بنجاح:", createdPlaceId);
-      navigate(`/listlinks/places/place-details-page/${createdPlaceId}`);
+      navigate(`/listlinks/places/place-layout/${createdPlaceId}`);
     } catch (err: any) {
+      console.error("خطأ أثناء حفظ المكان:", err);
       const errorMessage =
         err.response?.data?.message || "حدث خطأ أثناء حفظ المكان.";
       setError(errorMessage);

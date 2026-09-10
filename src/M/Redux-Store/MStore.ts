@@ -4,6 +4,7 @@ import UserReducer from "./UserControle/UserDisplatSlice";
 import UserSearch from "./UserSearch/UserSearch";
 import TopicTabel from "./TopicTablesControle/TopicTables";
 import placePermissionsReducer from "./PlacePermissions/placePermissionsSlice";
+import eventsFilter from "./EventsFilter/eventsFilterSlice.ts";
 export const MStore = {
   Theme: ThemeReducer,
   User: UserReducer,
@@ -11,4 +12,5 @@ export const MStore = {
   UserSearch,
   TopicTabel,
   placePermissions: placePermissionsReducer,
+  eventsFilter,
 };

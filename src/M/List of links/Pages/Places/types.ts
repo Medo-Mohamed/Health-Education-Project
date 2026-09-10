@@ -94,11 +94,12 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<IPlaceRole, IPlacePermission[]> =
       PlacePermission.UPLOAD_MEDIA,
     ],
     [PlaceRole.SUPERVISOR]: [
-      PlacePermission.EDIT_PLACE_INFO,
       PlacePermission.VIEW_MEMBERS,
+
       // صلاحيات الخطط للمشرف (المراجعة والرفع والدمج)
       PlacePermission.CREATE_PLAN,
       PlacePermission.EDIT_PLAN,
+      PlacePermission.DELETE_PLAN,
       PlacePermission.VIEW_PLAN,
       PlacePermission.SUBMIT_PLAN,
       PlacePermission.APPROVE_PLAN,
@@ -110,13 +111,13 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<IPlaceRole, IPlacePermission[]> =
       PlacePermission.UPLOAD_MEDIA,
     ],
     [PlaceRole.OPERATOR]: [
-      PlacePermission.CREATE_PLAN,
-      PlacePermission.EDIT_PLAN,
+      // PlacePermission.CREATE_PLAN,
+      // PlacePermission.EDIT_PLAN,
       PlacePermission.VIEW_PLAN, // قراءة الخطة لمعرفة المستهدفات
-      PlacePermission.SUBMIT_PLAN, // إمكانية رفع الخطة للمراجعة
+      // PlacePermission.SUBMIT_PLAN, // إمكانية رفع الخطة للمراجعة
       PlacePermission.CREATE_EVENT,
       PlacePermission.VIEW_PLACE,
-      PlacePermission.UPLOAD_MEDIA,
+      // PlacePermission.UPLOAD_MEDIA,
     ],
     [PlaceRole.VIEWER]: [PlacePermission.VIEW_PLACE, PlacePermission.VIEW_PLAN],
   };

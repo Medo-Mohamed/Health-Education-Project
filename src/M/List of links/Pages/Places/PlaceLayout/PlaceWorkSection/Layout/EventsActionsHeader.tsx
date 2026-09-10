@@ -42,9 +42,7 @@ export const EventsActionsHeader: React.FC<EventsActionsHeaderProps> = ({
           {/* 2. زر التوجيه لصفحة إضافة ندوة جديدة */}
           {canCreateEvent && (
             <button
-              onClick={() =>
-                navigate(`create-event`)
-              }
+              onClick={() => navigate(`create-event`)}
               className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition shadow-sm"
             >
               <Plus className="w-4 h-4" />

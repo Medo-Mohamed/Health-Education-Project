@@ -12,44 +12,38 @@ import NotFound from "./M/NOT FOUND PAGE/NotFound.tsx";
 import Register from "./M/Register/Register.tsx";
 import UserKeepLogin from "./G-Component/UserKeepLogin.tsx";
 import ProfilePage from "./M/Profile/Profile.tsx";
-import ModernProfilePage from "./M/List of links/Components/Profile_view/Profile_Page.tsx";
+import ModernProfilePage from "./M/List of links/Pages/Profile_view/Profile_Page.tsx";
 import ListOfLinks from "./M/List of links/ListOfLinks.tsx";
 import { FaCog, FaRegNewspaper, FaUserEdit } from "react-icons/fa";
 import { GiShadowFollower } from "react-icons/gi";
-import TablesGrid from "./M/List of links/Components/Topic Table/Components/TablesGrid.tsx";
-import FriendSearsh from "./M/List of links/Components/Friend Searsh/FriendSearsh.tsx";
-import TopicApp from "./M/List of links/Components/Topic Table/TopicApp.tsx";
+import TablesGrid from "./M/List of links/Pages/Topic Table/Components/TablesGrid.tsx";
+import FriendSearsh from "./M/List of links/Pages/Friend Searsh/FriendSearsh.tsx";
+import TopicApp from "./M/List of links/Pages/Topic Table/TopicApp.tsx";
 import { HiMiniTableCells } from "react-icons/hi2";
-import TopicTableDetails from "./M/List of links/Components/Topic Table/Components/TopicTableDetails.tsx";
-import FileIndex from "./M/List of links/Components/File Controle/FileIndex.tsx";
+import TopicTableDetails from "./M/List of links/Pages/Topic Table/Components/TopicTableDetails.tsx";
+import FileIndex from "./M/List of links/Pages/File Controle/FileIndex.tsx";
 import { ImFilesEmpty } from "react-icons/im";
-import DisplayFiles from "./M/List of links/Components/File Controle/Components/DisplayFiles.tsx";
-import PostIndex from "./M/List of links/Components/Posts/PostIndex.tsx";
-import DisplayPosts from "./M/List of links/Components/Posts/Components/DisplayPosts.tsx";
-import PlaceApp from "./M/List of links/Components/Places/PlaceApp.tsx";
+import DisplayFiles from "./M/List of links/Pages/File Controle/Components/DisplayFiles.tsx";
+import PostIndex from "./M/List of links/Pages/Posts/PostIndex.tsx";
+import DisplayPosts from "./M/List of links/Pages/Posts/Components/DisplayPosts.tsx";
+import PlaceApp from "./M/List of links/Pages/Places/PlaceApp.tsx";
 import { MdPlace } from "react-icons/md";
-import { MyPlacesPage } from "./M/List of links/Components/Places/PlacesPage/MyPlacesPage.tsx";
-import { CreatePlacePage } from "./M/List of links/Components/Places/CreatePlacePage/CreatePlacePage.tsx";
-import { PlaceLayout } from "./M/List of links/Components/Places/PlaceLayout/PlaceLayout.tsx";
-import EditStaffPermissionsPage from "./M/List of links/Components/Places/PlaceLayout/PlaceStaff/EditStaffPermissionsPage.tsx";
+import { MyPlacesPage } from "./M/List of links/Pages/Places/PlacesPage/MyPlacesPage.tsx";
+import { CreatePlacePage } from "./M/List of links/Pages/Places/CreatePlacePage/CreatePlacePage.tsx";
+import { PlaceLayout } from "./M/List of links/Pages/Places/PlaceLayout/PlaceLayout.tsx";
+import EditStaffPermissionsPage from "./M/List of links/Pages/Places/PlaceLayout/PlaceStaff/EditStaffPermissionsPage.tsx";
 import { Toaster } from "react-hot-toast";
-import { CreatePlaceEvent } from "./M/List of links/Components/Places/PlaceLayout/PlaceWorkSection/Events/CreatePlaceEventPage.tsx";
-// import { CreatePlacePlanContainer } from "./M/List of links/Components/Places/Components/WorkPlaceSection/components/CreatePlacePlanContainer.tsx";
-// import { PlaceOverview } from "./M/List of links/Components/Places/Components/PlaceOverview.tsx";
-// import { PlaceStaffTab } from "./M/List of links/Components/Places/Components/PlaceStaffTap.tsx";
-// import { PlaceEventsSection } from "./M/List of links/Components/Places/Components/WorkPlaceSection/PlaceEventsSection.tsx";
-import { PlaceOverview } from "./M/List of links/Components/Places/PlaceLayout/PlaceOverview.tsx";
-import { PlaceStaffTab } from "./M/List of links/Components/Places/PlaceLayout/PlaceStaff/PlaceStaffTap.tsx";
-// import PlaceWork, {
-//   PlaceEventsSection,
-// } from "./M/List of links/Components/Places/PlaceLayout/PlaceWorkSection/PlaceWork.tsx";
-// import { CreatePlacePlanContainer } from "./M/List of links/Components/Places/PlaceLayout/PlaceWorkSection/Plans/CreatePlacePlanContainer.tsx";
-import PlaceWorkLayout from "./M/List of links/Components/Places/PlaceLayout/PlaceWorkSection/Layout/PlaceWorkLayout.tsx";
-import PlanManagementLayout from "./M/List of links/Components/Places/PlaceLayout/PlaceWorkSection/Plans/PlanManagementLayout.tsx";
-import PlaceWork from "./M/List of links/Components/Places/PlaceLayout/PlaceWorkSection/PlaceWork.tsx";
-import PlanReviewPage from "./M/List of links/Components/Places/PlaceLayout/PlaceWorkSection/Plans/PlaceReview/PlanReviewPage.tsx";
-import { PlanApprovalPage } from "./M/List of links/Components/Places/PlaceLayout/PlaceWorkSection/Plans/PlaceApprove/PlanApprovalPage.tsx";
-import { CreatePlacePlanContainer } from "./M/List of links/Components/Places/PlaceLayout/PlaceWorkSection/Plans/PlaceCreate/CreatePlacePlanContainer.tsx";
+import { CreatePlaceEvent } from "./M/List of links/Pages/Places/PlaceLayout/PlaceWorkSection/Events/CreatePlaceEventPage.tsx";
+
+import { PlaceOverview } from "./M/List of links/Pages/Places/PlaceLayout/PlaceOverview.tsx";
+import { PlaceStaffTab } from "./M/List of links/Pages/Places/PlaceLayout/PlaceStaff/PlaceStaffTap.tsx";
+
+import PlaceWorkLayout from "./M/List of links/Pages/Places/PlaceLayout/PlaceWorkSection/Layout/PlaceWorkLayout.tsx";
+import PlanManagementLayout from "./M/List of links/Pages/Places/PlaceLayout/PlaceWorkSection/Plans/PlanManagementLayout.tsx";
+import PlaceWork from "./M/List of links/Pages/Places/PlaceLayout/PlaceWorkSection/PlaceWork.tsx";
+import PlanReviewPage from "./M/List of links/Pages/Places/PlaceLayout/PlaceWorkSection/Plans/PlaceReview/PlanReviewPage.tsx";
+import { PlanApprovalPage } from "./M/List of links/Pages/Places/PlaceLayout/PlaceWorkSection/Plans/PlaceApprove/PlanApprovalPage.tsx";
+import { CreatePlacePlanContainer } from "./M/List of links/Pages/Places/PlaceLayout/PlaceWorkSection/Plans/PlaceCreate/CreatePlacePlanContainer.tsx";
 export const MENU_DATA = [
   {
     path: "search",

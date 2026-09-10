@@ -16,7 +16,7 @@ import {
   Radio,
   Tv,
 } from "lucide-react";
-import AxiosApi from "../../../../../../../../AxiosApi";
+import AxiosApi from "../../../../../../../../AxiosApi.ts";
 import { SeminarModal } from "../EditSeminarModal.tsx";
 import { useParams } from "react-router-dom";
 import { locationTypeLabels, type LocationType } from "../../../../types.ts";
@@ -129,8 +129,8 @@ export const CreatePlacePlanContainer: React.FC = () => {
     useState<number>(0);
 
   const [condAttendees, setCondAttendees] = useState<ITargetAttendees>({
-    males: 10,
-    females: 10,
+    males: 0,
+    females: 0,
     children: 0,
   });
 
@@ -146,7 +146,6 @@ export const CreatePlacePlanContainer: React.FC = () => {
     null,
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
-
 
   const handleOpenAddModal = () => {
     setActiveSeminar(null);
@@ -904,7 +903,9 @@ export const CreatePlacePlanContainer: React.FC = () => {
               </select>
             </div>
 
-            {condLocationType === "external_seminar" && (
+            {(condLocationType === "external_seminar" ||
+              condLocationType === "convoy_seminars" ||
+              condLocationType === "public_meeting") && (
               <div className="md:col-span-2">
                 <label className="block text-xs font-semibold text-gray-600 mb-1">
                   اسم أو عنوان المكان الخارجي *
@@ -1221,7 +1222,9 @@ export const CreatePlacePlanContainer: React.FC = () => {
                     <span className="text-blue-800 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200 font-semibold">
                       {locationTypeLabels[cond.location_type]}
                     </span>
-                    {cond.location_type === "external_seminar" && (
+                    {(cond.location_type === "external_seminar" ||
+                      cond.location_type === "convoy_seminars" ||
+                      cond.location_type === "public_meeting") && (
                       <span className="text-gray-500 block truncate text-[11px]">
                         ({cond.external_location_name})
                       </span>
