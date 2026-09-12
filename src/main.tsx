@@ -14,7 +14,7 @@ import UserKeepLogin from "./G-Component/UserKeepLogin.tsx";
 import ProfilePage from "./M/Profile/Profile.tsx";
 import ModernProfilePage from "./M/List of links/Pages/Profile_view/Profile_Page.tsx";
 import ListOfLinks from "./M/List of links/ListOfLinks.tsx";
-import { FaCog, FaRegNewspaper, FaUserEdit } from "react-icons/fa";
+import { FaCog, FaFilePdf, FaRegNewspaper, FaUserEdit } from "react-icons/fa";
 import { GiShadowFollower } from "react-icons/gi";
 import TablesGrid from "./M/List of links/Pages/Topic Table/Components/TablesGrid.tsx";
 import FriendSearsh from "./M/List of links/Pages/Friend Searsh/FriendSearsh.tsx";
@@ -44,6 +44,7 @@ import PlaceWork from "./M/List of links/Pages/Places/PlaceLayout/PlaceWorkSecti
 import PlanReviewPage from "./M/List of links/Pages/Places/PlaceLayout/PlaceWorkSection/Plans/PlaceReview/PlanReviewPage.tsx";
 import { PlanApprovalPage } from "./M/List of links/Pages/Places/PlaceLayout/PlaceWorkSection/Plans/PlaceApprove/PlanApprovalPage.tsx";
 import { CreatePlacePlanContainer } from "./M/List of links/Pages/Places/PlaceLayout/PlaceWorkSection/Plans/PlaceCreate/CreatePlacePlanContainer.tsx";
+import { EventsPage } from "./M/List of links/Pages/Places/PlaceLayout/PlaceWorkSection/Filter/PDF/TestPage.tsx";
 export const MENU_DATA = [
   {
     path: "search",
@@ -174,6 +175,12 @@ export const MENU_DATA = [
       //   element: <CreatePlacePlanContainer />,
       // },
     ],
+  },
+  {
+    path: "pdf-preview",
+    title: "معاينة PDF",
+    icon: <FaFilePdf size={20} />,
+    element: <EventsPage />,
   },
   {
     path: "settings",

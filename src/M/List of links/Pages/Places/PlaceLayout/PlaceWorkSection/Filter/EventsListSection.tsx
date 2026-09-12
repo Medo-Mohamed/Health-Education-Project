@@ -31,6 +31,7 @@ import {
   updateEvent,
 } from "../../../../../../Redux-Store/EventsFilter/eventsFilterSlice.ts";
 import { useParams } from "react-router-dom";
+import { PdfPreviewModal } from "./PDF/PdfPreviewModal.tsx";
 
 type SortKey =
   | "place"
@@ -75,6 +76,9 @@ export const EventsListSection: React.FC = () => {
   // console.log(placeId);
   const dispatch = useDispatch<AppDispatch>();
   const { hasPermission } = usePlacePermissions();
+
+  const [isPdfModalOpenTables, setIsPdfModalOpenTables] = useState(false);
+  const [isPdfModalOpenRows, setIsPdfModalOpenRows] = useState(false);
 
   const canEditPlan = hasPermission(PlacePermission.EDIT_PLAN);
   const canDeletePlan = hasPermission(PlacePermission.DELETE_PLAN);
@@ -818,6 +822,41 @@ export const EventsListSection: React.FC = () => {
         instructors={instructors}
         canCreateForOthers={canCreateForOthers}
       />
+
+      <button
+        onClick={() => setIsPdfModalOpenTables(true)}
+        className="px-4 py-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl transition-colors shadow-sm cursor-pointer"
+      >
+        عرض وتحميل الجداول PDF
+      </button>
+
+      <button
+        onClick={() => setIsPdfModalOpenRows(true)}
+        className="px-4 py-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl transition-colors shadow-sm cursor-pointer"
+      >
+        عرض وتحميل الصفوف PDF
+      </button>
+
+      {isPdfModalOpenTables && (
+        <PdfPreviewModal
+          isOpen={isPdfModalOpenTables}
+          onClose={() => setIsPdfModalOpenTables(false)}
+          schedules={schedules}
+          rawList={rawList}
+          planeOrEvent={activeTab}
+          for={"tables"}
+        />
+      )}
+      {isPdfModalOpenRows && (
+        <PdfPreviewModal
+          isOpen={isPdfModalOpenRows}
+          onClose={() => setIsPdfModalOpenRows(false)}
+          schedules={schedules}
+          rawList={rawList}
+          planeOrEvent={activeTab}
+          for={"rows"}
+        />
+      )}
     </div>
   );
 };
