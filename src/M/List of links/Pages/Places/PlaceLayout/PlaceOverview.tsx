@@ -15,7 +15,9 @@ import {
 import { PlacePermission, type IPlace, type IPlacePermission } from "../types";
 
 import AxiosApi from "../../../../../AxiosApi";
-import toast from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import type { AppDispatch } from "../../../../../store";
+import { loading, open } from "../../../../Redux-Store/SuccessFaildState/SFS";
 
 interface PlaceContextType {
   place: IPlace;
@@ -27,6 +29,9 @@ export const PlaceOverview: React.FC = () => {
   const { place, subPlaces, hasPermission } =
     useOutletContext<PlaceContextType>();
   const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
+
+  // console.log("test");
 
   const handleEditPlace = () => {
     navigate(`/listlinks/places/edit/${place._id}`);
@@ -37,11 +42,17 @@ export const PlaceOverview: React.FC = () => {
       return;
 
     try {
+      dispatch(loading());
       await AxiosApi.delete(`/auth/withlogin/places/${place._id}`);
-      toast.success("تم حذف المكان بنجاح");
+      dispatch(open({ state: "success", title: "تم حذف المكان بنجاح" }));
       navigate("/listlinks/places");
     } catch (err: any) {
-      toast.error(err.response?.data?.message || "فشل حذف المكان.");
+      dispatch(
+        open({
+          state: "faild",
+          title: err.response?.data?.message || "فشل حذف المكان.",
+        }),
+      );
     }
   };
 

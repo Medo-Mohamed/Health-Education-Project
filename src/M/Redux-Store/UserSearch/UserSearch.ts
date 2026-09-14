@@ -11,7 +11,7 @@ export const searchUserByUsername = createAsyncThunk(
           page: payload.page || 1,
         },
       });
-      console.log("searchusers response:", response.data);
+      // console.log("searchusers response:", response.data);
       return response.data;
     } catch (error: any) {
       console.log(error.response?.data?.message || "حدث خطأ ما");
@@ -30,7 +30,7 @@ export const getFollowingUsers = createAsyncThunk(
           page: payload.page || 1,
         },
       });
-      console.log("followes response:", response.data);
+      // console.log("followes response:", response.data);
       return response.data;
     } catch (error: any) {
       console.log(error.response?.data?.message || "حدث خطأ ما");

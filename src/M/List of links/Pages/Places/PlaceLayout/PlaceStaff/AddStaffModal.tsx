@@ -8,8 +8,10 @@ import {
   Loader2,
   UserCheck,
 } from "lucide-react";
-import toast from "react-hot-toast";
 import AxiosApi from "../../../../../../AxiosApi.ts";
+import { useDispatch } from "react-redux";
+import type { AppDispatch } from "../../../../../../store";
+import { loading, open } from "../../../../../Redux-Store/SuccessFaildState/SFS";
 // import { PlaceRole } from "./EditStaffPermissionsPage.tsx";
 import {
   DEFAULT_ROLE_PERMISSIONS,
@@ -50,8 +52,8 @@ export const AddStaffModal: React.FC<AddStaffModalProps> = ({
   const [customPermissions, setCustomPermissions] = useState<string[]>([]);
   const [inheritToChildren, setInheritToChildren] = useState(true);
 
-  const [loading, setLoading] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
+  const dispatch = useDispatch<AppDispatch>();
 
   // إعادة ضبط ومزامنة الصلاحيات المخصصة عند تغيير الدور
   const handleRoleChange = (newRole: IPlaceRole) => {
@@ -102,14 +104,14 @@ export const AddStaffModal: React.FC<AddStaffModalProps> = ({
         console.error("خطأ أثناء البحث عن المستخدمين:", err);
         const message =
           err.response?.data?.message || "حدث خطأ أثناء البحث عن المستخدمين";
-        toast.error(message);
+        dispatch(open({ state: "faild", title: message }));
       } finally {
         setIsSearching(false);
       }
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [searchQuery, selectedUser, placeId, isOpen]);
+  }, [searchQuery, selectedUser, placeId, isOpen, dispatch]);
 
   if (!isOpen) return null;
 
@@ -139,11 +141,13 @@ export const AddStaffModal: React.FC<AddStaffModalProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedUser) {
-      toast("يرجى البحث واختيار مستخدم أولاً", { icon: "⚠️" });
+      dispatch(
+        open({ state: "faild", title: "يرجى البحث واختيار مستخدم أولاً" }),
+      );
       return;
     }
 
-    setLoading(true);
+    dispatch(loading());
 
     try {
       const response = await AxiosApi.post(
@@ -158,16 +162,14 @@ export const AddStaffModal: React.FC<AddStaffModalProps> = ({
 
       const successMsg =
         response.data?.message || "تمت إضافة الموظف وتعيين الدور بنجاح!";
-      toast.success(successMsg);
+      dispatch(open({ state: "success", title: successMsg }));
 
       if (onStaffAdded) onStaffAdded();
       handleClose();
     } catch (err: any) {
       const errorMsg =
         err.response?.data?.message || "فشلت العملية، يرجى المحاولة لاحقاً.";
-      toast.error(errorMsg);
-    } finally {
-      setLoading(false);
+      dispatch(open({ state: "faild", title: errorMsg }));
     }
   };
 
@@ -436,17 +438,11 @@ export const AddStaffModal: React.FC<AddStaffModalProps> = ({
             </button>
             <button
               type="submit"
-              disabled={loading || !selectedUser}
+              disabled={!selectedUser}
               className="flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold shadow-md shadow-indigo-600/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             >
-              {loading ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <>
-                  <Shield className="w-4 h-4" />
-                  <span>إضافة الموظف</span>
-                </>
-              )}
+              <Shield className="w-4 h-4" />
+              <span>إضافة الموظف</span>
             </button>
           </div>
         </form>

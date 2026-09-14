@@ -7,17 +7,15 @@ import {
   FileText,
   Layers,
   Hash,
-  CheckCircle2,
-  AlertCircle,
   MapPin,
   Info,
   Lock,
-  Loader2,
   ChevronDown,
   User as UserIcon,
 } from "lucide-react";
-import { useSelector } from "react-redux";
-import type { RootState } from "../../../../../../../store";
+import { useDispatch, useSelector } from "react-redux";
+import type { AppDispatch, RootState } from "../../../../../../../store";
+import { loading, open, close } from "../../../../../../Redux-Store/SuccessFaildState/SFS";
 import AxiosApi from "../../../../../../../AxiosApi";
 import { LocationType } from "../../../types";
 
@@ -58,6 +56,7 @@ const LOCAL_STORAGE_KEY = "last_place_event_settings";
 export const CreatePlaceEvent: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
 
   // جلب بيانات المستخدم من Redux State
   const reduxUser = useSelector((state: RootState) => state.User?.data?.user);
@@ -107,10 +106,6 @@ export const CreatePlaceEvent: React.FC = () => {
     event_date: new Date().toISOString().split("T")[0],
   });
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
-
   // إغلاق قائمة المحاضرين عند الضغط خارجها
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -143,6 +138,7 @@ export const CreatePlaceEvent: React.FC = () => {
       if (!id) return;
       try {
         setCheckingAuth(true);
+        dispatch(loading());
         const res = await AxiosApi.get(
           `/auth/withlogin/places/place-events/check-can-create/${id}`,
         );
@@ -222,11 +218,12 @@ export const CreatePlaceEvent: React.FC = () => {
         setHasPermission(false);
       } finally {
         setCheckingAuth(false);
+        dispatch(close());
       }
     };
 
     checkPermissionsAndLoadData();
-  }, [id, reduxUser]);
+  }, [id, reduxUser, dispatch]);
 
   // 2️⃣ جلب تفاصيل الجدول المختار
   useEffect(() => {
@@ -339,26 +336,36 @@ export const CreatePlaceEvent: React.FC = () => {
   // إرسال البيانات
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
-    setSuccess(null);
 
     if (totalAttendees <= 0) {
-      setError("لابد أن يكون هناك حضور في الندوة (شخص واحد على الأقل).");
+      dispatch(
+        open({
+          state: "faild",
+          title: "لابد أن يكون هناك حضور في الندوة (شخص واحد على الأقل).",
+        }),
+      );
       return;
     }
 
     if (!formData.instructor_info) {
-      setError("يرجى تحديد محاضر الفعالية.");
+      dispatch(
+        open({ state: "faild", title: "يرجى تحديد محاضر الفعالية." }),
+      );
       return;
     }
 
     if (requiresExternalLocation && !formData.external_location_name.trim()) {
-      setError("اسم المكان الخارجي مطلوب لهذا النوع من الأنشطة.");
+      dispatch(
+        open({
+          state: "faild",
+          title: "اسم المكان الخارجي مطلوب لهذا النوع من الأنشطة.",
+        }),
+      );
       return;
     }
 
+    dispatch(loading());
     try {
-      setLoading(true);
       await AxiosApi.post(
         `/auth/withlogin/places/place-events/save-event/${id}`,
         {
@@ -386,7 +393,12 @@ export const CreatePlaceEvent: React.FC = () => {
       };
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(settingsToSave));
 
-      setSuccess("تم إدخال الندوة وتحديث التفضيلات بنجاح!");
+      dispatch(
+        open({
+          state: "success",
+          title: "تم إدخال الندوة وتحديث التفضيلات بنجاح!",
+        }),
+      );
 
       setFormData((prev) => ({
         ...prev,
@@ -398,21 +410,12 @@ export const CreatePlaceEvent: React.FC = () => {
       }));
     } catch (err: any) {
       const msg = err.response?.data?.message || "حدث خطأ أثناء حفظ الندوة.";
-      setError(msg);
-    } finally {
-      setLoading(false);
+      dispatch(open({ state: "faild", title: msg }));
     }
   };
 
   if (checkingAuth) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[400px]">
-        <Loader2 className="w-10 h-10 text-indigo-600 animate-spin mb-4" />
-        <p className="text-gray-600 font-medium">
-          جاري التحقق من الصلاحيات والبيانات...
-        </p>
-      </div>
-    );
+    return null;
   }
 
   if (!hasPermission) {
@@ -449,21 +452,6 @@ export const CreatePlaceEvent: React.FC = () => {
           </h1>
         </div>
       </div>
-
-      {/* التنبيهات */}
-      {error && (
-        <div className="mb-6 p-4 bg-red-50 border-r-4 border-red-500 text-red-700 rounded flex items-center gap-2">
-          <AlertCircle className="w-5 h-5 text-red-500 shrink-0" />
-          <span>{error}</span>
-        </div>
-      )}
-
-      {success && (
-        <div className="mb-6 p-4 bg-green-50 border-r-4 border-green-500 text-green-700 rounded flex items-center gap-2">
-          <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
-          <span>{success}</span>
-        </div>
-      )}
 
       {/* النموذج */}
       <form
@@ -914,17 +902,9 @@ export const CreatePlaceEvent: React.FC = () => {
         <div className="pt-6 border-t border-gray-200 flex justify-end">
           <button
             type="submit"
-            disabled={loading}
             className="flex items-center gap-2 px-6 py-2.5 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-200 transition disabled:bg-indigo-300"
           >
-            {loading ? (
-              <>
-                <Loader2 className="w-5 h-5 animate-spin" />
-                جاري الحفظ...
-              </>
-            ) : (
-              "حفظ الندوة"
-            )}
+            حفظ الندوة
           </button>
         </div>
       </form>

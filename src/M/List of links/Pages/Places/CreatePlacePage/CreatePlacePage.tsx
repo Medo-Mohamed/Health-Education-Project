@@ -1,22 +1,17 @@
 // CreatePlacePage.tsx
 import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import {
-  AlertCircle,
-  Plus,
-  Trash2,
-  CheckCircle2,
-  Loader2,
-  Upload,
-} from "lucide-react";
+import { Plus, Trash2, CheckCircle2, Upload } from "lucide-react";
 import type { PlaceType, IPlace } from "../types";
-import type { RootState } from "../../../../../store";
+import type { AppDispatch, RootState } from "../../../../../store";
+import { loading, open, close } from "../../../../Redux-Store/SuccessFaildState/SFS";
 import AxiosApi from "../../../../../AxiosApi";
 
 export const CreatePlacePage: React.FC = () => {
   // console.log("CreatePlacePage rendered 00");
   const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
 
   // 1. أخذ parentId مباشرة من مسار الـ Route Params
   const { parentId } = useParams<{ parentId?: string }>();
@@ -40,13 +35,10 @@ export const CreatePlacePage: React.FC = () => {
   const [addressDetails, setAddressDetails] = useState("");
   const [phoneNumbers, setPhoneNumbers] = useState<string[]>([""]);
 
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-
   // 2. التحقق من وجود وصلاحية المكان الأب من السيرفر فور تحميل الصفحة
   useEffect(() => {
     if (parentId) {
-      setValidatingParent(true);
+      dispatch(loading());
 
       AxiosApi.get(
         `/auth/withlogin/places/place-manage/${parentId}/validate-parent`,
@@ -61,11 +53,14 @@ export const CreatePlacePage: React.FC = () => {
           const errorMessage =
             err.response?.data?.message ||
             "المكان الأب غير موجود أو ليس لديك صلاحية عليه.";
-          setError(errorMessage);
+          dispatch(open({ state: "faild", title: errorMessage }));
         })
-        .finally(() => setValidatingParent(false));
+        .finally(() => {
+          setValidatingParent(false);
+          dispatch(close());
+        });
     }
-  }, [parentId]);
+  }, [parentId, dispatch]);
 
   // إدارة اختيار صورة المكان مع تنظيف ذاكرة الـ Preview
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -95,15 +90,19 @@ export const CreatePlacePage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     // // console.log("damg");
     e.preventDefault();
-    setError(null);
 
     // 🔒 التحقق الشرطي الأساسي للمطور فقط عند عدم وجود أب
     if (!parentId && !isDev) {
-      setError("غير مسموح بإنشاء مكان رئيسي (بدون أب) إلا بحساب المطور DEV.");
+      dispatch(
+        open({
+          state: "faild",
+          title: "غير مسموح بإنشاء مكان رئيسي (بدون أب) إلا بحساب المطور DEV.",
+        }),
+      );
       return;
     }
 
-    setLoading(true);
+    dispatch(loading());
 
     const formData = new FormData();
     formData.append("name", name.trim());
@@ -143,24 +142,18 @@ export const CreatePlacePage: React.FC = () => {
       );
       const createdPlaceId = response.data?.place?._id || response.data?._id;
       // console.log("تم إنشاء المكان بنجاح:", createdPlaceId);
+      dispatch(open({ state: "success", title: "تم إنشاء المكان بنجاح." }));
       navigate(`/listlinks/places/place-layout/${createdPlaceId}`);
     } catch (err: any) {
       console.error("خطأ أثناء حفظ المكان:", err);
       const errorMessage =
         err.response?.data?.message || "حدث خطأ أثناء حفظ المكان.";
-      setError(errorMessage);
-    } finally {
-      setLoading(false);
+      dispatch(open({ state: "faild", title: errorMessage }));
     }
   };
 
   if (validatingParent) {
-    return (
-      <div className="p-12 text-center text-gray-500 flex flex-col items-center justify-center gap-2">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-        <span>جاري التحقق من صلاحية المكان الأب من السيرفر...</span>
-      </div>
-    );
+    return null;
   }
 
   return (
@@ -183,14 +176,6 @@ export const CreatePlacePage: React.FC = () => {
               <span className="font-bold text-base">{parentPlace.name}</span>
             </div>
             <CheckCircle2 className="w-5 h-5 text-blue-600 shrink-0" />
-          </div>
-        )}
-
-        {/* رسائل الخطأ */}
-        {error && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm flex items-center gap-2">
-            <AlertCircle className="w-5 h-5 shrink-0" />
-            <span>{error}</span>
           </div>
         )}
 
@@ -350,10 +335,10 @@ export const CreatePlacePage: React.FC = () => {
             </button>
             <button
               type="submit"
-              disabled={loading || (!!parentId && !parentPlace)}
+              disabled={!!parentId && !parentPlace}
               className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition disabled:opacity-50"
             >
-              {loading ? "جاري الحفظ..." : "حفظ المكان"}
+              حفظ المكان
             </button>
           </div>
         </form>

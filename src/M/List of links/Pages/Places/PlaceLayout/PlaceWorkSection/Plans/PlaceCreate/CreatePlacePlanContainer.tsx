@@ -17,6 +17,9 @@ import {
   Tv,
 } from "lucide-react";
 import AxiosApi from "../../../../../../../../AxiosApi.ts";
+import { useDispatch } from "react-redux";
+import type { AppDispatch } from "../../../../../../../../store";
+import { loading, open, close } from "../../../../../../../Redux-Store/SuccessFaildState/SFS";
 import { SeminarModal } from "../EditSeminarModal.tsx";
 import { useParams } from "react-router-dom";
 import { locationTypeLabels, type LocationType } from "../../../../types.ts";
@@ -87,6 +90,7 @@ export interface IGroupedSeminar {
 
 export const CreatePlacePlanContainer: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const dispatch = useDispatch<AppDispatch>();
 
   // 1. الصلاحيات والجداول
   const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
@@ -94,7 +98,6 @@ export const CreatePlacePlanContainer: React.FC = () => {
   const [availableSchedules, setAvailableSchedules] = useState<
     IServerAvailableTopic[]
   >([]);
-  const [loadingCheck, setLoadingCheck] = useState<boolean>(true);
 
   // 2. النطاق الزمني والعطلات
   const [startDate, setStartDate] = useState<string>("");
@@ -139,7 +142,6 @@ export const CreatePlacePlanContainer: React.FC = () => {
   // 5. الجدول النهائي المقترح والتعديل
   const [seminars, setSeminars] = useState<IGroupedSeminar[]>([]);
   const [isGenerated, setIsGenerated] = useState<boolean>(false);
-  const [saving, setSaving] = useState<boolean>(false);
 
   // حالة التحكم بمودال الإضافة والتعديل
   const [activeSeminar, setActiveSeminar] = useState<IGroupedSeminar | null>(
@@ -205,7 +207,7 @@ export const CreatePlacePlanContainer: React.FC = () => {
 
   useEffect(() => {
     const verifyUserAccess = async () => {
-      setLoadingCheck(true);
+      dispatch(loading());
       try {
         const res = await AxiosApi.get(
           `/auth/withlogin/places/place-plans/check-can-create/${id}`,
@@ -227,12 +229,12 @@ export const CreatePlacePlanContainer: React.FC = () => {
           err?.response?.data?.message || "حدث خطأ أثناء التحقق من الصلاحيات.",
         );
       } finally {
-        setLoadingCheck(false);
+        dispatch(close());
       }
     };
 
     if (id) verifyUserAccess();
-  }, [id]);
+  }, [id, dispatch]);
 
   const allAvailableGroups = [
     ...availableSchedules.map((s) => ({
@@ -313,30 +315,60 @@ export const CreatePlacePlanContainer: React.FC = () => {
 
   const handleAddCondition = () => {
     if (condSelectionType === "SINGLE" && (!condMainTopic || !condSubTopic)) {
-      alert("تنبيه: يجب اختيار موضوع رئيسي وفرعي واحد على الأقل.");
+      dispatch(
+        open({
+          state: "faild",
+          title: "تنبيه: يجب اختيار موضوع رئيسي وفرعي واحد على الأقل.",
+        }),
+      );
       return;
     }
     if (condSelectionType === "RANDOM_GROUP" && !condGroupId) {
-      alert("تنبيه: يجب اختيار مجموعة موضوعات.");
+      dispatch(
+        open({
+          state: "faild",
+          title: "تنبيه: يجب اختيار مجموعة موضوعات.",
+        }),
+      );
       return;
     }
     if (condRecurrence === "WEEKLY" && condDaysOfWeek.length === 0) {
-      alert("تنبيه: يجب تحديد يوم أسبوعي واحد على الأقل.");
+      dispatch(
+        open({
+          state: "faild",
+          title: "تنبيه: يجب تحديد يوم أسبوعي واحد على الأقل.",
+        }),
+      );
       return;
     }
     if (condRecurrence === "MONTHLY" && condDaysOfMonth.length === 0) {
-      alert("تنبيه: يجب تحديد يوم واحد من الشهر على الأقل.");
+      dispatch(
+        open({
+          state: "faild",
+          title: "تنبيه: يجب تحديد يوم واحد من الشهر على الأقل.",
+        }),
+      );
       return;
     }
     if (condRecurrence === "ONCE" && !condSpecificDate) {
-      alert("تنبيه: يجب تحديد تاريخ محدد لهذا الشرط.");
+      dispatch(
+        open({
+          state: "faild",
+          title: "تنبيه: يجب تحديد تاريخ محدد لهذا الشرط.",
+        }),
+      );
       return;
     }
     if (
       condLocationType === "external_seminar" &&
       !condExternalLocName.trim()
     ) {
-      alert("تنبيه: يرجى كتابة اسم المكان الخارجي عند اختيار ندوة خارجية.");
+      dispatch(
+        open({
+          state: "faild",
+          title: "تنبيه: يرجى كتابة اسم المكان الخارجي عند اختيار ندوة خارجية.",
+        }),
+      );
       return;
     }
 
@@ -372,11 +404,21 @@ export const CreatePlacePlanContainer: React.FC = () => {
 
   const handleGeneratePlan = () => {
     if (!startDate || !endDate) {
-      alert("يرجى تحديد بداية ونهاية التاريخ أولاً.");
+      dispatch(
+        open({
+          state: "faild",
+          title: "يرجى تحديد بداية ونهاية التاريخ أولاً.",
+        }),
+      );
       return;
     }
     if (conditions.length === 0) {
-      alert("يرجى إضافة شرط واحد على الأقل قبل الإنشاء.");
+      dispatch(
+        open({
+          state: "faild",
+          title: "يرجى إضافة شرط واحد على الأقل قبل الإنشاء.",
+        }),
+      );
       return;
     }
 
@@ -518,7 +560,7 @@ export const CreatePlacePlanContainer: React.FC = () => {
 
   const handleSaveFinalPlan = async () => {
     if (!window.confirm("هل أنت تأكد من حفظ هذه الخطة؟")) return;
-    setSaving(true);
+    dispatch(loading());
     try {
       const flattenedSeminars: any[] = [];
       seminars.forEach((s) => {
@@ -545,11 +587,19 @@ export const CreatePlacePlanContainer: React.FC = () => {
         },
       );
 
-      alert(res.data?.message || "تم حفظ الخطة بنجاح!");
+      dispatch(
+        open({
+          state: "success",
+          title: res.data?.message || "تم حفظ الخطة بنجاح!",
+        }),
+      );
     } catch (err: any) {
-      alert(err?.response?.data?.message || "حدث خطأ أثناء حفظ الخطة.");
-    } finally {
-      setSaving(false);
+      dispatch(
+        open({
+          state: "faild",
+          title: err?.response?.data?.message || "حدث خطأ أثناء حفظ الخطة.",
+        }),
+      );
     }
   };
 
@@ -596,14 +646,6 @@ export const CreatePlacePlanContainer: React.FC = () => {
 
     return transformed;
   };
-
-  if (loadingCheck) {
-    return (
-      <div className="p-12 text-center text-gray-500 font-medium">
-        جاري التحقق من الصلاحيات والجداول المتاحة...
-      </div>
-    );
-  }
 
   if (isAuthorized === false) {
     return (
@@ -1296,10 +1338,10 @@ export const CreatePlacePlanContainer: React.FC = () => {
 
               <button
                 onClick={handleSaveFinalPlan}
-                disabled={saving || seminars.length === 0}
+                disabled={seminars.length === 0}
                 className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-5 py-2.5 rounded-lg flex items-center gap-1.5 shadow-sm transition-all disabled:opacity-50"
               >
-                {saving ? "جاري الحفظ..." : "حفظ الخطة النهائية"}
+                حفظ الخطة النهائية
               </button>
             </div>
           </div>

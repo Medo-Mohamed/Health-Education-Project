@@ -1,7 +1,9 @@
-import { useState } from "react";
 import type { ITableGroupedStat } from "./PlanApprovalPage";
 import AxiosApi from "../../../../../../../../AxiosApi";
-import { AlertCircle, CheckCircle2, Layers, Loader2 } from "lucide-react";
+import { CheckCircle2, Layers } from "lucide-react";
+import { useDispatch } from "react-redux";
+import type { AppDispatch } from "../../../../../../../../store";
+import { loading, open } from "../../../../../../../Redux-Store/SuccessFaildState/SFS";
 
 interface IApprovedStatisticalSummaryTabProps {
   groupedTables: ITableGroupedStat[];
@@ -12,8 +14,7 @@ interface IApprovedStatisticalSummaryTabProps {
 export const ApprovedStatisticalSummaryTab: React.FC<
   IApprovedStatisticalSummaryTabProps
 > = ({ groupedTables, placeId, fetchData }) => {
-  const [submitting, setSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
+  const dispatch = useDispatch<AppDispatch>();
 
   //   console.log("groupedTables in ApprovedStatisticalSummaryTab:", groupedTables);
   const handleApprovePlan = async () => {
@@ -22,21 +23,22 @@ export const ApprovedStatisticalSummaryTab: React.FC<
     )
       return;
 
+    dispatch(loading());
     try {
-      setSubmitting(true);
-      setSubmitError(null);
       await AxiosApi.post(
         `/auth/withlogin/places/place-plans/approve-plan/${placeId}`,
         { userIdToApprove: null },
       );
-      alert("تم اعتماد الخطة بنجاح في السيرفر.");
+      dispatch(open({ state: "success", title: "تم اعتماد الخطة بنجاح في السيرفر." }));
       fetchData();
     } catch (err: any) {
-      setSubmitError(
-        err?.response?.data?.message || "حدث خطأ أثناء اعتماد الخطة.",
+      dispatch(
+        open({
+          state: "faild",
+          title:
+            err?.response?.data?.message || "حدث خطأ أثناء اعتماد الخطة.",
+        }),
       );
-    } finally {
-      setSubmitting(false);
     }
   };
 
@@ -53,25 +55,14 @@ export const ApprovedStatisticalSummaryTab: React.FC<
 
         <button
           type="button"
-          disabled={submitting || groupedTables.length === 0}
+          disabled={groupedTables.length === 0}
           onClick={handleApprovePlan}
           className="flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-colors shadow-md disabled:opacity-50"
         >
-          {submitting ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
-          ) : (
-            <CheckCircle2 className="w-4 h-4" />
-          )}
+          <CheckCircle2 className="w-4 h-4" />
           <span>تأكيد اعتماد الخطة (Approved)</span>
         </button>
       </div>
-
-      {submitError && (
-        <div className="p-4 bg-rose-50 text-rose-700 rounded-2xl border border-rose-200 flex items-center gap-2 text-sm font-bold">
-          <AlertCircle className="w-5 h-5 shrink-0" />
-          {submitError}
-        </div>
-      )}
 
       {groupedTables.length === 0 ? (
         <div className="p-8 text-center text-slate-400 font-bold border border-dashed border-slate-200 rounded-3xl bg-slate-50">

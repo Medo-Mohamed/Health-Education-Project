@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom"; // إدارة Query Params للـ URL
 import {
   FileText,
   Image as ImageIcon,
@@ -10,7 +11,6 @@ import {
   Presentation,
   FileBox,
   FileIcon,
-  ExternalLink,
 } from "lucide-react";
 import AxiosApi from "../../../../../AxiosApi";
 import axios from "axios";
@@ -27,39 +27,36 @@ interface FileItem {
   fileName: string;
   fileType: string;
   fileSize: string;
-  uploadedAt: string;
+  uploadedAt?: string;
   createdAt: string;
   fileUrl: string;
 }
-
-// interface ApiResponse {
-//   data: FileItem[];
-// }
 
 const ArchiveManager = () => {
   const UserRole = useSelector(
     (state: RootState) => state.User.data.user?.role,
   );
   const dispatch = useDispatch<AppDispatch>();
+
+  // إدارة الـ Query Params من الـ URL
+  const [searchParams, setSearchParams] = useSearchParams();
+  const pageFromUrl = Number(searchParams.get("page")) || 1;
+  const searchFromUrl = searchParams.get("search") || "";
+
   const [files, setFiles] = useState<FileItem[]>([]);
-  // const [loading, setLoading] = useState<boolean>(false);
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [searchTerm, setSearchTerm] = useState<string>(searchFromUrl);
   const [totalPages, setTotalPages] = useState<number>(1);
 
-  // 1. مكان الـ API فارغ لجلب البيانات
+  // 1. جلب البيانات بناءً على الـ Query Params
   const fetchFiles = async (
-    page: number = 1,
-    searchQuery: string = "",
+    page: number,
+    searchQuery: string,
   ): Promise<void> => {
     dispatch(loading());
     try {
-      // هنا تضع رابط الـ API الخاص بك مستقبلاً
       const response = await AxiosApi.get(
-        `/auth/withlogin/files?page=${page}&search=${searchQuery}`,
+        `/auth/withlogin/files?page=${page}&search=${encodeURIComponent(searchQuery)}`,
       );
-      console.log("API response:", response.data);
-
       setFiles(response.data?.data?.files || []);
       setTotalPages(response.data?.data?.totalPages || 1);
       dispatch(close());
@@ -84,27 +81,44 @@ const ArchiveManager = () => {
     }
   };
 
-  const onPageChange = (newPage: number) => {
-    if (newPage >= 1 && newPage <= totalPages) {
-      setCurrentPage(newPage);
-      fetchFiles(newPage, searchTerm); // جلب بيانات الصفحة الجديدة مع الاحتفاظ بكلمة البحث
-    }
-  };
+  // مزامنة حقل البحث إذا تغير من الـ URL
+  useEffect(() => {
+    setSearchTerm(searchFromUrl);
+  }, [searchFromUrl]);
 
+  // جلب البيانات عند تغير الـ URL
+  useEffect(() => {
+    fetchFiles(pageFromUrl, searchFromUrl);
+  }, [pageFromUrl, searchFromUrl]);
+
+  // تحديث الـ URL عند الكتابة مع Debounce
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
-      fetchFiles(1, searchTerm); // العودة للصفحة 1 عند كل بحث جديد
+      if (searchTerm !== searchFromUrl) {
+        const newParams = new URLSearchParams(searchParams);
+        if (searchTerm.trim()) {
+          newParams.set("search", searchTerm);
+        } else {
+          newParams.delete("search");
+        }
+        newParams.set("page", "1"); // العودة للصفحة الأولى
+        setSearchParams(newParams);
+      }
     }, 500);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [searchTerm]);
+  }, [searchTerm, searchFromUrl, searchParams, setSearchParams]);
 
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    fetchFiles();
-  }, []);
+  // تغيير الصفحة
+  const onPageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      const newParams = new URLSearchParams(searchParams);
+      newParams.set("page", newPage.toString());
+      setSearchParams(newParams);
+    }
+  };
 
-  // 2. مكان الـ API فارغ لرفع الملفات
+  // 2. رفع الملفات + إعادة جلب البيانات فوراً
   const handleFileUpload = async (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
@@ -120,12 +134,14 @@ const ArchiveManager = () => {
         "/auth/withlogin/files/upload",
         formData,
       );
-      console.log("Upload response:", response.data);
-      // بعد الرفع نحدث القائمة
-      setFiles(response.data?.data?.files || []);
-      setTotalPages(response.data?.data?.totalPages || 1);
-      setCurrentPage(1); // العودة للصفحة 1 لعرض الملف الجديد
-      setSearchTerm(""); // إعادة تعيين البحث لعرض جميع الملفات
+
+      // تفريغ حقل البحث وتصفير الصفحة في URL
+      setSearchParams({});
+      setSearchTerm("");
+
+      // طلب البيانات المحدثة مباشرة من الباك إند
+      await fetchFiles(1, "");
+
       dispatch(
         open({
           state: "success",
@@ -134,11 +150,11 @@ const ArchiveManager = () => {
       );
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        console.error("Error fetching files:", error);
+        console.error("Error uploading file:", error);
         dispatch(
           open({
             state: "faild",
-            title: error.response?.data?.message || "حدث خطأ أثناء جلب الملفات",
+            title: error.response?.data?.message || "حدث خطأ أثناء رفع الملف",
           }),
         );
       } else {
@@ -146,88 +162,214 @@ const ArchiveManager = () => {
         dispatch(
           open({
             state: "faild",
-            title: "حدث خطأ غير متوقع أثناء جلب الملفات",
+            title: "حدث خطأ غير متوقع أثناء رفع الملف",
+          }),
+        );
+      }
+    } finally {
+      // إعادة تعيين قيمة الـ input ليتمكن المستخدم من رفع نفس الملف مرة أخرى
+      event.target.value = "";
+    }
+  };
+
+  // 3. حذف الملف
+  const handleDeleteFile = async (e: React.MouseEvent, fileId: string) => {
+    e.stopPropagation(); // منع تنفيذ حدث التحميل عند الضغط على أيقونة الحذف
+
+    if (!window.confirm("هل أنت تأكد من أنك تريد حذف هذا الملف؟")) {
+      return;
+    }
+
+    try {
+      dispatch(loading());
+      const response = await AxiosApi.delete(`/auth/withlogin/files/${fileId}`);
+
+      // إعادة جلب البيانات للصفحة الحالية
+      await fetchFiles(pageFromUrl, searchFromUrl);
+
+      dispatch(
+        open({
+          state: "success",
+          title: response.data?.message || "تم حذف الملف بنجاح",
+        }),
+      );
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error("Error deleting file:", error);
+        dispatch(
+          open({
+            state: "faild",
+            title: error.response?.data?.message || "حدث خطأ أثناء حذف الملف",
+          }),
+        );
+      } else {
+        console.error("Unexpected error deleting file:", error);
+        dispatch(
+          open({
+            state: "faild",
+            title: "حدث خطأ غير متوقع أثناء حذف الملف",
           }),
         );
       }
     }
   };
 
-  const getFileIcon = (type: string) => {
-    // تحويل النوع لـ Lowercase لضمان المطابقة حتى لو جاءت من السيرفر كـ PDF أو Docx
+  // 4. تحميل الملف للجهاز مباشر بدون مشاكل CORS
+  const handleDownloadFile = async (
+    e: React.MouseEvent,
+    fileUrl: string,
+    fileName: string,
+  ) => {
+    e.stopPropagation();
+    dispatch(loading());
+
+    try {
+      const response = await axios.get(fileUrl, {
+        responseType: "blob",
+        withCredentials: false,
+      });
+
+      const blob = new Blob([response.data], {
+        type: response.headers["content-type"] || "application/octet-stream",
+      });
+
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", fileName);
+      document.body.appendChild(link);
+      link.click();
+
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      dispatch(close());
+    } catch (error) {
+      console.warn(
+        "Direct blob download failed, falling back to direct force-download link:",
+        error,
+      );
+
+      try {
+        let forceDownloadUrl = fileUrl;
+        if (
+          fileUrl.includes("cloudinary.com") &&
+          fileUrl.includes("/upload/")
+        ) {
+          forceDownloadUrl = fileUrl.replace(
+            "/upload/",
+            "/upload/fl_attachment/",
+          );
+        }
+
+        const link = document.createElement("a");
+        link.href = forceDownloadUrl;
+        link.setAttribute("download", fileName);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } catch (fallbackErr) {
+        console.error("All download methods failed:", fallbackErr);
+        dispatch(
+          open({
+            state: "faild",
+            title: "فشل تنزيل الملف، يرجى المحاولة لاحقاً",
+          }),
+        );
+      } finally {
+        dispatch(close());
+      }
+    }
+  };
+
+  // اختيار أيقونة النوع ولون تمييز البطاقة
+  const getFileStyle = (type: string) => {
     const fileType = type.toLowerCase();
 
     switch (fileType) {
-      // المستندات والكتب
       case "pdf":
-        return <FileText className="text-red-500" />;
-
-      // ملفات الورد (Word)
+        return {
+          icon: <FileText className="text-red-500" size={28} />,
+          badge: "bg-red-50 text-red-600 border-red-200",
+        };
       case "doc":
       case "docx":
-        return <FileText className="text-blue-600" />;
-
-      // ملفات الإكسل (Excel)
+        return {
+          icon: <FileText className="text-blue-600" size={28} />,
+          badge: "bg-blue-50 text-blue-600 border-blue-200",
+        };
       case "xls":
       case "xlsx":
       case "csv":
-        return <FileSpreadsheet className="text-green-600" />;
-
-      // العروض التقديمية (PowerPoint)
+        return {
+          icon: <FileSpreadsheet className="text-green-600" size={28} />,
+          badge: "bg-green-50 text-green-600 border-green-200",
+        };
       case "ppt":
       case "pptx":
-        return <Presentation className="text-orange-500" />;
-
-      // الصور
+        return {
+          icon: <Presentation className="text-orange-500" size={28} />,
+          badge: "bg-orange-50 text-orange-600 border-orange-200",
+        };
       case "png":
       case "jpg":
       case "jpeg":
       case "webp":
       case "gif":
-        return <ImageIcon className="text-purple-500" />;
-
-      // الملفات المضغوطة
+        return {
+          icon: <ImageIcon className="text-purple-500" size={28} />,
+          badge: "bg-purple-50 text-purple-600 border-purple-200",
+        };
       case "zip":
       case "rar":
       case "7z":
-        return <FileBox className="text-yellow-600" />;
-
-      // أي ملف آخر غير معروف
+        return {
+          icon: <FileBox className="text-yellow-600" size={28} />,
+          badge: "bg-yellow-50 text-yellow-600 border-yellow-200",
+        };
       default:
-        return <FileIcon className="text-gray-400" />;
+        return {
+          icon: <FileIcon className="text-gray-400" size={28} />,
+          badge: "bg-gray-50 text-gray-600 border-gray-200",
+        };
     }
   };
 
   return (
-    <div className="p-4 md:p-8  min-h-screen text-right" dir="rtl">
-      <div className="max-w-6xl mx-auto">
+    <div className="p-3 sm:p-6 lg:p-8 min-h-screen text-right" dir="rtl">
+      <div className="max-w-7xl mx-auto">
         {/* Header Section */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8">
           <div>
-            <h1 className="text-2xl font-bold ">أرشيف الملفات الصحية</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-800">
+              أرشيف الملفات الصحية
+            </h1>
+            <p className="text-xs sm:text-sm text-gray-500 mt-1">
+              اضغط على أي كارت لبدء تحميل الملف فوراً
+            </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
             <form
-              className="relative"
-              onSubmit={(e) => {
-                e.preventDefault();
-                console.log(searchTerm);
-              }}
+              className="relative w-full sm:w-64"
+              onSubmit={(e) => e.preventDefault()}
             >
-              <Search className="absolute right-3 top-2.5" size={18} />
+              <Search
+                className="absolute right-3 top-2.5 text-gray-400"
+                size={18}
+              />
               <input
                 type="text"
                 placeholder="ابحث عن ملف..."
-                className="pr-10 pl-4 py-2 border rounded-lg focus:outline-none focus:ring-2 w-full md:w-64"
+                className="pr-10 pl-4 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
                 onChange={(e) => setSearchTerm(e.target.value)}
                 value={searchTerm}
               />
             </form>
+
             {(UserRole === "admin" || UserRole === "dev") && (
-              <label className="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition shadow-sm">
-                <UploadCloud size={20} />
-                <span>رفع</span>
+              <label className="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 text-sm font-medium rounded-lg flex items-center justify-center gap-2 transition shadow-sm active:scale-95">
+                <UploadCloud size={18} />
+                <span>رفع ملف</span>
                 <input
                   type="file"
                   className="hidden"
@@ -239,68 +381,76 @@ const ArchiveManager = () => {
           </div>
         </div>
 
-        {/* Files Grid List */}
-        <div className="grid grid-cols-1 gap-4">
-          {files
-            // .filter((f) => f.fileName.includes(searchTerm))
-            .map((file) => (
+        {/* Files Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+          {files.map((file) => {
+            const style = getFileStyle(file.fileType);
+
+            return (
               <div
                 key={file._id}
-                className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 hover:border-blue-200 hover:shadow-md transition flex flex-col lg:flex-row items-center justify-between gap-4"
+                onClick={(e) =>
+                  handleDownloadFile(e, file.fileUrl, file.fileName)
+                }
+                className="group relative bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg hover:border-blue-300 transition-all duration-200 cursor-pointer flex flex-col justify-between"
               >
-                {/* File Info Side */}
-                <div
-                  className="flex items-center gap-4 w-full lg:max-w-[60%] xl:max-w-[70%] flex-1"
-                  title={`${file.fileName}\nحجم الملف: ${file.fileSize}\nتاريخ الرفع: ${new Date(file.createdAt).toLocaleDateString()}`}
-                >
-                  <div className="p-3 bg-gray-50 rounded-lg">
-                    {getFileIcon(file.fileType)}
+                {/* الجزء العلوي: الأيقونة مع نوع الملف و الحذف */}
+                <div className="flex items-start justify-between gap-2 mb-3">
+                  <div className="p-2.5 bg-gray-50 rounded-xl group-hover:bg-blue-50 transition-colors">
+                    {style.icon}
                   </div>
-                  <div className="overflow-hidden flex-1">
-                    <h3 className="font-semibold text-gray-800 truncate ">
-                      {file.fileName}
-                    </h3>
-                    <div className="flex gap-3 text-xs text-gray-400 mt-1">
-                      <span>{file.fileSize}</span>
-                      <span>•</span>
-                      <span>
-                        {new Date(file.createdAt).toLocaleDateString()}
-                      </span>
-                    </div>
+                  <div className="flex items-center gap-1.5">
+                    <span
+                      className={`text-[10px] sm:text-[11px] font-bold uppercase px-2 py-0.5 rounded-md border ${style.badge}`}
+                    >
+                      {file.fileType}
+                    </span>
+                    {(UserRole === "admin" || UserRole === "dev") && (
+                      <button
+                        onClick={(e) => handleDeleteFile(e, file._id)}
+                        className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition active:scale-95"
+                        title="حذف الملف"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    )}
                   </div>
                 </div>
 
-                {/* Actions Side */}
-                <div className="flex items-center gap-2 w-full lg:min-w-auto justify-end border-t lg:border-t-0 pt-3 lg:pt-0 ">
-                  <button
-                    // onClick={() => handleViewFile()}
-                    className="flex-1 lg:flex-none flex justify-center items-center gap-1 px-3 py-2 text-sm text-blue-600 hover:bg-blue-50 rounded-md transition"
+                {/* تفاصيل الملف ونبذة عن المحتوى */}
+                <div className="space-y-2 flex-1 flex flex-col justify-between">
+                  <h3
+                    className="font-semibold text-gray-800 text-xs sm:text-sm line-clamp-2 leading-relaxed group-hover:text-blue-600 transition-colors"
+                    title={file.fileName}
                   >
-                    <ExternalLink size={16} />
-                    عرض
-                  </button>
-                  <button className="flex-1 lg:flex-none flex justify-center items-center gap-1 px-3 py-2 text-sm text-green-600 hover:bg-green-50 rounded-md transition">
-                    <Download size={16} />
-                    <span>تحميل</span>
-                  </button>
-                  <button className="p-2 text-red-500 hover:bg-red-50 rounded-md transition">
-                    <Trash2 size={18} />
-                  </button>
+                    {file.fileName}
+                  </h3>
+
+                  {/* نبذة ومعلومات الحجم والتاريخ */}
+                  <div className="pt-2 border-t border-gray-50 flex items-center justify-between text-[11px] sm:text-xs text-gray-400">
+                    <span>{file.fileSize || "غير محدد"}</span>
+                    <span>{new Date(file.createdAt).toLocaleDateString()}</span>
+                  </div>
+                </div>
+
+                {/* زر تحميل */}
+                <div className="mt-3 pt-2.5 border-t border-gray-100 flex items-center justify-center gap-2 text-xs font-medium text-blue-600 group-hover:bg-blue-600 group-hover:text-white py-2 rounded-xl transition-all">
+                  <Download size={14} />
+                  <span>تحميل الملف</span>
                 </div>
               </div>
-            ))}
+            );
+          })}
         </div>
 
-        {/* Pagination Section */}
-        <div className="flex flex-col md:flex-row items-center justify-center mt-8 pt-6 border-t border-gray-200">
-          {/* أزرار التنقل */}
-          <div className="flex items-center gap-2">
-            {/* زر السابق */}
+        {/* الترقيم / Pagination */}
+        <div className="flex flex-col sm:flex-row items-center justify-center mt-8 sm:mt-10 pt-4 sm:pt-6 border-t border-gray-200 gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-2 max-w-full overflow-x-auto pb-2 sm:pb-0">
             <button
-              onClick={() => onPageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-              className={`px-4 py-2 rounded-lg border text-sm font-medium transition-colors ${
-                currentPage === 1
+              onClick={() => onPageChange(pageFromUrl - 1)}
+              disabled={pageFromUrl === 1}
+              className={`px-3 sm:px-4 py-2 rounded-lg border text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${
+                pageFromUrl === 1
                   ? "opacity-50 border-0 cursor-not-allowed"
                   : "bg-white text-gray-700 hover:bg-gray-50 border-gray-300"
               }`}
@@ -308,35 +458,33 @@ const ArchiveManager = () => {
               السابق
             </button>
 
-            {/* أرقام الصفحات (عرض مبسط) */}
-            <div className="hidden sm:flex items-center gap-1">
-              {/* دالة ذكية لتحديد الأرقام التي ستظهر */}
+            <div className="flex items-center gap-1">
               {(() => {
                 const pages = [];
-                const range = 1; // عدد الصفحات التي تظهر قبل وبعد الصفحة الحالية
+                const range = 1;
 
                 for (let i = 1; i <= totalPages; i++) {
-                  // دائماً نعرض الصفحة الأولى والأخيرة والصفحة الحالية وما حولها
                   if (
                     i === 1 ||
                     i === totalPages ||
-                    (i >= currentPage - range && i <= currentPage + range)
+                    (i >= pageFromUrl - range && i <= pageFromUrl + range)
                   ) {
                     pages.push(i);
                   } else if (
-                    i === currentPage - range - 1 ||
-                    i === currentPage + range + 1
+                    i === pageFromUrl - range - 1 ||
+                    i === pageFromUrl + range + 1
                   ) {
-                    // إضافة النقاط إذا كان هناك فاصل
                     pages.push("...");
                   }
                 }
 
-                // تنظيف النقاط المتكررة (اختياري لضمان مظهر نظيف)
                 return pages.map((pageNum, index) => {
                   if (pageNum === "...") {
                     return (
-                      <span key={`dots-${index}`} className="px-2 ">
+                      <span
+                        key={`dots-${index}`}
+                        className="px-1.5 text-xs text-gray-400"
+                      >
                         ...
                       </span>
                     );
@@ -346,8 +494,8 @@ const ArchiveManager = () => {
                     <button
                       key={pageNum}
                       onClick={() => onPageChange(pageNum as number)}
-                      className={`w-10 h-10 rounded-lg text-sm font-medium transition-all ${
-                        currentPage === pageNum
+                      className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg text-xs sm:text-sm font-medium transition-all ${
+                        pageFromUrl === pageNum
                           ? "bg-blue-600 text-white shadow-sm"
                           : "bg-white text-gray-600 hover:bg-blue-50 border border-gray-200"
                       }`}
@@ -359,12 +507,11 @@ const ArchiveManager = () => {
               })()}
             </div>
 
-            {/* زر التالي */}
             <button
-              onClick={() => onPageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className={`px-4 py-2 rounded-lg border text-sm font-medium transition-colors ${
-                currentPage === totalPages
+              onClick={() => onPageChange(pageFromUrl + 1)}
+              disabled={pageFromUrl === totalPages}
+              className={`px-3 sm:px-4 py-2 rounded-lg border text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${
+                pageFromUrl === totalPages
                   ? "opacity-50 border-0 cursor-not-allowed"
                   : "bg-white text-gray-700 hover:bg-gray-50 border-gray-300"
               }`}

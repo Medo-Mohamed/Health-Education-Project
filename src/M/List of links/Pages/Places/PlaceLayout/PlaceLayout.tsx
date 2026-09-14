@@ -6,13 +6,16 @@ import {
   Building2,
   ChevronLeft,
   FolderTree,
-  Loader2,
   AlertCircle,
   Users,
   Calendar,
 } from "lucide-react";
 import { PlacePermission, type IPlace, type IPlacePermission } from "../types";
 import AxiosApi from "../../../../../AxiosApi";
+import {
+  loading as sfsLoading,
+  close as sfsClose,
+} from "../../../../Redux-Store/SuccessFaildState/SFS";
 import {
   setPlacePermissions,
   setPermissionsLoading,
@@ -53,6 +56,7 @@ export const PlaceLayout: React.FC = () => {
     setLoading(true);
     setError(null);
     dispatch(setPermissionsLoading(true));
+    dispatch(sfsLoading());
 
     try {
       const res = await AxiosApi.get<PlaceDetailsResponse>(
@@ -95,6 +99,7 @@ export const PlaceLayout: React.FC = () => {
       );
     } finally {
       setLoading(false);
+      dispatch(sfsClose());
     }
   }, [id, dispatch, currentUser]);
 
@@ -108,12 +113,7 @@ export const PlaceLayout: React.FC = () => {
   }, [fetchPlaceData, dispatch]);
 
   if (loading) {
-    return (
-      <div className="p-16 text-center text-gray-500 flex flex-col items-center justify-center gap-3">
-        <Loader2 className="w-10 h-10 animate-spin text-blue-600" />
-        <span className="text-sm font-medium">جاري تحميل تفاصيل المكان...</span>
-      </div>
-    );
+    return null;
   }
 
   if (error || !place) {

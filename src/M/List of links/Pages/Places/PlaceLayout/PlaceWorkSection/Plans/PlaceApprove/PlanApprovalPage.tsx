@@ -13,6 +13,9 @@ import {
   CheckCircle2,
   PlusCircle,
 } from "lucide-react";
+import { useDispatch } from "react-redux";
+import type { AppDispatch } from "../../../../../../../../store";
+import { loading, open, close } from "../../../../../../../Redux-Store/SuccessFaildState/SFS";
 import { ApprovedStatisticalSummaryTab } from "./ApprovedStatisticalSummaryTab";
 import type { IGroupedSeminar } from "../PlaceCreate/CreatePlacePlanContainer";
 import { SeminarModal, type IServerAvailableTopic } from "../EditSeminarModal";
@@ -109,9 +112,9 @@ export interface ITableGroupedStat {
 
 export const PlanApprovalPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const dispatch = useDispatch<AppDispatch>();
   const [rawPlans, setRawPlans] = useState<IPlacePlanItem[]>([]);
   const [topicsTables, setTopicsTables] = useState<ITopicTable[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
   // const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
 
   // حالات مودال التعديل/الإضافة
@@ -130,7 +133,7 @@ export const PlanApprovalPage: React.FC = () => {
 
   const fetchData = useCallback(async () => {
     try {
-      setLoading(true);
+      dispatch(loading());
       const res = await AxiosApi.get(
         `/auth/withlogin/places/place-plans/get-plan-to-approve/${id}`,
       );
@@ -141,9 +144,9 @@ export const PlanApprovalPage: React.FC = () => {
     } catch (err) {
       console.error("خطأ أثناء جلب البيانات عبر AxiosApi:", err);
     } finally {
-      setLoading(false);
+      dispatch(close());
     }
-  }, [id]);
+  }, [id, dispatch]);
 
   useEffect(() => {
     if (id) {
@@ -445,7 +448,12 @@ export const PlanApprovalPage: React.FC = () => {
       }
     } catch (err: any) {
       console.error("خطأ أثناء حفظ التعديل:", err);
-      alert(err.response?.data?.message || "حدث خطأ أثناء حفظ الفعالية");
+      dispatch(
+        open({
+          state: "faild",
+          title: err.response?.data?.message || "حدث خطأ أثناء حفظ الفعالية",
+        }),
+      );
     } finally {
       setSavingId(null);
     }
@@ -466,7 +474,12 @@ export const PlanApprovalPage: React.FC = () => {
         }
       } catch (err: any) {
         console.error("خطأ أثناء الحذف:", err);
-        alert(err.response?.data?.message || "حدث خطأ أثناء حذف الصف");
+        dispatch(
+          open({
+            state: "faild",
+            title: err.response?.data?.message || "حدث خطأ أثناء حذف الصف",
+          }),
+        );
       } finally {
         setDeletingId(null);
       }
@@ -484,7 +497,14 @@ export const PlanApprovalPage: React.FC = () => {
           fetchData();
         }
       } catch (err: any) {
-        alert(err.response?.data?.message || "حدث خطأ أثناء اعتماد خطط الموظف");
+        dispatch(
+          open({
+            state: "faild",
+            title:
+              err.response?.data?.message ||
+              "حدث خطأ أثناء اعتماد خطط الموظف",
+          }),
+        );
       }
     }
   };
@@ -501,14 +521,6 @@ export const PlanApprovalPage: React.FC = () => {
     }
   };
   */
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen text-slate-500 font-medium">
-        جاري تحميل ملفات الخطط والموضوعات...
-      </div>
-    );
-  }
 
   return (
     <div className="p-6 bg-slate-50 min-h-screen dir-rtl font-sans text-slate-800">

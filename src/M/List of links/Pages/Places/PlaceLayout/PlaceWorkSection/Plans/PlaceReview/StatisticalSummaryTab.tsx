@@ -1,6 +1,8 @@
-import { useState } from "react";
 import AxiosApi from "../../../../../../../../AxiosApi";
-import { AlertCircle, Layers, Loader2, PieChart, Send } from "lucide-react";
+import { Layers, PieChart, Send } from "lucide-react";
+import { useDispatch } from "react-redux";
+import type { AppDispatch } from "../../../../../../../../store";
+import { loading, open } from "../../../../../../../Redux-Store/SuccessFaildState/SFS";
 import type { ITableGroupedStat } from "./PlanReviewPage";
 
 interface IStatisticalSummaryTabProps {
@@ -14,26 +16,27 @@ export default function StatisticalSummaryTab({
   placeId,
   fetchData,
 }: IStatisticalSummaryTabProps) {
-  const [submitting, setSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
+  const dispatch = useDispatch<AppDispatch>();
 
   const handleSubmitPlanForApproval = async () => {
     if (!window.confirm("هل أنت تأكد من رغبتك في رفع الخطة للإعتماد؟")) return;
 
+    dispatch(loading());
     try {
-      setSubmitting(true);
-      setSubmitError(null);
       await AxiosApi.post(
         `/auth/withlogin/places/place-plans/update-plan-draft/${placeId}`,
       );
-      alert("تم رفع الخطة للإعتماد بنجاح.");
+      dispatch(open({ state: "success", title: "تم رفع الخطة للإعتماد بنجاح." }));
       fetchData();
     } catch (err: any) {
-      setSubmitError(
-        err?.response?.data?.message || "حدث خطأ أثناء رفع الخطة للإعتماد.",
+      dispatch(
+        open({
+          state: "faild",
+          title:
+            err?.response?.data?.message ||
+            "حدث خطأ أثناء رفع الخطة للإعتماد.",
+        }),
       );
-    } finally {
-      setSubmitting(false);
     }
   };
 
@@ -50,25 +53,14 @@ export default function StatisticalSummaryTab({
 
         <button
           type="button"
-          disabled={submitting || groupedTables.length === 0}
+          disabled={groupedTables.length === 0}
           onClick={handleSubmitPlanForApproval}
           className="flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-colors shadow-md disabled:opacity-50"
         >
-          {submitting ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
-          ) : (
-            <Send className="w-4 h-4" />
-          )}
+          <Send className="w-4 h-4" />
           <span>رفع الخطة للإعتماد</span>
         </button>
       </div>
-
-      {submitError && (
-        <div className="p-4 bg-rose-50 text-rose-700 rounded-2xl border border-rose-200 flex items-center gap-2 text-sm font-bold">
-          <AlertCircle className="w-5 h-5 shrink-0" />
-          {submitError}
-        </div>
-      )}
 
       {groupedTables.length === 0 ? (
         <div className="p-8 text-center text-slate-400 font-bold border border-dashed border-slate-200 rounded-3xl bg-slate-50">

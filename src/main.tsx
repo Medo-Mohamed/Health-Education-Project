@@ -14,7 +14,7 @@ import UserKeepLogin from "./G-Component/UserKeepLogin.tsx";
 import ProfilePage from "./M/Profile/Profile.tsx";
 import ModernProfilePage from "./M/List of links/Pages/Profile_view/Profile_Page.tsx";
 import ListOfLinks from "./M/List of links/ListOfLinks.tsx";
-import { FaCog, FaFilePdf, FaRegNewspaper, FaUserEdit } from "react-icons/fa";
+import { FaCog, FaRegNewspaper, FaUserEdit } from "react-icons/fa";
 import { GiShadowFollower } from "react-icons/gi";
 import TablesGrid from "./M/List of links/Pages/Topic Table/Components/TablesGrid.tsx";
 import FriendSearsh from "./M/List of links/Pages/Friend Searsh/FriendSearsh.tsx";
@@ -32,7 +32,6 @@ import { MyPlacesPage } from "./M/List of links/Pages/Places/PlacesPage/MyPlaces
 import { CreatePlacePage } from "./M/List of links/Pages/Places/CreatePlacePage/CreatePlacePage.tsx";
 import { PlaceLayout } from "./M/List of links/Pages/Places/PlaceLayout/PlaceLayout.tsx";
 import EditStaffPermissionsPage from "./M/List of links/Pages/Places/PlaceLayout/PlaceStaff/EditStaffPermissionsPage.tsx";
-import { Toaster } from "react-hot-toast";
 import { CreatePlaceEvent } from "./M/List of links/Pages/Places/PlaceLayout/PlaceWorkSection/Events/CreatePlaceEventPage.tsx";
 
 import { PlaceOverview } from "./M/List of links/Pages/Places/PlaceLayout/PlaceOverview.tsx";
@@ -44,7 +43,6 @@ import PlaceWork from "./M/List of links/Pages/Places/PlaceLayout/PlaceWorkSecti
 import PlanReviewPage from "./M/List of links/Pages/Places/PlaceLayout/PlaceWorkSection/Plans/PlaceReview/PlanReviewPage.tsx";
 import { PlanApprovalPage } from "./M/List of links/Pages/Places/PlaceLayout/PlaceWorkSection/Plans/PlaceApprove/PlanApprovalPage.tsx";
 import { CreatePlacePlanContainer } from "./M/List of links/Pages/Places/PlaceLayout/PlaceWorkSection/Plans/PlaceCreate/CreatePlacePlanContainer.tsx";
-import { EventsPage } from "./M/List of links/Pages/Places/PlaceLayout/PlaceWorkSection/Filter/PDF/TestPage.tsx";
 export const MENU_DATA = [
   {
     path: "search",
@@ -177,12 +175,6 @@ export const MENU_DATA = [
     ],
   },
   {
-    path: "pdf-preview",
-    title: "معاينة PDF",
-    icon: <FaFilePdf size={20} />,
-    element: <EventsPage />,
-  },
-  {
     path: "settings",
     title: "الإعدادات",
     icon: <FaCog size={20} />,
@@ -235,11 +227,6 @@ const router = createBrowserRouter([...Paths]);
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <Provider store={store}>
-      <Toaster
-        position="top-center"
-        reverseOrder={false}
-        toastOptions={{ duration: 4000 }}
-      />
       <ThemeHandler />
       <UserKeepLogin />
       <div dir="rtl">

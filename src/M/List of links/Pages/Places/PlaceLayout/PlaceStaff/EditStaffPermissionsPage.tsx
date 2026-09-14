@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import AxiosApi from "../../../../../../AxiosApi";
-import { toast } from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import type { AppDispatch } from "../../../../../../store";
+import { loading, open, close } from "../../../../../Redux-Store/SuccessFaildState/SFS";
 import {
   Save,
   ShieldCheck,
   ShieldAlert,
-  Loader2,
   CheckCircle2,
   GitFork,
   Clock,
@@ -26,7 +27,6 @@ import {
 // ==========================================
 
 // 3. خريطة الصلاحيات الافتراضية المحدثة
-// eslint-disable-next-line react-refresh/only-export-components
 // export const DEFAULT_ROLE_PERMISSIONS: Record<IPlaceRole, IPlacePermission[]> =
 //   {
 //     [PlaceRole.ADMIN]: [
@@ -175,9 +175,7 @@ const EditStaffPermissionsPage: React.FC = () => {
   const { id, userId } = useParams<{ id: string; userId: string }>();
   // console.log("edit permis");
   const navigate = useNavigate();
-
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
+  const dispatch = useDispatch<AppDispatch>();
 
   const [staffInfo, setStaffInfo] = useState<StaffInfo | null>(null);
   const [selectedRole, setSelectedRole] = useState<IPlaceRole>(
@@ -199,7 +197,7 @@ const EditStaffPermissionsPage: React.FC = () => {
   useEffect(() => {
     const fetchStaffData = async () => {
       try {
-        setLoading(true);
+        dispatch(loading());
         const response = await AxiosApi.get(
           `/auth/withlogin/places/place-staff/place-staff-permissions/${userId}/${id}/permissions`,
         );
@@ -249,21 +247,25 @@ const EditStaffPermissionsPage: React.FC = () => {
 
           setInheritToChildren(inherit_to_children ?? true);
         }
+
+        dispatch(close());
       } catch (error: any) {
         console.error("خطأ في جلب بيانات الصلاحيات:", error);
-        toast.error(
-          error.response?.data?.message ||
-            "تعذر جلب بيانات الصلاحيات من السيرفر",
+        dispatch(
+          open({
+            state: "faild",
+            title:
+              error.response?.data?.message ||
+              "تعذر جلب بيانات الصلاحيات من السيرفر",
+          }),
         );
-      } finally {
-        setLoading(false);
       }
     };
 
     if (id && userId) {
       fetchStaffData();
     }
-  }, [id, userId]);
+  }, [id, userId, dispatch]);
 
   // الصلاحيات التلقائية القادمة مع الدور المختار
   const defaultPermsForRole = DEFAULT_ROLE_PERMISSIONS[selectedRole] || [];
@@ -297,7 +299,7 @@ const EditStaffPermissionsPage: React.FC = () => {
   // دالة الحفظ وإرسال التحديثات للسيرفر
   const handleSave = async () => {
     try {
-      setSaving(true);
+      dispatch(loading());
 
       const payload = {
         role: selectedRole,
@@ -320,29 +322,25 @@ const EditStaffPermissionsPage: React.FC = () => {
       );
 
       if (response.data.success) {
-        toast.success(response.data.message || "تم حفظ التعديلات بنجاح");
+        dispatch(
+          open({
+            state: "success",
+            title: response.data.message || "تم حفظ التعديلات بنجاح",
+          }),
+        );
         navigate(-1);
       }
     } catch (error: any) {
       console.error("خطأ أثناء حفظ الصلاحيات:", error);
-      toast.error(
-        error.response?.data?.message || "حدث خطأ أثناء حفظ التعديلات",
+      dispatch(
+        open({
+          state: "faild",
+          title:
+            error.response?.data?.message || "حدث خطأ أثناء حفظ التعديلات",
+        }),
       );
-    } finally {
-      setSaving(false);
     }
   };
-
-  if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh]">
-        <Loader2 className="w-10 h-10 animate-spin text-blue-600 mb-3" />
-        <p className="text-gray-500 font-medium text-sm">
-          جاري جلب إعدادات الصلاحيات من السيرفر...
-        </p>
-      </div>
-    );
-  }
 
   return (
     <div className="max-w-4xl mx-auto dir-rtl" dir="rtl">
@@ -362,14 +360,9 @@ const EditStaffPermissionsPage: React.FC = () => {
 
         <button
           onClick={handleSave}
-          disabled={saving}
           className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl font-bold text-xs transition shadow-sm disabled:opacity-70"
         >
-          {saving ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
-          ) : (
-            <Save className="w-4 h-4" />
-          )}
+          <Save className="w-4 h-4" />
           <span>حفظ التعديلات</span>
         </button>
       </div>

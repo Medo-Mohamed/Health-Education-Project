@@ -3,14 +3,15 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   Users,
-  Loader2,
   UserCheck,
   ShieldAlert,
   Trash2,
   ShieldCheck,
 } from "lucide-react";
 import AxiosApi from "../../../../../../AxiosApi";
-import toast from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import type { AppDispatch } from "../../../../../../store";
+import { loading, open, close } from "../../../../../Redux-Store/SuccessFaildState/SFS";
 import { AddStaffModal } from "./AddStaffModal";
 // import { PlacePermission } from "../PlaceLayout";
 import { usePlacePermissions } from "../../../../../Redux-Store/PlacePermissions/usePlacePermissions";
@@ -42,34 +43,39 @@ interface StaffItem {
 export const PlaceStaffTab: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
 
   // جلب الصلاحيات من الـ Hook
   const { hasPermission } = usePlacePermissions();
 
   const [staffList, setStaffList] = useState<StaffItem[]>([]);
-  const [staffLoading, setStaffLoading] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // جلب قائمة الموظفين
   const fetchStaffList = useCallback(async () => {
     if (!id) return;
-    setStaffLoading(true);
+    dispatch(loading());
     try {
       const res = await AxiosApi.get(
         `/auth/withlogin/places/place-staff/place-staff/${id}/staff`,
       );
       setStaffList(res.data.staff || []);
+      dispatch(close());
     } catch (err: any) {
       if (err.response?.status === 403) {
-        toast.error("ليس لديك صلاحية لعرض موظفي هذا المكان.");
+        dispatch(
+          open({
+            state: "faild",
+            title: "ليس لديك صلاحية لعرض موظفي هذا المكان.",
+          }),
+        );
       } else {
         console.error("خطأ أثناء جلب موظفي المكان:", err);
+        dispatch(close());
       }
       setStaffList([]);
-    } finally {
-      setStaffLoading(false);
     }
-  }, [id]);
+  }, [id, dispatch]);
 
   // ✅ التعديل الرئيسي: الاعتماد على id و fetchStaffList فقط وتجنب الـ Infinite Loop
   useEffect(() => {
@@ -99,13 +105,21 @@ export const PlaceStaffTab: React.FC = () => {
     if (!window.confirm("هل أنت تأكد من إزالة هذا الموظف من المكان؟")) return;
 
     try {
+      dispatch(loading());
       await AxiosApi.delete(
         `/auth/withlogin/places/place-staff/place-staff-access/${accessId}/${id}`,
       );
-      toast.success("تم إزالة الموظف بنجاح");
+      dispatch(
+        open({ state: "success", title: "تم إزالة الموظف بنجاح" }),
+      );
       fetchStaffList();
     } catch (err: any) {
-      toast.error(err.response?.data?.message || "فشل إزالة الموظف من المكان.");
+      dispatch(
+        open({
+          state: "faild",
+          title: err.response?.data?.message || "فشل إزالة الموظف من المكان.",
+        }),
+      );
     }
   };
 
@@ -144,14 +158,7 @@ export const PlaceStaffTab: React.FC = () => {
         )}
       </div>
 
-      {staffLoading ? (
-        <div className="py-12 text-center text-gray-500 flex flex-col items-center justify-center gap-2">
-          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-          <span className="text-xs font-medium">
-            جاري تحميل قائمة الموظفين...
-          </span>
-        </div>
-      ) : staffList.length === 0 ? (
+      {staffList.length === 0 ? (
         <div className="text-center py-12 bg-gray-50/70 rounded-2xl border border-dashed border-gray-200">
           <Users className="w-12 h-12 text-gray-300 mx-auto mb-3" />
           <p className="text-sm font-bold text-gray-700">

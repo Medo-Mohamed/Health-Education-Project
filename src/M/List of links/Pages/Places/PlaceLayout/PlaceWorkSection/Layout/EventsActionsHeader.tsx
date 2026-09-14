@@ -1,7 +1,6 @@
 // components/EventsActionsHeader.tsx
-import React from "react";
 import { Calendar, Plus, Target } from "lucide-react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 interface EventsActionsHeaderProps {
   canCreateEvent: boolean;
@@ -11,7 +10,6 @@ interface EventsActionsHeaderProps {
 export const EventsActionsHeader: React.FC<EventsActionsHeaderProps> = ({
   canCreateEvent,
 }) => {
-  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
   return (

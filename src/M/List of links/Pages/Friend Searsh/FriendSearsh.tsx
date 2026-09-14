@@ -6,32 +6,72 @@ import {
   getFollowingUsers,
   searchUserByUsername,
 } from "../../../Redux-Store/UserSearch/UserSearch";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { FaUserCircle } from "react-icons/fa";
 import { close, loading } from "../../../Redux-Store/SuccessFaildState/SFS";
 
 function UserSearchPage({ comesFrom }: { comesFrom: string }) {
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const searchFromUrl = searchParams.get("search") || "";
+  const pageFromUrl = Number(searchParams.get("page")) || 1;
+
+  const [searchTerm, setSearchTerm] = useState(searchFromUrl);
   const UserSearch = useSelector((state: RootState) => state.UserSearch);
   const dispatch = useDispatch<AppDispatch>();
 
-  if (UserSearch.state === "loading") dispatch(loading());
-  else dispatch(close());
+  // ✅ الحل الصحيح: وضع الـ dispatch داخل useEffect
+  useEffect(() => {
+    if (UserSearch.state === "loading") {
+      dispatch(loading());
+    } else {
+      dispatch(close());
+    }
+  }, [UserSearch.state, dispatch]);
+
+  // مزامنة حقل المدخلات إذا تغير الـ URL
+  useEffect(() => {
+    setSearchTerm(searchFromUrl);
+  }, [searchFromUrl]);
+
+  // تنفيذ طلب البحث تلقائياً عند تغيير الـ URL (سواء كلمة البحث أو رقم الصفحة)
+  useEffect(() => {
+    dispatch(clearState());
+    if (comesFrom === "searchUsers") {
+      if (searchFromUrl.trim()) {
+        dispatch(
+          searchUserByUsername({
+            searchTerm: searchFromUrl,
+            page: pageFromUrl,
+          }),
+        );
+      }
+    } else if (comesFrom === "followingUsers") {
+      dispatch(
+        getFollowingUsers({
+          searchTerm: searchFromUrl,
+          page: pageFromUrl,
+        }),
+      );
+    }
+  }, [comesFrom, searchFromUrl, pageFromUrl, dispatch]);
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (comesFrom === "searchUsers")
-      dispatch(searchUserByUsername({ searchTerm }));
-    else if (comesFrom === "followingUsers")
-      dispatch(getFollowingUsers({ searchTerm }));
-    console.log(UserSearch);
+    const newParams = new URLSearchParams(searchParams);
+    if (searchTerm.trim()) {
+      newParams.set("search", searchTerm);
+    } else {
+      newParams.delete("search");
+    }
+    newParams.set("page", "1"); // العودة للصفحة الأولى عند البحث الجديد
+    setSearchParams(newParams);
   };
 
-  useEffect(() => {
-    dispatch(clearState());
-    if (comesFrom === "followingUsers")
-      dispatch(getFollowingUsers({ searchTerm: "" }));
-  }, [comesFrom, dispatch]);
+  const handlePageChange = (newPage: number) => {
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set("page", newPage.toString());
+    setSearchParams(newParams);
+  };
 
   return (
     <div className=" max-w-4xl mx-auto" dir="rtl">
@@ -96,14 +136,7 @@ function UserSearchPage({ comesFrom }: { comesFrom: string }) {
         <div className="flex justify-center items-center gap-4 mt-8">
           <button
             disabled={UserSearch.info.currentPage === 1}
-            onClick={() =>
-              dispatch(
-                searchUserByUsername({
-                  searchTerm,
-                  page: UserSearch.info.currentPage - 1,
-                }),
-              )
-            }
+            onClick={() => handlePageChange(UserSearch.info.currentPage - 1)}
             className="px-4 py-2 rounded-lg disabled:opacity-50"
           >
             السابق
@@ -117,14 +150,7 @@ function UserSearchPage({ comesFrom }: { comesFrom: string }) {
             disabled={
               UserSearch.info.currentPage === UserSearch.info.totalPages
             }
-            onClick={() =>
-              dispatch(
-                searchUserByUsername({
-                  searchTerm,
-                  page: UserSearch.info.currentPage + 1,
-                }),
-              )
-            }
+            onClick={() => handlePageChange(UserSearch.info.currentPage + 1)}
             className="px-4 py-2 rounded-lg disabled:opacity-50"
           >
             التالي

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   Building2,
   Activity,
@@ -13,7 +13,8 @@ import {
   Filter,
 } from "lucide-react";
 import type { IPlace, PlaceType } from "../types";
-import type { RootState } from "../../../../../store";
+import type { AppDispatch, RootState } from "../../../../../store";
+import { loading, open, close } from "../../../../Redux-Store/SuccessFaildState/SFS";
 import AxiosApi from "../../../../../AxiosApi"; // تأكد من مسار AxiosApi لديك
 
 interface PlacesResponse {
@@ -27,33 +28,44 @@ interface PlacesResponse {
 }
 
 export const MyPlacesPage: React.FC = () => {
-  const [places, setPlaces] = useState<IPlace[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  // حالة الفلترة والبحث والترقيم
-  const [searchTerm, setSearchTerm] = useState("");
-  const [scope, setScope] = useState<"direct" | "all">("direct"); // الخيار الافتراضي: المباشرة فقط
-  const [page, setPage] = useState(1);
+  // قراءة القيم الحالية من الـ Query Params مع تعيين قيم افتراضية
+  const searchFromUrl = searchParams.get("search") || "";
+  const scopeFromUrl =
+    (searchParams.get("scope") as "direct" | "all") || "direct";
+  const pageFromUrl = Number(searchParams.get("page")) || 1;
+
+  const [places, setPlaces] = useState<IPlace[]>([]);
+
+  // حالة المدخل المؤقت للبحث
+  const [searchTerm, setSearchTerm] = useState(searchFromUrl);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
 
   // جلب بيانات المستخدم من Redux State
   const User = useSelector((state: RootState) => state.User.data?.user);
   const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
+
+  // مزامنة حالة حقل المدخلات إذا تغير الـ URL من الخارج
+  useEffect(() => {
+    setSearchTerm(searchFromUrl);
+  }, [searchFromUrl]);
 
   // دالة جلب البيانات من السيرفر باستخدام Query Params
   const fetchPlaces = useCallback(async () => {
     if (!User?._id) return;
 
-    setLoading(true);
+    dispatch(loading());
     try {
       const response = await AxiosApi.get<PlacesResponse>(
         "/auth/withlogin/places/my-places",
         {
           params: {
-            search: searchTerm,
-            scope,
-            page,
+            search: searchFromUrl,
+            scope: scopeFromUrl,
+            page: pageFromUrl,
             limit: 9, // عرض 9 أماكن في كل صفحة (شبكة 3x3)
           },
         },
@@ -62,31 +74,63 @@ export const MyPlacesPage: React.FC = () => {
       setPlaces(response.data.places || []);
       setTotalPages(response.data.pagination?.totalPages || 1);
       setTotalCount(response.data.pagination?.total || 0);
+      dispatch(close());
     } catch (error) {
       console.error("خطأ أثناء جلب الأماكن:", error);
-    } finally {
-      setLoading(false);
+      dispatch(
+        open({
+          state: "faild",
+          title: "حدث خطأ أثناء جلب الأماكن.",
+        }),
+      );
     }
-  }, [User?._id, searchTerm, scope, page]);
+  }, [User?._id, searchFromUrl, scopeFromUrl, pageFromUrl, dispatch]);
 
-  // تنفيذ طلب الجلب عند تغيير الفلاتر أو التصفح
+  // تنفيذ طلب الجلب عند تغيير الـ URL Params
   useEffect(() => {
-    const timer = setTimeout(() => {
-      fetchPlaces();
-    }, 300); // Debounce لتخفيف الإرسال أثناء الكتابة في البحث
-
-    return () => clearTimeout(timer);
+    fetchPlaces();
   }, [fetchPlaces]);
 
-  // العودة للصفحة الأولى عند تغيير البحث أو نطاق الصلاحية
+  // تحديث الـ URL عند تغير البحث مع Debounce
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchTerm !== searchFromUrl) {
+        setSearchParams((prev) => {
+          const newParams = new URLSearchParams(prev);
+          if (searchTerm.trim()) {
+            newParams.set("search", searchTerm);
+          } else {
+            newParams.delete("search");
+          }
+          newParams.set("page", "1"); // العودة للصفحة الأولى عند البحث
+          return newParams;
+        });
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm, searchFromUrl, setSearchParams]);
+
+  // العودة للصفحة الأولى عند تغيير نطاق الصلاحية
   const handleScopeChange = (newScope: "direct" | "all") => {
-    setScope(newScope);
-    setPage(1);
+    setSearchParams((prev) => {
+      const newParams = new URLSearchParams(prev);
+      newParams.set("scope", newScope);
+      newParams.set("page", "1");
+      return newParams;
+    });
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
-    setPage(1);
+  };
+
+  const handlePageChange = (newPage: number) => {
+    setSearchParams((prev) => {
+      const newParams = new URLSearchParams(prev);
+      newParams.set("page", newPage.toString());
+      return newParams;
+    });
   };
 
   const getTypeBadge = (type: PlaceType) => {
@@ -161,7 +205,7 @@ export const MyPlacesPage: React.FC = () => {
             <button
               onClick={() => handleScopeChange("direct")}
               className={`px-3 py-1.5 text-xs font-medium rounded-md transition ${
-                scope === "direct"
+                scopeFromUrl === "direct"
                   ? "bg-white text-blue-600 shadow-sm"
                   : "text-gray-600 hover:text-gray-900"
               }`}
@@ -171,7 +215,7 @@ export const MyPlacesPage: React.FC = () => {
             <button
               onClick={() => handleScopeChange("all")}
               className={`px-3 py-1.5 text-xs font-medium rounded-md transition ${
-                scope === "all"
+                scopeFromUrl === "all"
                   ? "bg-white text-blue-600 shadow-sm"
                   : "text-gray-600 hover:text-gray-900"
               }`}
@@ -183,13 +227,9 @@ export const MyPlacesPage: React.FC = () => {
       </div>
 
       {/* 3. عرض البطاقات أو رسائل التحميل/الفراغ */}
-      {loading ? (
-        <div className="p-12 text-center text-gray-500">
-          جاري تحميل الأماكن...
-        </div>
-      ) : places.length === 0 ? (
+      {places.length === 0 ? (
         <div className="bg-gray-50 border border-dashed rounded-xl p-12 text-center text-gray-500">
-          {searchTerm
+          {searchFromUrl
             ? "لا توجد نتائج تطابق بحثك الحالي."
             : "لا توجد أماكن مسندة إليك ضمن هذا النطاق."}
         </div>
@@ -230,23 +270,24 @@ export const MyPlacesPage: React.FC = () => {
           {totalPages > 1 && (
             <div className="mt-8 flex items-center justify-between border-t pt-4 flex-col md:flex-row gap-4 md:gap-0">
               <span className="text-xs text-gray-500">
-                إجمالي الأماكن: {totalCount} | الصفحة {page} من {totalPages}
+                إجمالي الأماكن: {totalCount} | الصفحة {pageFromUrl} من{" "}
+                {totalPages}
               </span>
               <div className="flex items-center gap-2">
                 <button
-                  disabled={page === 1}
-                  onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+                  disabled={pageFromUrl === 1}
+                  onClick={() => handlePageChange(Math.max(pageFromUrl - 1, 1))}
                   className="p-2 rounded-lg border text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition"
                 >
                   <ChevronRight className="w-4 h-4" />
                 </button>
                 <span className="text-sm font-medium px-3 text-gray-700">
-                  {page} / {totalPages}
+                  {pageFromUrl} / {totalPages}
                 </span>
                 <button
-                  disabled={page === totalPages}
+                  disabled={pageFromUrl === totalPages}
                   onClick={() =>
-                    setPage((prev) => Math.min(prev + 1, totalPages))
+                    handlePageChange(Math.min(pageFromUrl + 1, totalPages))
                   }
                   className="p-2 rounded-lg border text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition"
                 >

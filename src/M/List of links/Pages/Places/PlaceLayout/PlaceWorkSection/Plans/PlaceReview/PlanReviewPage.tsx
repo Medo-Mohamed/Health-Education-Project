@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useParams } from "react-router-dom";
-import { FileText, Loader2, PieChart } from "lucide-react";
+import { FileText, PieChart } from "lucide-react";
 import AxiosApi from "../../../../../../../../AxiosApi";
 import {
   type IGroupedSeminar,
@@ -10,7 +10,9 @@ import {
 import DraftManagementTab from "./DraftManagementTab";
 import StatisticalSummaryTab from "./StatisticalSummaryTab";
 import { SeminarModal } from "../EditSeminarModal";
-import toast from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import type { AppDispatch } from "../../../../../../../../store";
+import { loading, open, close } from "../../../../../../../Redux-Store/SuccessFaildState/SFS";
 import { LocationType } from "../../../../types";
 
 export interface ITargetAttendeeBreakdown {
@@ -94,12 +96,12 @@ export interface ITableGroupedStat {
 // ==========================================
 export default function PlanReviewPage() {
   const { id } = useParams<{ id: string }>();
+  const dispatch = useDispatch<AppDispatch>();
 
   const [activeTab, setActiveTab] = useState<"drafts" | "stats">("drafts");
 
   const [plans, setPlans] = useState<IPlacePlan[]>([]);
   const [tablesSummary, setTablesSummary] = useState<ITableSummary[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
   const [savingId, setSavingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [savedSuccessId, setSavedSuccessId] = useState<string | null>(null);
@@ -112,7 +114,7 @@ export default function PlanReviewPage() {
   // 1. جلب كافة المسودات والجداول الخاصة بالمكان
   const fetchData = useCallback(async () => {
     try {
-      setLoading(true);
+      dispatch(loading());
       setError(null);
 
       const response = await AxiosApi.get(
@@ -139,9 +141,9 @@ export default function PlanReviewPage() {
     } catch (err: any) {
       setError(err?.response?.data?.message || "حدث خطأ أثناء جلب البيانات.");
     } finally {
-      setLoading(false);
+      dispatch(close());
     }
-  }, [id]);
+  }, [id, dispatch]);
 
   useEffect(() => {
     if (id) {
@@ -333,7 +335,12 @@ export default function PlanReviewPage() {
           setSavedSuccessId(planId);
           setTimeout(() => setSavedSuccessId(null), 2000);
         }
-        toast.success(response.data.message || "تمت العملية بنجاح");
+        dispatch(
+          open({
+            state: "success",
+            title: response.data.message || "تمت العملية بنجاح",
+          }),
+        );
       } catch (err: any) {
         console.log(err);
         setError(
@@ -344,7 +351,7 @@ export default function PlanReviewPage() {
         setDeletingId(null);
       }
     },
-    [id],
+    [id, dispatch],
   );
   // تعديل handleSaveFromModal لإرسال كلا المسميين لضمان التوافق الكامل
   const handleSaveFromModal = (savedSeminar: IGroupedSeminar) => {
@@ -521,17 +528,6 @@ export default function PlanReviewPage() {
 
     return result;
   }, [availableSchedules, plans, getActualTableName]);
-
-  if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[350px] space-y-3">
-        <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
-        <p className="text-sm font-bold text-slate-500">
-          جاري تحميل المسودات والجداول...
-        </p>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-6" dir="rtl">
