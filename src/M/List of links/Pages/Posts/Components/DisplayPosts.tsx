@@ -4,7 +4,11 @@ import AxiosApi from "../../../../../AxiosApi";
 import { API_BASE_URL } from "../../../../../Constant";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../../../../store";
-import { loading, open, close } from "../../../../Redux-Store/SuccessFaildState/SFS";
+import {
+  loading,
+  open,
+  close,
+} from "../../../../Redux-Store/SuccessFaildState/SFS";
 import { ChevronRight, ChevronLeft } from "lucide-react";
 
 interface IPost {

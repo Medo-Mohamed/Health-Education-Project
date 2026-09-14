@@ -33,6 +33,8 @@ export const PlaceOverview: React.FC = () => {
 
   // console.log("test");
 
+  // console.log("test");
+
   const handleEditPlace = () => {
     navigate(`/listlinks/places/edit/${place._id}`);
   };
