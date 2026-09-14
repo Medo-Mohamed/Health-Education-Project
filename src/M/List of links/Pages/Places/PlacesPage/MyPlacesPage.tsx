@@ -36,18 +36,8 @@ export const MyPlacesPage: React.FC = () => {
     (searchParams.get("scope") as "direct" | "all") || "direct";
   const pageFromUrl = Number(searchParams.get("page")) || 1;
 
-  const [searchParams, setSearchParams] = useSearchParams();
-
-  // قراءة القيم الحالية من الـ Query Params مع تعيين قيم افتراضية
-  const searchFromUrl = searchParams.get("search") || "";
-  const scopeFromUrl =
-    (searchParams.get("scope") as "direct" | "all") || "direct";
-  const pageFromUrl = Number(searchParams.get("page")) || 1;
-
   const [places, setPlaces] = useState<IPlace[]>([]);
 
-  // حالة المدخل المؤقت للبحث
-  const [searchTerm, setSearchTerm] = useState(searchFromUrl);
   // حالة المدخل المؤقت للبحث
   const [searchTerm, setSearchTerm] = useState(searchFromUrl);
   const [totalPages, setTotalPages] = useState(1);
@@ -73,9 +63,6 @@ export const MyPlacesPage: React.FC = () => {
         "/auth/withlogin/places/my-places",
         {
           params: {
-            search: searchFromUrl,
-            scope: scopeFromUrl,
-            page: pageFromUrl,
             search: searchFromUrl,
             scope: scopeFromUrl,
             page: pageFromUrl,
@@ -105,27 +92,8 @@ export const MyPlacesPage: React.FC = () => {
   }, [fetchPlaces]);
 
   // تحديث الـ URL عند تغير البحث مع Debounce
-  // تنفيذ طلب الجلب عند تغيير الـ URL Params
-  useEffect(() => {
-    fetchPlaces();
-  }, [fetchPlaces]);
-
-  // تحديث الـ URL عند تغير البحث مع Debounce
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (searchTerm !== searchFromUrl) {
-        setSearchParams((prev) => {
-          const newParams = new URLSearchParams(prev);
-          if (searchTerm.trim()) {
-            newParams.set("search", searchTerm);
-          } else {
-            newParams.delete("search");
-          }
-          newParams.set("page", "1"); // العودة للصفحة الأولى عند البحث
-          return newParams;
-        });
-      }
-    }, 300);
       if (searchTerm !== searchFromUrl) {
         setSearchParams((prev) => {
           const newParams = new URLSearchParams(prev);
@@ -142,17 +110,9 @@ export const MyPlacesPage: React.FC = () => {
 
     return () => clearTimeout(timer);
   }, [searchTerm, searchFromUrl, setSearchParams]);
-  }, [searchTerm, searchFromUrl, setSearchParams]);
 
   // العودة للصفحة الأولى عند تغيير نطاق الصلاحية
-  // العودة للصفحة الأولى عند تغيير نطاق الصلاحية
   const handleScopeChange = (newScope: "direct" | "all") => {
-    setSearchParams((prev) => {
-      const newParams = new URLSearchParams(prev);
-      newParams.set("scope", newScope);
-      newParams.set("page", "1");
-      return newParams;
-    });
     setSearchParams((prev) => {
       const newParams = new URLSearchParams(prev);
       newParams.set("scope", newScope);
@@ -163,14 +123,6 @@ export const MyPlacesPage: React.FC = () => {
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
-  };
-
-  const handlePageChange = (newPage: number) => {
-    setSearchParams((prev) => {
-      const newParams = new URLSearchParams(prev);
-      newParams.set("page", newPage.toString());
-      return newParams;
-    });
   };
 
   const handlePageChange = (newPage: number) => {
@@ -254,7 +206,6 @@ export const MyPlacesPage: React.FC = () => {
               onClick={() => handleScopeChange("direct")}
               className={`px-3 py-1.5 text-xs font-medium rounded-md transition ${
                 scopeFromUrl === "direct"
-                scopeFromUrl === "direct"
                   ? "bg-white text-blue-600 shadow-sm"
                   : "text-gray-600 hover:text-gray-900"
               }`}
@@ -264,7 +215,6 @@ export const MyPlacesPage: React.FC = () => {
             <button
               onClick={() => handleScopeChange("all")}
               className={`px-3 py-1.5 text-xs font-medium rounded-md transition ${
-                scopeFromUrl === "all"
                 scopeFromUrl === "all"
                   ? "bg-white text-blue-600 shadow-sm"
                   : "text-gray-600 hover:text-gray-900"
@@ -279,7 +229,6 @@ export const MyPlacesPage: React.FC = () => {
       {/* 3. عرض البطاقات أو رسائل التحميل/الفراغ */}
       {places.length === 0 ? (
         <div className="bg-gray-50 border border-dashed rounded-xl p-12 text-center text-gray-500">
-          {searchFromUrl
           {searchFromUrl
             ? "لا توجد نتائج تطابق بحثك الحالي."
             : "لا توجد أماكن مسندة إليك ضمن هذا النطاق."}
@@ -323,13 +272,9 @@ export const MyPlacesPage: React.FC = () => {
               <span className="text-xs text-gray-500">
                 إجمالي الأماكن: {totalCount} | الصفحة {pageFromUrl} من{" "}
                 {totalPages}
-                إجمالي الأماكن: {totalCount} | الصفحة {pageFromUrl} من{" "}
-                {totalPages}
               </span>
               <div className="flex items-center gap-2">
                 <button
-                  disabled={pageFromUrl === 1}
-                  onClick={() => handlePageChange(Math.max(pageFromUrl - 1, 1))}
                   disabled={pageFromUrl === 1}
                   onClick={() => handlePageChange(Math.max(pageFromUrl - 1, 1))}
                   className="p-2 rounded-lg border text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition"
@@ -338,13 +283,10 @@ export const MyPlacesPage: React.FC = () => {
                 </button>
                 <span className="text-sm font-medium px-3 text-gray-700">
                   {pageFromUrl} / {totalPages}
-                  {pageFromUrl} / {totalPages}
                 </span>
                 <button
                   disabled={pageFromUrl === totalPages}
-                  disabled={pageFromUrl === totalPages}
                   onClick={() =>
-                    handlePageChange(Math.min(pageFromUrl + 1, totalPages))
                     handlePageChange(Math.min(pageFromUrl + 1, totalPages))
                   }
                   className="p-2 rounded-lg border text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition"
