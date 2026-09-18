@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { usePlacePermissions } from "../../../../../../Redux-Store/PlacePermissions/usePlacePermissions.ts";
+// import { usePlacePermissions } from "../../../../../../Redux-Store/PlacePermissions/usePlacePermissions.ts";
 import {
   EventsFilterSection,
   type FilterState,
@@ -9,7 +9,7 @@ import {
 import { EventsActionsHeader } from "./EventsActionsHeader.tsx";
 import { EventsAnalyticsSection } from "../Filter/EventsAnalyticsSection.tsx";
 import { EventsListSection } from "../Filter/EventsListSection.tsx";
-import { PlacePermission } from "../../../types.ts";
+// import { PlacePermission } from "../../../types.ts";
 import type { AppDispatch, RootState } from "../../../../../../../store.tsx";
 import {
   fetchFilterData,
@@ -27,9 +27,6 @@ export const PlaceWorkLayout: React.FC = () => {
   );
 
   const todayDate = new Date().toISOString().split("T")[0];
-
-  const { hasPermission } = usePlacePermissions();
-  const canCreateEvent = hasPermission(PlacePermission.CREATE_EVENT);
 
   const [filters, setFilters] = useState<FilterState>({
     selectedPlaces: placeId ? [placeId] : ["MAIN_PLACE"],
@@ -68,7 +65,7 @@ export const PlaceWorkLayout: React.FC = () => {
 
   return (
     <div className="space-y-6 dir-rtl" dir="rtl">
-      <EventsActionsHeader canCreateEvent={canCreateEvent} />
+      <EventsActionsHeader />
 
       <EventsFilterSection
         filters={filters}

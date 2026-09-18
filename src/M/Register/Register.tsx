@@ -4,29 +4,44 @@ import type { AppDispatch, RootState } from "../../store";
 import { useDispatch, useSelector } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
 import { MdDeleteOutline } from "react-icons/md";
+import {
+  FiUser,
+  FiLock,
+  FiMail,
+  FiPhone,
+  FiMapPin,
+  FiPlus,
+  FiUserPlus,
+  FiCheckCircle,
+  FiAlertCircle,
+} from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import AxiosApi from "../../AxiosApi";
 import { fetchUser } from "../Redux-Store/UserControle/UserDisplatSlice";
 import type { AxiosError } from "axios";
+
 const Register = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const UserStates = useSelector((state: RootState) => state.User);
+
   useEffect(() => {
     if (UserStates.status === "idle") {
       navigate("/");
     }
-  }, [UserStates.status, navigate]); // سيعمل فقط عندما تتغير الحالة
+  }, [UserStates.status, navigate]);
+
   const [formData, setFormData] = useState({
     username: "",
     password: "",
     first_name: "",
     last_name: "",
     email: "",
-    phone_numbers: [{ id: uuidv4(), number: "" }], // مصفوفة لتبدأ برقم واحد على الأقل
+    phone_numbers: [{ id: uuidv4(), number: "" }],
     governorate: "",
     city: "",
   });
+
   interface ErrorState {
     username: string;
     password: string;
@@ -46,15 +61,12 @@ const Register = () => {
   });
   const [success, setSuccess] = useState(false);
 
-  // التعامل مع تغيير الحقول العادية
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
-    // console.log(e.target.name, e.target.value);
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // التعامل مع مصفوفة أرقام الهاتف
   const handlePhoneChange = (index: number, value: string) => {
     const updatedPhones = [...formData.phone_numbers];
     updatedPhones[index].number = value;
@@ -67,6 +79,7 @@ const Register = () => {
       phone_numbers: [...formData.phone_numbers, { id: uuidv4(), number: "" }],
     });
   };
+
   const removePhoneField = (id: string) => {
     const updatedPhones = formData.phone_numbers.filter(
       (phone) => phone.id !== id,
@@ -78,14 +91,13 @@ const Register = () => {
     e.preventDefault();
     setError("");
 
-    // تجهيز البيانات لتطابق الـ Schema
     const payload = {
       username: formData.username,
       password: formData.password,
       first_name: formData.first_name,
       last_name: formData.last_name,
-      email: formData.email || undefined, // إرسال undefined إذا كان فارغاً
-      phone_numbers: formData.phone_numbers.map((p) => p.number), // إرسال الأرقام غير الفارغة فقط
+      email: formData.email || undefined,
+      phone_numbers: formData.phone_numbers.map((p) => p.number),
 
       location: {
         governorate: formData.governorate,
@@ -101,7 +113,6 @@ const Register = () => {
       setSuccess(true);
       console.log("User created:", response.data);
       setTimeout(() => {
-        // navigate("/login");
         dispatch(
           fetchUser({
             username: formData.username,
@@ -109,7 +120,7 @@ const Register = () => {
             rememberMe: false,
           }),
         );
-      }, 2000); // الانتقال بعد 2 ثانية للسماح للمستخدم برؤية رسالة النجاح
+      }, 2000);
     } catch (err: unknown) {
       const error = err as AxiosError<Record<string, unknown>>;
       console.log("Error creating user:", error.response?.data);
@@ -142,6 +153,7 @@ const Register = () => {
       }
     }
   };
+
   const formBackground = useSelector((state: RootState) =>
     state.Theme.value === "light"
       ? "form-background-light"
@@ -149,140 +161,199 @@ const Register = () => {
   );
 
   return (
-    <div className="register-container min-h-screen flex flex-col">
-      <div className="relative  w-full element-center  bg-black/30  p-6 pt-18.75 flex-1">
+    <div className="register-container min-h-screen flex flex-col justify-center items-center py-10 px-4 bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
+      <div className="w-full max-w-xl mx-auto mt-[45px]">
         <div
-          className={`${formBackground} p-8 rounded-lg shadow-md w-full max-w-md`}
+          className={`${formBackground} bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 p-6 sm:p-10 rounded-2xl shadow-xl transition-all duration-300`}
         >
-          <h2 className="text-2xl font-bold mb-6 text-center ">
-            إنشاء حساب جديد
-          </h2>
+          {/* Header */}
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 mb-3 shadow-inner">
+              <FiUserPlus className="text-2xl" />
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">
+              إنشاء حساب جديد
+            </h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+              أدخل بياناتك للانضمام إلينا
+            </p>
+          </div>
 
+          {/* Alerts */}
           {typeof error === "string" && error && (
-            <div className="bg-red-100 text-red-600 p-3 rounded mb-4">
-              {error}
-            </div>
-          )}
-          {success && (
-            <div className="bg-green-100 text-green-600 p-3 rounded mb-4">
-              تم التسجيل بنجاح!
+            <div className="flex items-center gap-2 bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800/50 text-red-700 dark:text-red-400 p-4 rounded-xl mb-6 text-sm">
+              <FiAlertCircle className="text-lg shrink-0" />
+              <span>{error}</span>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {/* الاسم الكامل */}
-            <div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium ">
-                    الاسم الاول *
-                  </label>
+          {success && (
+            <div className="flex items-center gap-2 bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800/50 text-emerald-700 dark:text-emerald-400 p-4 rounded-xl mb-6 text-sm">
+              <FiCheckCircle className="text-lg shrink-0" />
+              <span>تم التسجيل بنجاح! جاري تحويلك...</span>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {/* الاسم الأول واسم العائلة */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
+                  الاسم الأول <span className="text-red-500">*</span>
+                </label>
+                <div className="relative">
+                  <span className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400 dark:text-gray-500">
+                    <FiUser />
+                  </span>
                   <input
                     type="text"
                     name="first_name"
                     onChange={handleChange}
                     required
-                    className="mt-1 block w-full border  rounded-md p-2 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="****"
+                    className="w-full pr-10 pl-3 py-2.5 bg-gray-50 dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-500 transition-all outline-none"
                   />
-                  {typeof error === "object" && error.first_name && (
-                    <p className="text-red-500 text-sm">{error.first_name}</p>
-                  )}
                 </div>
-                <div>
-                  <label className="block text-sm font-medium ">
-                    اسم العائلة *
-                  </label>
+                {typeof error === "object" && error.first_name && (
+                  <p className="text-red-500 text-xs mt-1.5">
+                    {error.first_name}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
+                  اسم العائلة <span className="text-red-500">*</span>
+                </label>
+                <div className="relative">
+                  <span className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400 dark:text-gray-500">
+                    <FiUser />
+                  </span>
                   <input
                     type="text"
                     name="last_name"
                     onChange={handleChange}
                     required
-                    className="mt-1 block w-full border  rounded-md p-2 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="****"
+                    className="w-full pr-10 pl-3 py-2.5 bg-gray-50 dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-500 transition-all outline-none"
                   />
-                  {typeof error === "object" && error.last_name && (
-                    <p className="text-red-500 text-sm">{error.last_name}</p>
-                  )}
                 </div>
+                {typeof error === "object" && error.last_name && (
+                  <p className="text-red-500 text-xs mt-1.5">
+                    {error.last_name}
+                  </p>
+                )}
               </div>
             </div>
 
             {/* اسم المستخدم */}
             <div>
-              <label className="block text-sm font-medium ">
-                اسم المستخدم *
+              <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
+                اسم المستخدم <span className="text-red-500">*</span>
               </label>
-              <input
-                type="text"
-                name="username"
-                required
-                onChange={handleChange}
-                className="mt-1 block w-full border  rounded-md p-2 shadow-sm"
-              />
+              <div className="relative">
+                <span className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400 dark:text-gray-500">
+                  <FiUser />
+                </span>
+                <input
+                  type="text"
+                  name="username"
+                  required
+                  onChange={handleChange}
+                  placeholder="username123"
+                  className="w-full pr-10 pl-3 py-2.5 bg-gray-50 dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-500 transition-all outline-none"
+                />
+              </div>
               {typeof error === "object" && error.username && (
-                <p className="text-red-500 text-sm">{error.username}</p>
+                <p className="text-red-500 text-xs mt-1.5">{error.username}</p>
               )}
             </div>
 
             {/* كلمة المرور */}
             <div>
-              <label className="block text-sm font-medium ">
-                كلمة المرور *
+              <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
+                كلمة المرور <span className="text-red-500">*</span>
               </label>
-              <input
-                type="password"
-                name="password"
-                required
-                onChange={handleChange}
-                className="mt-1 block w-full border  rounded-md p-2 shadow-sm"
-              />
+              <div className="relative">
+                <span className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400 dark:text-gray-500">
+                  <FiLock />
+                </span>
+                <input
+                  type="password"
+                  name="password"
+                  required
+                  onChange={handleChange}
+                  placeholder="••••••••"
+                  className="w-full pr-10 pl-3 py-2.5 bg-gray-50 dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-500 transition-all outline-none"
+                />
+              </div>
               {typeof error === "object" && error.password && (
-                <p className="text-red-500 text-sm">{error.password}</p>
+                <p className="text-red-500 text-xs mt-1.5">{error.password}</p>
               )}
             </div>
 
-            {/* البريد الإلكتروني (اختياري) */}
+            {/* البريد الإلكتروني */}
             <div>
-              <label className="block text-sm font-medium ">
-                البريد الإلكتروني (اختياري)
+              <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
+                البريد الإلكتروني{" "}
+                <span className="text-gray-400 font-normal">(اختياري)</span>
               </label>
-              <input
-                type="email"
-                name="email"
-                onChange={handleChange}
-                className="mt-1 block w-full border  rounded-md p-2 shadow-sm"
-              />
+              <div className="relative">
+                <span className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400 dark:text-gray-500">
+                  <FiMail />
+                </span>
+                <input
+                  type="email"
+                  name="email"
+                  onChange={handleChange}
+                  placeholder="example@domain.com"
+                  className="w-full pr-10 pl-3 py-2.5 bg-gray-50 dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-500 transition-all outline-none"
+                />
+              </div>
               {typeof error === "object" && error.email && (
-                <p className="text-red-500 text-sm">{error.email}</p>
+                <p className="text-red-500 text-xs mt-1.5">{error.email}</p>
               )}
             </div>
 
             {/* أرقام الهاتف */}
-            <div>
-              <label className="block text-sm font-medium ">
-                أرقام الهاتف (مطلوب واحد على الأقل)
+            <div className="space-y-2">
+              <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300">
+                أرقام الهاتف <span className="text-red-500">*</span>{" "}
+                <span className="text-gray-400 font-normal">
+                  (مطلوب رقم واحد على الأقل)
+                </span>
               </label>
               {formData.phone_numbers.map((phone, index) => (
-                <div key={phone.id}>
-                  <div className="flex items-center gap-1 ">
-                    <input
-                      type="text"
-                      value={phone.number}
-                      required={index === 0}
-                      placeholder="01xxxxxxxxx"
-                      onChange={(e) => handlePhoneChange(index, e.target.value)}
-                      className="mt-1 block w-full border  rounded-md p-2 shadow-sm mb-2 flex-1"
-                    />
+                <div key={phone.id} className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <div className="relative flex-1">
+                      <span className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400 dark:text-gray-500">
+                        <FiPhone />
+                      </span>
+                      <input
+                        type="text"
+                        value={phone.number}
+                        required={index === 0}
+                        placeholder="01xxxxxxxxx"
+                        onChange={(e) =>
+                          handlePhoneChange(index, e.target.value)
+                        }
+                        className="w-full pr-10 pl-3 py-2.5 bg-gray-50 dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-500 transition-all outline-none"
+                      />
+                    </div>
                     {formData.phone_numbers.length > 1 && (
-                      <div
+                      <button
+                        type="button"
                         onClick={() => removePhoneField(phone.id)}
-                        className="text-red-600 cursor-pointer text-2xl"
+                        className="p-2.5 text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-xl transition-colors duration-200"
+                        title="حذف الرقم"
                       >
-                        <MdDeleteOutline />
-                      </div>
+                        <MdDeleteOutline className="text-xl" />
+                      </button>
                     )}
                   </div>
                   {typeof error === "object" && error.phone_numbers[index] && (
-                    <p className="text-red-500 text-sm pb-1">
+                    <p className="text-red-500 text-xs mt-1">
                       {error.phone_numbers[index]}
                     </p>
                   )}
@@ -291,37 +362,54 @@ const Register = () => {
               <button
                 type="button"
                 onClick={addPhoneField}
-                className="text-blue-600 hover:text-blue-800 transition-colors duration-300 flex items-center gap-1 text-sm w-full justify-center border p-2 rounded-md"
+                className="mt-2 w-full py-2 px-3 border border-dashed border-gray-300 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 text-blue-600 dark:text-blue-400 hover:bg-blue-50/50 dark:hover:bg-blue-950/30 rounded-xl text-xs font-semibold transition-all duration-200 flex items-center justify-center gap-1.5"
               >
-                + إضافة رقم آخر
+                <FiPlus className="text-sm" /> إضافة رقم آخر
               </button>
             </div>
 
             {/* الموقع الجغرافي */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium ">المحافظة</label>
-                <input
-                  type="text"
-                  name="governorate"
-                  onChange={handleChange}
-                  className="mt-1 block w-full border  rounded-md p-2 shadow-sm"
-                />
+                <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
+                  المحافظة
+                </label>
+                <div className="relative">
+                  <span className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400 dark:text-gray-500">
+                    <FiMapPin />
+                  </span>
+                  <input
+                    type="text"
+                    name="governorate"
+                    onChange={handleChange}
+                    placeholder="القاهرة"
+                    className="w-full pr-10 pl-3 py-2.5 bg-gray-50 dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-500 transition-all outline-none"
+                  />
+                </div>
               </div>
               <div>
-                <label className="block text-sm font-medium ">المدينة</label>
-                <input
-                  type="text"
-                  name="city"
-                  onChange={handleChange}
-                  className="mt-1 block w-full border  rounded-md p-2 shadow-sm"
-                />
+                <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
+                  المدينة
+                </label>
+                <div className="relative">
+                  <span className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400 dark:text-gray-500">
+                    <FiMapPin />
+                  </span>
+                  <input
+                    type="text"
+                    name="city"
+                    onChange={handleChange}
+                    placeholder="مدينة نصر"
+                    className="w-full pr-10 pl-3 py-2.5 bg-gray-50 dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-500 transition-all outline-none"
+                  />
+                </div>
               </div>
             </div>
 
+            {/* زر الإرسال */}
             <button
               type="submit"
-              className="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700 transition duration-200"
+              className="w-full mt-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg hover:shadow-blue-500/25 transition-all duration-200 active:scale-[0.99] text-sm flex items-center justify-center gap-2 cursor-pointer"
             >
               تسجيل الحساب
             </button>

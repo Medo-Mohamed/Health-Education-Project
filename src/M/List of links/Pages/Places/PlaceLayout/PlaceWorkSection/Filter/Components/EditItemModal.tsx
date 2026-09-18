@@ -303,46 +303,62 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-3 sm:p-4 overflow-y-auto"
       dir="rtl"
     >
-      <div className="bg-white rounded-2xl shadow-2xl border w-full max-w-2xl p-6 space-y-5 my-8 text-right font-sans relative">
-        <div className="flex justify-between items-center border-b pb-4">
-          <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2">
-            <Calendar className="w-5 h-5 text-blue-600" />
-            تعديل بيانات{" "}
-            {activeTab === "plans" ? "الخطة المقررة" : "الفعالية المنفذة"}
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 w-full max-w-2xl p-4 sm:p-6 space-y-4 sm:space-y-5 my-auto text-right font-sans relative max-h-[90vh] flex flex-col">
+        {/* الهيدر */}
+        <div className="flex justify-between items-center border-b border-gray-100 dark:border-gray-700 pb-3 sm:pb-4 shrink-0">
+          <h3 className="text-base sm:text-lg font-bold text-gray-800 dark:text-gray-100 flex items-center gap-2">
+            <Calendar className="w-5 h-5 text-blue-600 dark:text-blue-400 shrink-0" />
+            <span>
+              تعديل بيانات{" "}
+              {activeTab === "plans" ? "الخطة المقررة" : "الفعالية المنفذة"}
+            </span>
           </h3>
           <button
             onClick={onClose}
             type="button"
-            className="p-1 rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
+            className="p-1.5 rounded-lg text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
+        {/* رسالة الخطأ */}
         {errorMessage && (
-          <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-xs font-semibold">
+          <div className="p-3 bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-900/60 rounded-xl text-red-600 dark:text-red-400 text-xs font-semibold shrink-0">
             ⚠️ {errorMessage}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4 text-xs">
-          <div className="bg-blue-50/50 p-3 rounded-xl border border-blue-100 space-y-3">
+        {/* النموذج - قابل للتمرير داخل المودال */}
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-4 text-xs overflow-y-auto custom-scrollbar pl-1 pr-0.5 flex-1"
+        >
+          {/* قسم جدول الخطة/المواضيع */}
+          <div className="bg-blue-50/50 dark:bg-blue-950/20 p-3 sm:p-4 rounded-xl border border-blue-100 dark:border-blue-900/40 space-y-3">
             {uniqueScheduleNames.length > 0 && (
               <div>
-                <label className="block font-semibold text-gray-700 mb-1 flex items-center gap-1">
-                  <Layers className="w-3.5 h-3.5 text-blue-600" /> اسم الجدول
+                <label className="block font-semibold text-gray-700 dark:text-gray-300 mb-1 flex items-center gap-1">
+                  <Layers className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 shrink-0" />{" "}
+                  اسم الجدول
                 </label>
                 <select
-                  className="w-full border rounded-lg p-2 font-semibold bg-white outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer text-xs"
+                  className="w-full border border-gray-200 dark:border-gray-700 rounded-lg p-2 font-semibold bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer text-xs"
                   value={formData.schedule_name}
                   onChange={handleScheduleChange}
                 >
-                  <option value="">-- اختر اسم الجدول --</option>
+                  <option value="" className="dark:bg-gray-800">
+                    -- اختر اسم الجدول --
+                  </option>
                   {uniqueScheduleNames.map((sName) => (
-                    <option key={sName} value={sName}>
+                    <option
+                      key={sName}
+                      value={sName}
+                      className="dark:bg-gray-800"
+                    >
                       {sName}
                     </option>
                   ))}
@@ -350,22 +366,28 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
               </div>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div>
-                <label className="block font-semibold text-gray-700 mb-1 flex items-center gap-1">
-                  <BookOpen className="w-3.5 h-3.5 text-indigo-600" /> الموضوع
-                  الرئيسي
+                <label className="block font-semibold text-gray-700 dark:text-gray-300 mb-1 flex items-center gap-1">
+                  <BookOpen className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400 shrink-0" />{" "}
+                  الموضوع الرئيسي
                 </label>
                 {availableMainTopics.length > 0 ? (
                   <select
                     required
-                    className="w-full border rounded-lg p-2 font-semibold bg-white outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer text-xs"
+                    className="w-full border border-gray-200 dark:border-gray-700 rounded-lg p-2 font-semibold bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer text-xs"
                     value={formData.main_topic}
                     onChange={handleMainTopicChange}
                   >
-                    <option value="">-- اختر الموضوع الرئيسي --</option>
+                    <option value="" className="dark:bg-gray-800">
+                      -- اختر الموضوع الرئيسي --
+                    </option>
                     {availableMainTopics.map((mTopic) => (
-                      <option key={mTopic} value={mTopic}>
+                      <option
+                        key={mTopic}
+                        value={mTopic}
+                        className="dark:bg-gray-800"
+                      >
                         {mTopic}
                       </option>
                     ))}
@@ -374,7 +396,7 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
                   <input
                     type="text"
                     required
-                    className="w-full border rounded-lg p-2 font-semibold bg-white outline-none focus:ring-2 focus:ring-blue-500 text-xs"
+                    className="w-full border border-gray-200 dark:border-gray-700 rounded-lg p-2 font-semibold bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 outline-none focus:ring-2 focus:ring-blue-500 text-xs"
                     value={formData.main_topic}
                     onChange={(e) =>
                       setFormData({ ...formData, main_topic: e.target.value })
@@ -384,21 +406,27 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
               </div>
 
               <div>
-                <label className="block font-semibold text-gray-700 mb-1">
+                <label className="block font-semibold text-gray-700 dark:text-gray-300 mb-1">
                   الموضوع الفرعي
                 </label>
                 {availableSubTopics.length > 0 ? (
                   <select
                     required
-                    className="w-full border rounded-lg p-2 bg-white outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer text-xs"
+                    className="w-full border border-gray-200 dark:border-gray-700 rounded-lg p-2 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer text-xs"
                     value={formData.sub_topic}
                     onChange={(e) =>
                       setFormData({ ...formData, sub_topic: e.target.value })
                     }
                   >
-                    <option value="">-- اختر الموضوع الفرعي --</option>
+                    <option value="" className="dark:bg-gray-800">
+                      -- اختر الموضوع الفرعي --
+                    </option>
                     {availableSubTopics.map((sTopic) => (
-                      <option key={sTopic} value={sTopic}>
+                      <option
+                        key={sTopic}
+                        value={sTopic}
+                        className="dark:bg-gray-800"
+                      >
                         {sTopic}
                       </option>
                     ))}
@@ -407,7 +435,7 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
                   <input
                     type="text"
                     required
-                    className="w-full border rounded-lg p-2 bg-white outline-none focus:ring-2 focus:ring-blue-500 text-xs"
+                    className="w-full border border-gray-200 dark:border-gray-700 rounded-lg p-2 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 outline-none focus:ring-2 focus:ring-blue-500 text-xs"
                     value={formData.sub_topic}
                     onChange={(e) =>
                       setFormData({ ...formData, sub_topic: e.target.value })
@@ -418,11 +446,12 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
             </div>
           </div>
 
+          {/* القائم بالفعالية */}
           {activeTab === "events" && (
-            <div className="bg-amber-50/60 p-3 rounded-xl border border-amber-200 space-y-2">
-              <label className="block font-bold text-amber-900 mb-1 flex items-center gap-1">
-                <UserCheck className="w-4 h-4 text-amber-600" /> القائم بالندوة
-                / الفعالية
+            <div className="bg-amber-50/60 dark:bg-amber-950/20 p-3 sm:p-4 rounded-xl border border-amber-200 dark:border-amber-900/40 space-y-2">
+              <label className="block font-bold text-amber-900 dark:text-amber-300 mb-1 flex items-center gap-1">
+                <UserCheck className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />{" "}
+                القائم بالندوة / الفعالية
               </label>
 
               {canCreateForOthers ? (
@@ -430,10 +459,10 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
                   <button
                     type="button"
                     onClick={() => setIsInstructorDropdownOpen((prev) => !prev)}
-                    className="w-full flex items-center justify-between gap-3 bg-white p-2 rounded-lg border border-amber-300 hover:border-amber-400 focus:ring-2 focus:ring-amber-500 transition-all text-right"
+                    className="w-full flex items-center justify-between gap-3 bg-white dark:bg-gray-800 p-2 rounded-lg border border-amber-300 dark:border-amber-700 hover:border-amber-400 dark:hover:border-amber-600 focus:ring-2 focus:ring-amber-500 transition-all text-right"
                   >
                     <div className="flex items-center gap-3 overflow-hidden">
-                      <div className="w-8 h-8 rounded-full overflow-hidden bg-amber-100 flex-shrink-0 border border-amber-300 flex items-center justify-center">
+                      <div className="w-8 h-8 rounded-full overflow-hidden bg-amber-100 dark:bg-amber-950 flex-shrink-0 border border-amber-300 dark:border-amber-700 flex items-center justify-center">
                         {formData.executor_avatar ? (
                           <img
                             src={formData.executor_avatar}
@@ -441,20 +470,22 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
                             className="w-full h-full object-cover"
                           />
                         ) : (
-                          <UserCheck className="w-4 h-4 text-amber-600" />
+                          <UserCheck className="w-4 h-4 text-amber-600 dark:text-amber-400" />
                         )}
                       </div>
-                      <span className="font-semibold text-xs text-gray-800 truncate">
+                      <span className="font-semibold text-xs text-gray-800 dark:text-gray-200 truncate">
                         {formData.executor_name || "-- اختر القائم بالندوة --"}
                       </span>
                     </div>
                     <ChevronDown
-                      className={`w-4 h-4 text-gray-500 transition-transform ${isInstructorDropdownOpen ? "rotate-180" : ""}`}
+                      className={`w-4 h-4 text-gray-500 dark:text-gray-400 shrink-0 transition-transform ${
+                        isInstructorDropdownOpen ? "rotate-180" : ""
+                      }`}
                     />
                   </button>
 
                   {isInstructorDropdownOpen && (
-                    <div className="absolute right-0 left-0 mt-1 bg-white border border-amber-200 rounded-xl shadow-xl z-20 max-h-56 overflow-y-auto divide-y divide-gray-100">
+                    <div className="absolute right-0 left-0 mt-1 bg-white dark:bg-gray-800 border border-amber-200 dark:border-gray-700 rounded-xl shadow-xl z-20 max-h-56 overflow-y-auto divide-y divide-gray-100 dark:divide-gray-700">
                       {isCurrentInstructorNotInList && (
                         <button
                           type="button"
@@ -466,9 +497,9 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
                               formData.executor_avatar,
                             )
                           }
-                          className="w-full flex items-center gap-3 p-2.5 hover:bg-amber-50 transition-colors text-right"
+                          className="w-full flex items-center gap-3 p-2.5 hover:bg-amber-50 dark:hover:bg-amber-950/40 transition-colors text-right"
                         >
-                          <div className="w-8 h-8 rounded-full overflow-hidden bg-amber-100 flex-shrink-0 border border-amber-300 flex items-center justify-center">
+                          <div className="w-8 h-8 rounded-full overflow-hidden bg-amber-100 dark:bg-amber-900 flex-shrink-0 border border-amber-300 dark:border-amber-700 flex items-center justify-center">
                             {formData.executor_avatar ? (
                               <img
                                 src={formData.executor_avatar}
@@ -476,14 +507,14 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
                                 className="w-full h-full object-cover"
                               />
                             ) : (
-                              <UserCheck className="w-4 h-4 text-amber-600" />
+                              <UserCheck className="w-4 h-4 text-amber-600 dark:text-amber-400" />
                             )}
                           </div>
                           <div>
-                            <div className="font-semibold text-xs text-gray-800">
+                            <div className="font-semibold text-xs text-gray-800 dark:text-gray-200">
                               {formData.executor_name}
                             </div>
-                            <span className="text-[10px] text-amber-600 font-medium">
+                            <span className="text-[10px] text-amber-600 dark:text-amber-400 font-medium">
                               (المُسجل حالياً)
                             </span>
                           </div>
@@ -504,13 +535,13 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
                                 ins.avatar_url,
                               )
                             }
-                            className={`w-full flex items-center gap-3 p-2.5 hover:bg-amber-50 transition-colors text-right ${
+                            className={`w-full flex items-center gap-3 p-2.5 hover:bg-amber-50 dark:hover:bg-amber-950/40 transition-colors text-right ${
                               formData.executor_name === fullName
-                                ? "bg-amber-50/80 font-bold"
+                                ? "bg-amber-50/80 dark:bg-amber-950/60 font-bold"
                                 : ""
                             }`}
                           >
-                            <div className="w-8 h-8 rounded-full overflow-hidden bg-amber-100 flex-shrink-0 border border-amber-300 flex items-center justify-center">
+                            <div className="w-8 h-8 rounded-full overflow-hidden bg-amber-100 dark:bg-amber-900 flex-shrink-0 border border-amber-300 dark:border-amber-700 flex items-center justify-center">
                               {ins.avatar_url ? (
                                 <img
                                   src={ins.avatar_url}
@@ -518,15 +549,15 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
                                   className="w-full h-full object-cover"
                                 />
                               ) : (
-                                <UserCheck className="w-4 h-4 text-amber-600" />
+                                <UserCheck className="w-4 h-4 text-amber-600 dark:text-amber-400" />
                               )}
                             </div>
                             <div className="overflow-hidden">
-                              <div className="font-semibold text-xs text-gray-800 truncate">
+                              <div className="font-semibold text-xs text-gray-800 dark:text-gray-200 truncate">
                                 {fullName}
                               </div>
                               {ins.email && (
-                                <div className="text-[10px] text-gray-500 truncate">
+                                <div className="text-[10px] text-gray-500 dark:text-gray-400 truncate">
                                   {ins.email}
                                 </div>
                               )}
@@ -538,8 +569,8 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
                   )}
                 </div>
               ) : (
-                <div className="flex items-center gap-3 bg-white p-2 rounded-lg border border-amber-200">
-                  <div className="w-8 h-8 rounded-full overflow-hidden bg-amber-100 flex-shrink-0 border border-amber-300 flex items-center justify-center">
+                <div className="flex items-center gap-3 bg-white dark:bg-gray-800 p-2 rounded-lg border border-amber-200 dark:border-amber-800/60">
+                  <div className="w-8 h-8 rounded-full overflow-hidden bg-amber-100 dark:bg-amber-900 flex-shrink-0 border border-amber-300 dark:border-amber-700 flex items-center justify-center">
                     {formData.executor_avatar ? (
                       <img
                         src={formData.executor_avatar}
@@ -547,13 +578,13 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <UserCheck className="w-4 h-4 text-amber-600" />
+                      <UserCheck className="w-4 h-4 text-amber-600 dark:text-amber-400" />
                     )}
                   </div>
                   <input
                     type="text"
                     readOnly
-                    className="w-full bg-transparent font-semibold text-xs text-gray-700 outline-none cursor-not-allowed"
+                    className="w-full bg-transparent font-semibold text-xs text-gray-700 dark:text-gray-300 outline-none cursor-not-allowed"
                     value={formData.executor_name || "غير محدد"}
                   />
                 </div>
@@ -561,15 +592,17 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
             </div>
           )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* التاريخ والعدد */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div>
-              <label className="block font-semibold text-gray-700 mb-1 flex items-center gap-1">
-                <Calendar className="w-3.5 h-3.5 text-blue-600" /> التاريخ
+              <label className="block font-semibold text-gray-700 dark:text-gray-300 mb-1 flex items-center gap-1">
+                <Calendar className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 shrink-0" />{" "}
+                التاريخ
               </label>
               <input
                 type="date"
                 required
-                className="w-full border rounded-lg p-2 font-mono outline-none focus:ring-2 focus:ring-blue-500 text-xs"
+                className="w-full border border-gray-200 dark:border-gray-700 rounded-lg p-2 font-mono bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 outline-none focus:ring-2 focus:ring-blue-500 text-xs"
                 value={formData.date}
                 onChange={(e) =>
                   setFormData({ ...formData, date: e.target.value })
@@ -578,14 +611,14 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
             </div>
 
             <div>
-              <label className="block font-semibold text-gray-700 mb-1">
+              <label className="block font-semibold text-gray-700 dark:text-gray-300 mb-1">
                 عدد الأنشطة / الفعاليات
               </label>
               <input
                 type="number"
                 min="1"
                 required
-                className="w-full border rounded-lg p-2 font-bold text-indigo-700 outline-none focus:ring-2 focus:ring-blue-500 text-xs"
+                className="w-full border border-gray-200 dark:border-gray-700 rounded-lg p-2 font-bold text-indigo-700 dark:text-indigo-400 bg-white dark:bg-gray-800 outline-none focus:ring-2 focus:ring-blue-500 text-xs"
                 value={formData.count}
                 onChange={(e) =>
                   setFormData({
@@ -597,15 +630,16 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
             </div>
           </div>
 
-          <div className="border-t pt-3 space-y-3">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* نوع المكان والموقع الخارجي */}
+          <div className="border-t border-gray-100 dark:border-gray-700 pt-3 space-y-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div>
-                <label className="block font-semibold text-gray-700 mb-1 flex items-center gap-1">
-                  <MapPin className="w-3.5 h-3.5 text-emerald-600" /> نوع / مكان
-                  الفعالية
+                <label className="block font-semibold text-gray-700 dark:text-gray-300 mb-1 flex items-center gap-1">
+                  <MapPin className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />{" "}
+                  نوع / مكان الفعالية
                 </label>
                 <select
-                  className="w-full border rounded-lg p-2 outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer font-medium bg-white text-xs"
+                  className="w-full border border-gray-200 dark:border-gray-700 rounded-lg p-2 outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer font-medium bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 text-xs"
                   value={formData.location_type}
                   onChange={(e) =>
                     setFormData({
@@ -616,17 +650,46 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
                 >
                   {locationTypeLabels ? (
                     Object.entries(locationTypeLabels).map(([key, label]) => (
-                      <option key={key} value={key}>
+                      <option
+                        key={key}
+                        value={key}
+                        className="dark:bg-gray-800"
+                      >
                         {label}
                       </option>
                     ))
                   ) : (
                     <>
-                      <option value="internal_seminar">ندوة داخلية</option>
-                      <option value="external_seminar">ندوة خارجية</option>
-                      <option value="general_consultation">مشورة عامة</option>
-                      <option value="public_meeting">لقاء جماهيري</option>
-                      <option value="convoy_seminars">ندوات قوافل</option>
+                      <option
+                        value="internal_seminar"
+                        className="dark:bg-gray-800"
+                      >
+                        ندوة داخلية
+                      </option>
+                      <option
+                        value="external_seminar"
+                        className="dark:bg-gray-800"
+                      >
+                        ندوة خارجية
+                      </option>
+                      <option
+                        value="general_consultation"
+                        className="dark:bg-gray-800"
+                      >
+                        مشورة عامة
+                      </option>
+                      <option
+                        value="public_meeting"
+                        className="dark:bg-gray-800"
+                      >
+                        لقاء جماهيري
+                      </option>
+                      <option
+                        value="convoy_seminars"
+                        className="dark:bg-gray-800"
+                      >
+                        ندوات قوافل
+                      </option>
                     </>
                   )}
                 </select>
@@ -638,14 +701,14 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
                 "public_meeting",
               ].includes(formData.location_type) && (
                 <div>
-                  <label className="block font-semibold text-gray-700 mb-1">
+                  <label className="block font-semibold text-gray-700 dark:text-gray-300 mb-1">
                     اسم أو عنوان المكان الخارجي
                   </label>
                   <input
                     type="text"
                     required
                     placeholder="مثال: قاعة المؤتمرات - مركز الشباب..."
-                    className="w-full border rounded-lg p-2 outline-none focus:ring-2 focus:ring-blue-500 text-xs"
+                    className="w-full border border-gray-200 dark:border-gray-700 rounded-lg p-2 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 outline-none focus:ring-2 focus:ring-blue-500 text-xs placeholder:text-gray-400 dark:placeholder:text-gray-500"
                     value={formData.external_location_name}
                     onChange={(e) =>
                       setFormData({
@@ -659,21 +722,22 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
             </div>
           </div>
 
-          <div className="bg-purple-50/50 p-3 rounded-xl border border-purple-100 space-y-2">
-            <label className="block font-bold text-purple-900 flex items-center gap-1">
-              <Radio className="w-4 h-4 text-purple-600" /> الأنشطة والوسائل
-              الإعلامية المرافقة:
+          {/* الوسائل الإعلامية */}
+          <div className="bg-purple-50/50 dark:bg-purple-950/20 p-3 sm:p-4 rounded-xl border border-purple-100 dark:border-purple-900/40 space-y-2">
+            <label className="block font-bold text-purple-900 dark:text-purple-300 flex items-center gap-1">
+              <Radio className="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0" />{" "}
+              الأنشطة والوسائل الإعلامية المرافقة:
             </label>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-[11px] font-semibold text-gray-600 mb-1 flex items-center gap-1">
-                  <Tv className="w-3 h-3 text-purple-600" /> عدد استخدام الوسائل
-                  الإعلامية
+                <label className="block text-[11px] font-semibold text-gray-600 dark:text-gray-400 mb-1 flex items-center gap-1">
+                  <Tv className="w-3 h-3 text-purple-600 dark:text-purple-400 shrink-0" />{" "}
+                  عدد استخدام الوسائل الإعلامية
                 </label>
                 <input
                   type="number"
                   min="0"
-                  className="w-full border rounded-lg p-1.5 font-bold bg-white text-xs"
+                  className="w-full border border-gray-200 dark:border-gray-700 rounded-lg p-1.5 font-bold bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 text-xs"
                   value={formData.media_outlets_count}
                   onChange={(e) =>
                     setFormData({
@@ -687,14 +751,14 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
                 />
               </div>
               <div>
-                <label className="block text-[11px] font-semibold text-gray-600 mb-1 flex items-center gap-1">
-                  <Radio className="w-3 h-3 text-purple-600" /> عدد الأنشطة
-                  الإعلامية الرقمية
+                <label className="block text-[11px] font-semibold text-gray-600 dark:text-gray-400 mb-1 flex items-center gap-1">
+                  <Radio className="w-3 h-3 text-purple-600 dark:text-purple-400 shrink-0" />{" "}
+                  عدد الأنشطة الإعلامية الرقمية
                 </label>
                 <input
                   type="number"
                   min="0"
-                  className="w-full border rounded-lg p-1.5 font-bold bg-white text-xs"
+                  className="w-full border border-gray-200 dark:border-gray-700 rounded-lg p-1.5 font-bold bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 text-xs"
                   value={formData.digital_media_activities_count}
                   onChange={(e) =>
                     setFormData({
@@ -710,19 +774,21 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
             </div>
           </div>
 
-          <div className="bg-gray-50 p-3 rounded-xl border border-gray-200 space-y-2">
-            <label className="block font-bold text-gray-700 flex items-center gap-1">
-              <Users className="w-4 h-4 text-indigo-600" /> أعداد الحضور
+          {/* أعداد الحضور */}
+          <div className="bg-gray-50 dark:bg-gray-700/40 p-3 sm:p-4 rounded-xl border border-gray-200 dark:border-gray-700 space-y-2">
+            <label className="block font-bold text-gray-700 dark:text-gray-300 flex items-center gap-1">
+              <Users className="w-4 h-4 text-indigo-600 dark:text-indigo-400 shrink-0" />{" "}
+              أعداد الحضور
             </label>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-3 gap-2 sm:gap-3">
               <div>
-                <label className="block text-[11px] font-semibold text-gray-600 mb-1">
+                <label className="block text-[11px] font-semibold text-gray-600 dark:text-gray-400 mb-1 truncate">
                   👨 ذكور
                 </label>
                 <input
                   type="number"
                   min="0"
-                  className="w-full border rounded-lg p-1.5 font-bold bg-white text-xs"
+                  className="w-full border border-gray-200 dark:border-gray-700 rounded-lg p-1.5 font-bold bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 text-xs"
                   value={formData.attendees.males}
                   onChange={(e) =>
                     handleAttendeeChange("males", parseInt(e.target.value))
@@ -731,13 +797,13 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-gray-600 mb-1">
+                <label className="block text-[11px] font-semibold text-gray-600 dark:text-gray-400 mb-1 truncate">
                   👩 إناث
                 </label>
                 <input
                   type="number"
                   min="0"
-                  className="w-full border rounded-lg p-1.5 font-bold bg-white text-xs"
+                  className="w-full border border-gray-200 dark:border-gray-700 rounded-lg p-1.5 font-bold bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 text-xs"
                   value={formData.attendees.females}
                   onChange={(e) =>
                     handleAttendeeChange("females", parseInt(e.target.value))
@@ -746,13 +812,13 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-gray-600 mb-1">
+                <label className="block text-[11px] font-semibold text-gray-600 dark:text-gray-400 mb-1 truncate">
                   👶 أطفال
                 </label>
                 <input
                   type="number"
                   min="0"
-                  className="w-full border rounded-lg p-1.5 font-bold bg-white text-xs"
+                  className="w-full border border-gray-200 dark:border-gray-700 rounded-lg p-1.5 font-bold bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 text-xs"
                   value={formData.attendees.children}
                   onChange={(e) =>
                     handleAttendeeChange("children", parseInt(e.target.value))
@@ -762,17 +828,18 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
             </div>
           </div>
 
-          <div className="flex justify-end gap-2 border-t pt-4">
+          {/* أزرار الإجراءات */}
+          <div className="flex justify-end gap-2 border-t border-gray-100 dark:border-gray-700 pt-4 shrink-0">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-semibold hover:bg-gray-200 transition-colors"
+              className="px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-xl font-semibold transition-colors cursor-pointer"
             >
               إلغاء
             </button>
             <button
               type="submit"
-              className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold shadow flex items-center gap-1.5 transition-colors"
+              className="px-5 py-2 bg-blue-600 dark:bg-blue-500 hover:bg-blue-700 dark:hover:bg-blue-600 text-white rounded-xl font-bold shadow-sm flex items-center gap-1.5 transition-colors cursor-pointer"
             >
               <Save className="w-4 h-4" />
               حفظ التعديلات

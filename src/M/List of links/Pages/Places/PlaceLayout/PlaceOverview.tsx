@@ -29,7 +29,7 @@ export const PlaceOverview: React.FC = () => {
   const { place, subPlaces, hasPermission } =
     useOutletContext<PlaceContextType>();
   const navigate = useNavigate();
-  const dispatch = useDispatch<AppDispatch>();
+  // const dispatch = useDispatch<AppDispatch>();
 
   // console.log("test");
 
@@ -39,24 +39,24 @@ export const PlaceOverview: React.FC = () => {
     navigate(`/listlinks/places/edit/${place._id}`);
   };
 
-  const handleDeletePlace = async () => {
-    if (!window.confirm(`هل أنت تأكد من إزالة وحذف المكان "${place.name}"؟`))
-      return;
+  // const handleDeletePlace = async () => {
+  //   if (!window.confirm(`هل أنت تأكد من إزالة وحذف المكان "${place.name}"؟`))
+  //     return;
 
-    try {
-      dispatch(loading());
-      await AxiosApi.delete(`/auth/withlogin/places/${place._id}`);
-      dispatch(open({ state: "success", title: "تم حذف المكان بنجاح" }));
-      navigate("/listlinks/places");
-    } catch (err: any) {
-      dispatch(
-        open({
-          state: "faild",
-          title: err.response?.data?.message || "فشل حذف المكان.",
-        }),
-      );
-    }
-  };
+  //   try {
+  //     dispatch(loading());
+  //     await AxiosApi.delete(`/auth/withlogin/places/${place._id}`);
+  //     dispatch(open({ state: "success", title: "تم حذف المكان بنجاح" }));
+  //     navigate("/listlinks/places");
+  //   } catch (err: any) {
+  //     dispatch(
+  //       open({
+  //         state: "faild",
+  //         title: err.response?.data?.message || "فشل حذف المكان.",
+  //       }),
+  //     );
+  //   }
+  // };
 
   const getPlaceTypeLabel = (type: string) => {
     switch (type) {
@@ -128,13 +128,13 @@ export const PlaceOverview: React.FC = () => {
             {hasPermission(PlacePermission.EDIT_PLACE_INFO) && (
               <button
                 onClick={handleEditPlace}
-                className="flex items-center gap-1.5 px-3.5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-bold rounded-lg border transition"
+                className="flex cursor-pointer items-center gap-1.5 px-3.5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-bold rounded-lg border transition"
               >
                 <Edit className="w-4 h-4 text-gray-600" />
                 <span>تعديل المكان</span>
               </button>
             )}
-            {hasPermission(PlacePermission.DELETE_PLACE) && (
+            {/* {hasPermission(PlacePermission.DELETE_PLACE) && (
               <button
                 onClick={handleDeletePlace}
                 className="flex items-center gap-1.5 px-3.5 py-2 bg-red-50 hover:bg-red-100 text-red-700 text-xs font-bold rounded-lg border border-red-200 transition"
@@ -142,7 +142,7 @@ export const PlaceOverview: React.FC = () => {
                 <Trash2 className="w-4 h-4 text-red-600" />
                 <span>حذف المكان</span>
               </button>
-            )}
+            )} */}
           </div>
         </div>
       </div>

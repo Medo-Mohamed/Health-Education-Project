@@ -18,7 +18,7 @@ function Footer() {
         <div>
           <h3 className="text-xl font-bold mb-4">روابط سريعة</h3>
           <ul className="space-y-2">
-            <li>
+            {/* <li>
               <a href="#" className="hover:text-blue-400">
                 الخصوصية
               </a>
@@ -27,7 +27,7 @@ function Footer() {
               <a href="#" className="hover:text-blue-400">
                 اتصل بنا
               </a>
-            </li>
+            </li> */}
           </ul>
         </div>
 

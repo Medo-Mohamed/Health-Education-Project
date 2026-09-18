@@ -133,7 +133,7 @@ function UserSearchPage({ comesFrom }: { comesFrom: string }) {
 
       {/* أزرار التنقل (Pagination) */}
       {UserSearch.info.totalPages > 1 && (
-        <div className="flex justify-center items-center gap-4 mt-8">
+        <div className="flex flex-wrap justify-center items-center gap-2 sm:gap-4 mt-8">
           <button
             disabled={UserSearch.info.currentPage === 1}
             onClick={() => handlePageChange(UserSearch.info.currentPage - 1)}

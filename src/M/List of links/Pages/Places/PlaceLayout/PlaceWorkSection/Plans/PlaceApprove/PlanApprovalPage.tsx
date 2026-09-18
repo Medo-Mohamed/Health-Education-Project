@@ -12,10 +12,15 @@ import {
   Loader2,
   CheckCircle2,
   PlusCircle,
+  MapPin,
 } from "lucide-react";
 import { useDispatch } from "react-redux";
 import type { AppDispatch } from "../../../../../../../../store";
-import { loading, open, close } from "../../../../../../../Redux-Store/SuccessFaildState/SFS";
+import {
+  loading,
+  open,
+  close,
+} from "../../../../../../../Redux-Store/SuccessFaildState/SFS";
 import { ApprovedStatisticalSummaryTab } from "./ApprovedStatisticalSummaryTab";
 import type { IGroupedSeminar } from "../PlaceCreate/CreatePlacePlanContainer";
 import { SeminarModal, type IServerAvailableTopic } from "../EditSeminarModal";
@@ -319,40 +324,55 @@ export const PlanApprovalPage: React.FC = () => {
 
   const renderLocationBadge = (plan: IPlacePlanItem) => {
     switch (plan.location_type) {
-      case LocationType.INTERNAL_SEMINAR:
-        return (
-          <span className="px-2 py-1 bg-blue-50 text-blue-700 border border-blue-200 rounded-lg text-[11px] font-semibold inline-block">
-            ندوة داخلية
-          </span>
-        );
       case LocationType.EXTERNAL_SEMINAR:
         return (
-          <span className="px-2 py-1 bg-amber-50 text-amber-700 border border-amber-200 rounded-lg text-[11px] font-semibold inline-block">
-            ندوة خارجية ({plan.external_location_name || "مكان خارجي"})
+          <span
+            className="inline-flex items-center gap-1 text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/50 px-2 py-0.5 rounded-md font-bold"
+            title="ندوة خارجية"
+          >
+            <MapPin className="w-3 h-3 shrink-0 text-amber-600 dark:text-amber-400" />
+            {plan.external_location_name || "ندوة خارجية"}
           </span>
         );
       case LocationType.GENERAL_CONSULTATION:
         return (
-          <span className="px-2 py-1 bg-purple-50 text-purple-700 border border-purple-200 rounded-lg text-[11px] font-semibold inline-block">
+          <span
+            className="inline-flex items-center gap-1 text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-950/50 px-2 py-0.5 rounded-md font-bold"
+            title="مشورة عامة"
+          >
+            <MapPin className="w-3 h-3 shrink-0 text-purple-600 dark:text-purple-400" />
             مشورة عامة
           </span>
         );
       case LocationType.PUBLIC_MEETING:
         return (
-          <span className="px-2 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-lg text-[11px] font-semibold inline-block">
-            لقاء جماهيري ({plan.external_location_name || "لقاء جماهيري"})
+          <span
+            className="inline-flex items-center gap-1 text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/50 px-2 py-0.5 rounded-md font-bold"
+            title="لقاء جماهيري"
+          >
+            <MapPin className="w-3 h-3 shrink-0 text-blue-600 dark:text-blue-400" />
+            {plan.external_location_name || "لقاء جماهيري"}
           </span>
         );
       case LocationType.CONVOY_SEMINARS:
         return (
-          <span className="px-2 py-1 bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-lg text-[11px] font-semibold inline-block">
-            ندوات قوافل ({plan.external_location_name || "ندوات قوافل"})
+          <span
+            className="inline-flex items-center gap-1 text-teal-700 dark:text-teal-300 bg-teal-50 dark:bg-teal-950/50 px-2 py-0.5 rounded-md font-bold"
+            title="ندوات القوافل"
+          >
+            <MapPin className="w-3 h-3 shrink-0 text-teal-600 dark:text-teal-400" />
+            {plan.external_location_name || "ندوات القوافل"}
           </span>
         );
+      case LocationType.INTERNAL_SEMINAR:
       default:
         return (
-          <span className="px-2 py-1 bg-slate-50 text-slate-700 border border-slate-200 rounded-lg text-[11px] font-semibold inline-block">
-            {plan.location_type}
+          <span
+            className="inline-flex items-center gap-1 text-zinc-700 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded-md font-bold"
+            title="ندوة داخلية"
+          >
+            <MapPin className="w-3 h-3 shrink-0 text-zinc-600 dark:text-zinc-400" />
+            ندوة داخلية
           </span>
         );
     }
@@ -501,8 +521,7 @@ export const PlanApprovalPage: React.FC = () => {
           open({
             state: "faild",
             title:
-              err.response?.data?.message ||
-              "حدث خطأ أثناء اعتماد خطط الموظف",
+              err.response?.data?.message || "حدث خطأ أثناء اعتماد خطط الموظف",
           }),
         );
       }
@@ -523,14 +542,14 @@ export const PlanApprovalPage: React.FC = () => {
   */
 
   return (
-    <div className="p-6 bg-slate-50 min-h-screen dir-rtl font-sans text-slate-800">
+    <div className=" bg-slate-50 dark:bg-slate-950 min-h-screen dir-rtl font-sans text-slate-800 dark:text-slate-200">
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
         <div>
-          <h1 className="text-3xl font-black text-slate-900">
+          <h1 className="text-3xl font-black text-slate-900 dark:text-white">
             اعتماد ومراجعة الخطط التشغيلية
           </h1>
-          <p className="text-slate-500 text-xs mt-1">
+          <p className="text-slate-500 dark:text-slate-400 text-xs mt-1">
             إدارة، مراجعة، واعتماد الخطط المقدمة من الموظفين
           </p>
         </div>
@@ -539,37 +558,37 @@ export const PlanApprovalPage: React.FC = () => {
           <div className="flex items-center gap-2">
             <button
               onClick={() => handleAddNewPlan()}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl font-bold shadow-sm transition-all text-xs flex items-center gap-2 cursor-pointer"
+              className="bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-600 dark:hover:bg-emerald-500 text-white px-4 py-2.5 rounded-xl font-bold shadow-sm transition-all text-xs flex items-center gap-2 cursor-pointer"
             >
               <PlusCircle className="w-4 h-4" />
               <span>إضافة فعالية جديدة</span>
             </button>
 
             {/* 
-            <button
-              onClick={handleMergeSelectedUsers}
-              disabled={selectedUserIds.length < 2}
-              className={`px-5 py-2.5 rounded-xl font-bold shadow-sm transition-all text-xs flex items-center gap-2 ${
-                selectedUserIds.length >= 2
-                  ? "bg-amber-600 hover:bg-amber-700 text-white cursor-pointer shadow-amber-200"
-                  : "bg-slate-200 text-slate-400 cursor-not-allowed"
-              }`}
-            >
-              <span>🔀 دمج الخطط المحددة ({selectedUserIds.length})</span>
-            </button>
-            */}
+        <button
+          onClick={handleMergeSelectedUsers}
+          disabled={selectedUserIds.length < 2}
+          className={`px-5 py-2.5 rounded-xl font-bold shadow-sm transition-all text-xs flex items-center gap-2 ${
+            selectedUserIds.length >= 2
+              ? "bg-amber-600 hover:bg-amber-700 text-white cursor-pointer shadow-amber-200"
+              : "bg-slate-200 text-slate-400 dark:bg-slate-800 dark:text-slate-600 cursor-not-allowed"
+          }`}
+        >
+          <span>🔀 دمج الخطط المحددة ({selectedUserIds.length})</span>
+        </button>
+        */}
           </div>
         )}
       </div>
 
       {/* Tabs */}
-      <div className="flex flex-wrap gap-2 mb-6 border-b border-slate-200 pb-3">
+      <div className="flex flex-wrap gap-2 mb-6 border-b border-slate-200 dark:border-slate-800 pb-3">
         <button
           onClick={() => setActiveTab("users")}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs transition-all ${
             activeTab === "users"
-              ? "bg-slate-900 text-white shadow-md"
-              : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200"
+              ? "bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 shadow-md"
+              : "bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800"
           }`}
         >
           <LayoutList className="w-4 h-4" />
@@ -580,8 +599,8 @@ export const PlanApprovalPage: React.FC = () => {
           onClick={() => setActiveTab("approved_summary")}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs transition-all ${
             activeTab === "approved_summary"
-              ? "bg-emerald-600 text-white shadow-md"
-              : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200"
+              ? "bg-emerald-600 dark:bg-emerald-500 text-white shadow-md"
+              : "bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800"
           }`}
         >
           <UserCheck className="w-4 h-4" />
@@ -602,7 +621,7 @@ export const PlanApprovalPage: React.FC = () => {
       {activeTab === "users" && (
         <>
           {userGroups.length === 0 ? (
-            <div className="bg-white p-12 text-center rounded-2xl border border-slate-200 text-slate-500 shadow-sm">
+            <div className="bg-white dark:bg-slate-900 p-12 text-center rounded-2xl border border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 shadow-sm">
               لا توجد خطط معلقة قيد المراجعة حالياً.
             </div>
           ) : (
@@ -611,20 +630,20 @@ export const PlanApprovalPage: React.FC = () => {
               return (
                 <div
                   key={group.user._id}
-                  className="bg-white rounded-2xl shadow-sm border border-slate-200 mb-8 overflow-hidden transition-all"
+                  className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 mb-8 overflow-hidden transition-all"
                 >
-                  <div className="bg-slate-50/80 p-4 border-b border-slate-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                  <div className="bg-slate-50/80 dark:bg-slate-800/50 p-4 border-b border-slate-200 dark:border-slate-800 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div className="flex items-center gap-3">
                       {/* 
-                      <input
-                        type="checkbox"
-                        checked={isSelected}
-                        onChange={() => toggleUserSelection(group.user._id)}
-                        className="w-4 h-4 text-amber-600 rounded focus:ring-amber-500 cursor-pointer"
-                      />
-                      */}
+                  <input
+                    type="checkbox"
+                    checked={isSelected}
+                    onChange={() => toggleUserSelection(group.user._id)}
+                    className="w-4 h-4 text-amber-600 rounded focus:ring-amber-500 cursor-pointer"
+                  />
+                  */}
                       <div>
-                        <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                        <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
                           {group.user?.avatar_url ? (
                             <img
                               src={group.user.avatar_url}
@@ -639,7 +658,7 @@ export const PlanApprovalPage: React.FC = () => {
                           )}
                           {group.user.first_name} {group.user.last_name}
                           {group.user.email && (
-                            <span className="text-xs font-normal text-slate-400">
+                            <span className="text-xs font-normal text-slate-400 dark:text-slate-500">
                               ({group.user.email})
                             </span>
                           )}
@@ -651,7 +670,7 @@ export const PlanApprovalPage: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => handleAddNewPlan(group.user._id)}
-                        className="bg-blue-50 hover:bg-blue-100 text-blue-700 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-1 border border-blue-200"
+                        className="bg-blue-50 dark:bg-blue-950/50 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-400 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-1 border border-blue-200 dark:border-blue-800/60"
                       >
                         <PlusCircle className="w-3.5 h-3.5" />
                         <span>إضافة لهذه الخطة</span>
@@ -659,7 +678,7 @@ export const PlanApprovalPage: React.FC = () => {
 
                       <button
                         onClick={() => handleApproveUserTable(group.user._id)}
-                        className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl font-bold text-xs transition-colors shadow-sm"
+                        className="bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-600 dark:hover:bg-emerald-500 text-white px-4 py-2 rounded-xl font-bold text-xs transition-colors shadow-sm"
                       >
                         ✓ اعتماد جدول الموظف كاملاً
                       </button>
@@ -667,85 +686,117 @@ export const PlanApprovalPage: React.FC = () => {
                   </div>
 
                   {/* Table */}
-                  <div className="overflow-x-auto rounded-b-2xl bg-white">
-                    <table className="w-full text-right text-xs">
-                      <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold">
-                        <tr>
-                          <th className="p-3.5">اسم الجدول الفعلي</th>
-                          <th className="p-3.5">الموضوع الرئيسي</th>
-                          <th className="p-3.5">الموضوع الفرعي</th>
-                          <th className="p-3.5">تاريخ الفعالية</th>
-                          <th className="p-3.5">نوع المكان</th>
-                          <th className="p-3.5 text-center">العدد</th>
-                          <th className="p-3.5 text-center">
-                            التغطية الإعلامية
-                          </th>
-                          <th className="p-3.5 text-center">الحضور المستهدف</th>
-                          <th className="p-3.5 text-center">
+                  <div className="custom-scrollbar overflow-x-auto overflow-y-auto max-h-[70vh] rounded-b-2xl border border-slate-200 dark:border-slate-800 shadow-sm bg-white dark:bg-slate-900 max-lg:bg-transparent max-lg:border-0 max-lg:shadow-none">
+                    <table className="w-full custom-scrollbar text-right text-xs max-lg:block max-lg:whitespace-normal">
+                      <thead className="sticky top-0 z-10 bg-slate-100 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-bold max-lg:hidden shadow-sm max-lg:bg-transparent">
+                        <tr className="text-center">
+                          <th className="p-1">اسم الجدول الفعلي</th>
+                          <th className="p-1">الموضوع الرئيسي</th>
+                          <th className="p-1">الموضوع الفرعي</th>
+                          <th className="p-1">تاريخ الفعالية</th>
+                          <th className="p-1">نوع المكان</th>
+                          <th className="p-1 text-center">العدد</th>
+                          <th className="p-1 text-center">التغطية الإعلامية</th>
+                          <th className="p-1 text-center">الحضور المستهدف</th>
+                          <th className="p-1 text-center">
                             الحالة / الإجراءات
                           </th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-100">
+                      <tbody className="divide-y divide-slate-100 dark:divide-slate-800 max-lg:block max-lg:space-y-4 max-lg:divide-y-0 max-lg:bg-transparent">
                         {group.plans.map((plan) => {
                           return (
                             <tr
                               key={plan._id}
-                              className="hover:bg-blue-50/40 transition-colors"
+                              className="hover:bg-blue-50/40 dark:hover:bg-blue-950/20 transition-colors max-lg:block max-lg:rounded-2xl max-lg:border max-lg:border-slate-200 dark:max-lg:border-slate-800 max-lg:bg-white dark:max-lg:bg-slate-900 max-lg:p-4 max-lg:shadow-sm max-lg:hover:bg-white dark:max-lg:hover:bg-slate-900"
                             >
-                              <td className="p-3.5 font-bold text-slate-800">
-                                {plan.schedule_name || "جدول تشغيلي"}
+                              <td
+                                data-label="اسم الجدول الفعلي"
+                                className="p-1 font-bold text-slate-800 dark:text-slate-100 max-lg:grid max-lg:grid-cols-3 max-lg:items-center max-lg:gap-3 max-lg:py-2.5 max-lg:px-1 max-lg:border-b max-lg:border-dashed max-lg:border-slate-100 dark:max-lg:border-slate-800 max-lg:before:content-[attr(data-label)] max-lg:before:col-span-1 max-lg:before:text-xs max-lg:before:font-bold max-lg:before:text-slate-500 dark:max-lg:before:text-slate-400"
+                              >
+                                <div className="max-lg:col-span-2">
+                                  {plan.schedule_name || "جدول تشغيلي"}
+                                </div>
                               </td>
 
-                              <td className="p-3.5 text-slate-700 font-medium">
-                                {plan.main_topic || "—"}
+                              <td
+                                data-label="الموضوع الرئيسي"
+                                className="p-1 text-slate-700 dark:text-slate-300 font-medium max-lg:grid max-lg:grid-cols-3 max-lg:items-center max-lg:gap-3 max-lg:py-2.5 max-lg:px-1 max-lg:border-b max-lg:border-dashed max-lg:border-slate-100 dark:max-lg:border-slate-800 max-lg:before:content-[attr(data-label)] max-lg:before:col-span-1 max-lg:before:text-xs max-lg:before:font-bold max-lg:before:text-slate-500 dark:max-lg:before:text-slate-400"
+                              >
+                                <div className="max-lg:col-span-2">
+                                  {plan.main_topic || "—"}
+                                </div>
                               </td>
 
-                              <td className="p-3.5 text-slate-600">
-                                {plan.sub_topic || "—"}
+                              <td
+                                data-label="الموضوع الفرعي"
+                                className="p-1 text-slate-600 dark:text-slate-400 max-lg:grid max-lg:grid-cols-3 max-lg:items-center max-lg:gap-3 max-lg:py-2.5 max-lg:px-1 max-lg:border-b max-lg:border-dashed max-lg:border-slate-100 dark:max-lg:border-slate-800 max-lg:before:content-[attr(data-label)] max-lg:before:col-span-1 max-lg:before:text-xs max-lg:before:font-bold max-lg:before:text-slate-500 dark:max-lg:before:text-slate-400"
+                              >
+                                <div className="max-lg:col-span-2">
+                                  {plan.sub_topic || "—"}
+                                </div>
                               </td>
 
-                              <td className="p-3.5 text-slate-600 whitespace-nowrap">
-                                <span className="flex items-center gap-1">
-                                  <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                              <td
+                                data-label="تاريخ الفعالية"
+                                className="p-1 text-slate-600 dark:text-slate-400 whitespace-nowrap max-lg:grid max-lg:grid-cols-3 max-lg:items-center max-lg:gap-3 max-lg:py-2.5 max-lg:px-1 max-lg:border-b max-lg:border-dashed max-lg:border-slate-100 dark:max-lg:border-slate-800 max-lg:whitespace-normal max-lg:before:content-[attr(data-label)] max-lg:before:col-span-1 max-lg:before:text-xs max-lg:before:font-bold max-lg:before:text-slate-500 dark:max-lg:before:text-slate-400"
+                              >
+                                <div className="max-lg:col-span-2 flex items-center gap-1">
+                                  <Calendar className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" />
                                   {plan.planned_date
                                     ? plan.planned_date.substring(0, 10)
                                     : "—"}
-                                </span>
+                                </div>
                               </td>
 
-                              <td className="p-3.5 text-slate-600">
-                                {renderLocationBadge(plan)}
+                              <td
+                                data-label="نوع المكان"
+                                className="p-1 text-slate-600 dark:text-slate-400 max-lg:grid max-lg:grid-cols-3 max-lg:items-center max-lg:gap-3 max-lg:py-2.5 max-lg:px-1 max-lg:border-b max-lg:border-dashed max-lg:border-slate-100 dark:max-lg:border-slate-800 max-lg:before:content-[attr(data-label)] max-lg:before:col-span-1 max-lg:before:text-xs max-lg:before:font-bold max-lg:before:text-slate-500 dark:max-lg:before:text-slate-400"
+                              >
+                                <div className="max-lg:col-span-2">
+                                  {renderLocationBadge(plan)}
+                                </div>
                               </td>
 
-                              <td className="p-3.5 text-center">
-                                <span className="px-2 py-1 bg-indigo-50 text-indigo-700 font-black rounded-lg">
-                                  {plan.target_seminars_count || 1}
-                                </span>
+                              <td
+                                data-label="العدد"
+                                className="p-1 text-center max-lg:text-right max-lg:grid max-lg:grid-cols-3 max-lg:items-center max-lg:gap-3 max-lg:py-2.5 max-lg:px-1 max-lg:border-b max-lg:border-dashed max-lg:border-slate-100 dark:max-lg:border-slate-800 max-lg:before:content-[attr(data-label)] max-lg:before:col-span-1 max-lg:before:text-xs max-lg:before:font-bold max-lg:before:text-slate-500 dark:max-lg:before:text-slate-400"
+                              >
+                                <div className="max-lg:col-span-2">
+                                  <span className="px-2 py-1 bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 font-black rounded-lg inline-block">
+                                    {plan.target_seminars_count || 1}
+                                  </span>
+                                </div>
                               </td>
 
-                              <td className="p-3.5 text-center">
-                                <div className="flex items-center justify-center gap-2 text-[11px] text-slate-600">
+                              <td
+                                data-label="التغطية الإعلامية"
+                                className="p-1 text-center max-lg:text-right max-lg:grid max-lg:grid-cols-3 max-lg:items-center max-lg:gap-3 max-lg:py-2.5 max-lg:px-1 max-lg:border-b max-lg:border-dashed max-lg:border-slate-100 dark:max-lg:border-slate-800 max-lg:before:content-[attr(data-label)] max-lg:before:col-span-1 max-lg:before:text-xs max-lg:before:font-bold max-lg:before:text-slate-500 dark:max-lg:before:text-slate-400"
+                              >
+                                <div className="max-lg:col-span-2 flex lg:flex-col xl:flex-row items-center gap-2 text-[11px] text-slate-600 dark:text-slate-400 justify-center max-lg:justify-start">
                                   <span
-                                    className="flex items-center gap-0.5"
+                                    className="flex items-center gap-1"
                                     title="وسائل الإعلام"
                                   >
-                                    <Radio className="w-3 h-3 text-cyan-600" />
+                                    <Radio className="w-3 h-3 text-cyan-600 dark:text-cyan-400" />
                                     {plan.media_outlets_count || 0}
                                   </span>
                                   <span>•</span>
                                   <span
-                                    className="flex items-center gap-0.5"
+                                    className="flex items-center gap-1"
                                     title="الأنشطة الرقمية"
                                   >
-                                    <Globe className="w-3 h-3 text-indigo-600" />
+                                    <Globe className="w-3 h-3 text-indigo-600 dark:text-indigo-400" />
                                     {plan.digital_media_activities_count || 0}
                                   </span>
                                 </div>
                               </td>
 
-                              <td className="p-3.5 text-center">
-                                <div className="flex items-center justify-center gap-1.5 text-[11px]">
+                              <td
+                                data-label="الحضور المستهدف"
+                                className="p-1 text-center max-lg:text-right max-lg:grid max-lg:grid-cols-3 max-lg:items-center max-lg:gap-3 max-lg:py-2.5 max-lg:px-1 max-lg:border-b max-lg:border-dashed max-lg:border-slate-100 dark:max-lg:border-slate-800 max-lg:before:content-[attr(data-label)] max-lg:before:col-span-1 max-lg:before:text-xs max-lg:before:font-bold max-lg:before:text-slate-500 dark:max-lg:before:text-slate-400"
+                              >
+                                <div className="max-lg:col-span-2 flex lg:flex-col xl:flex-row items-center gap-1.5 text-[11px] justify-center max-lg:justify-start max-lg:flex-wrap text-slate-700 dark:text-slate-300">
                                   <span title="ذكور">
                                     👨 {plan.target_attendees?.males || 0}
                                   </span>
@@ -757,14 +808,14 @@ export const PlanApprovalPage: React.FC = () => {
                                   <span title="أطفال">
                                     👶 {plan.target_attendees?.children || 0}
                                   </span>
-                                  <span className="font-bold text-emerald-600 mr-1 bg-emerald-50 px-1.5 py-0.5 rounded">
-                                    (إجمالي {plan.target_total_attendees || 0})
-                                  </span>
                                 </div>
                               </td>
 
-                              <td className="p-3.5 text-center whitespace-nowrap">
-                                <div className="flex items-center justify-center gap-2">
+                              <td
+                                data-label="الحالة / الإجراءات"
+                                className="p-1 text-center whitespace-nowrap max-lg:grid max-lg:grid-cols-3 max-lg:items-center max-lg:gap-3 max-lg:py-2.5 max-lg:px-1 max-lg:whitespace-normal max-lg:before:content-[attr(data-label)] max-lg:before:col-span-1 max-lg:before:text-xs max-lg:before:font-bold max-lg:before:text-slate-500 dark:max-lg:before:text-slate-400"
+                              >
+                                <div className="max-lg:col-span-2 flex lg:flex-col xl:flex-row items-center justify-center max-lg:justify-start gap-2 max-lg:flex-wrap">
                                   {savingId === plan._id && (
                                     <Loader2 className="w-4 h-4 text-amber-500 animate-spin" />
                                   )}
@@ -775,18 +826,17 @@ export const PlanApprovalPage: React.FC = () => {
                                   <button
                                     type="button"
                                     onClick={() => handleOpenEditModal(plan)}
-                                    className="p-1.5 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white rounded-lg transition-colors flex items-center gap-1 font-bold"
+                                    className="p-1.5 bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 hover:bg-blue-600 dark:hover:bg-blue-500 hover:text-white dark:hover:text-white rounded-lg transition-colors flex items-center gap-1 font-bold"
                                     title="تعديل الندوة"
                                   >
                                     <Edit className="w-3.5 h-3.5" />
-                                    <span>تعديل</span>
                                   </button>
 
                                   <button
                                     type="button"
                                     disabled={deletingId === plan._id}
                                     onClick={() => handlePlanDelete(plan._id)}
-                                    className="p-1.5 bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white rounded-lg transition-colors flex items-center gap-1 font-bold disabled:opacity-50"
+                                    className="p-1.5 bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 hover:bg-rose-600 dark:hover:bg-rose-500 hover:text-white dark:hover:text-white rounded-lg transition-colors flex items-center gap-1 font-bold disabled:opacity-50"
                                     title="حذف الندوة"
                                   >
                                     {deletingId === plan._id ? (
@@ -794,7 +844,6 @@ export const PlanApprovalPage: React.FC = () => {
                                     ) : (
                                       <Trash2 className="w-3.5 h-3.5" />
                                     )}
-                                    <span>حذف</span>
                                   </button>
                                 </div>
                               </td>

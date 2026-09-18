@@ -32,6 +32,7 @@
   --color-inpute: #ffffff;
   --box-container: #6da2ff7d;
   --box-container-border: #6da2ff3b;
+  --border-color: #6da2ff3b;
   --finded-users-bg: rgba(0, 0, 0, 0.1);
   --cteate-topic-bg: rgba(255, 255, 255, 0.9);
 }
@@ -58,6 +59,7 @@
   --color-inpute: #313131;
   --box-container: #1d293d;
   --box-container-border: #314158;
+  --border-color: #314158;
   --finded-users-bg: rgba(255, 255, 255, 0.1);
   --cteate-topic-bg: rgba(0, 0, 0, 0.9);
 }
@@ -82,3 +84,249 @@ footer {
   color: var(--text-color);
 }
 
+/*
+ * ========================================================
+ *  DARK THEME ADAPTATION LAYER
+ * ========================================================
+ *
+ * الهدف:
+ *   Most components use hardcoded Tailwind light-palette classes
+ *   (bg-white, text-gray-800, border-slate-200 etc.) WITHOUT
+ *   corresponding `dark:` variants. Instead of touching 1000+
+ *   class instances across 40+ files, this layer provides a
+ *   single, centralized override in THIS file that:
+ *
+ *   1. Remaps the most common neutral utilities to dark equivalents
+ *      when `.dark` is present on <body>.
+ *   2. Is fully tunable — edit the color values below to customize.
+ *   3. Does NOT touch colored utilities (blue, green, red, etc.),
+ *      so badges, buttons, alerts, and charts keep their color.
+ *
+ * Specificity:
+ *   .dark .bg-white   = (0,2,0) > .bg-white (0,1,0)  ✓ wins
+ *   Cascade order: this file loads AFTER Tailwind utilities,
+ *   so at equal specificity, the later rule (this layer) wins.
+ *
+ * Impact on components that ALREADY have explicit `dark:`:
+ *   The 6 files (AddStaffModal, DisplayPosts, LoginForm,
+ *   Profile, Profile_Page, Login) will have their explicit
+ *   dark: values overridden by this layer. Since the mapped
+ *   values are close (slate-800 family), the visual diff
+ *   is minimal. If you need those files to have unique dark
+ *   surfaces, add `!important` to their `dark:` classes —
+ *   but that is NOT recommended for maintainability.
+ *
+ * Customization:
+ *   To change any dark surface/text/border, edit the hex
+ *   values in the rules below. All surfaces, text, and
+ *   borders are defined in ONE place — easy to maintain.
+ * ========================================================
+ */
+.dark {
+  /* ── Surface Colors ── */
+  --surface-primary: #161f2d; /* Cards, modals (slate-800) */
+  --surface-secondary: #111827; /* Subtle bg (gray-900)       */
+  --surface-tertiary: #1f2937; /* Nested cards (gray-800)    */
+  --surface-border: #334155; /* Border lines (slate-700)   */
+  --surface-border-subtle: #1e293b; /* Fine lines (slate-800) */
+
+  /* ── Text Colors ── */
+  --text-primary: #f1f5f9; /* Headings, strong text       */
+  --text-secondary: #e2e8f0; /* Body, normal text           */
+  --text-muted: #94a3b8; /* Descriptions, meta          */
+  --text-faint: #64748b; /* Placeholders, timestamps    */
+}
+
+/* ── Surfaces: bg-* ── */
+.dark .bg-white {
+  background-color: var(--surface-primary);
+}
+.dark .bg-gray-50 {
+  background-color: var(--surface-secondary);
+}
+.dark .bg-gray-100 {
+  background-color: var(--surface-tertiary);
+}
+.dark .bg-gray-200 {
+  background-color: #334155;
+}
+.dark .bg-gray-300 {
+  background-color: #3b4a63;
+}
+.dark .bg-slate-50 {
+  background-color: var(--surface-secondary);
+}
+.dark .bg-slate-100 {
+  background-color: var(--surface-tertiary);
+}
+.dark .bg-slate-200 {
+  background-color: #334155;
+}
+.dark .bg-slate-300 {
+  background-color: #3b4a63;
+}
+
+/* Opacity variants used in headers/zebra rows */
+.dark .bg-gray-50\/80 {
+  background-color: rgba(17, 24, 39, 0.8);
+}
+.dark .bg-slate-50\/80 {
+  background-color: rgba(17, 24, 39, 0.8);
+}
+.dark .bg-slate-100\/80 {
+  background-color: rgba(31, 41, 55, 0.8);
+}
+
+/* ── Text: text-* ── */
+/* Primary hierarchy (gray) */
+.dark .text-gray-900 {
+  color: var(--text-primary);
+}
+.dark .text-gray-800 {
+  color: var(--text-secondary);
+}
+.dark .text-gray-700 {
+  color: var(--text-muted);
+}
+.dark .text-gray-600 {
+  color: var(--text-muted);
+}
+.dark .text-gray-500 {
+  color: var(--text-faint);
+}
+.dark .text-gray-400 {
+  color: #475569;
+}
+
+/* Primary hierarchy (slate) */
+.dark .text-slate-900 {
+  color: var(--text-primary);
+}
+.dark .text-slate-800 {
+  color: var(--text-secondary);
+}
+.dark .text-slate-700 {
+  color: var(--text-muted);
+}
+.dark .text-slate-600 {
+  color: var(--text-muted);
+}
+.dark .text-slate-500 {
+  color: var(--text-faint);
+}
+.dark .text-slate-400 {
+  color: #475569;
+}
+
+/* Raw text-black → inherit body color */
+.dark .text-black {
+  color: var(--text-color);
+}
+
+/* ── Borders: border-* ── */
+.dark .border-gray-200 {
+  border-color: var(--surface-border);
+}
+.dark .border-gray-300 {
+  border-color: #475569;
+}
+.dark .border-gray-100 {
+  border-color: var(--surface-border-subtle);
+}
+.dark .border-slate-200 {
+  border-color: var(--surface-border);
+}
+.dark .border-slate-300 {
+  border-color: #475569;
+}
+.dark .border-slate-100 {
+  border-color: var(--surface-border-subtle);
+}
+
+/* ── Accent text: intentionally NOT remapped ──
+ *  Colored text (blue-700, indigo-900 etc.) sits on colored
+ *  chips (bg-blue-50...) which stay light in dark mode for
+ *  contrast. The few cases where accent text lives on a
+ *  darkened WHITE card are fixed individually in their
+ *  components with `dark:text-*-300`. This keeps colored
+ *  chips crisp instead of producing light-on-light text.
+ */
+
+/* ── Line separators in dark mode ── */
+.dark hr {
+  border-color: var(--surface-border-subtle);
+}
+
+/* التنسيق ينطبق فقط على العنصر الذي يحمل كلاس custom-scrollbar */
+
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent; /* خلفية شفافة */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 20px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+
+
+/* --- ضبط شريط التمرير لمتصفحات Chrome, Safari, Edge --- */
+
+/* عرض الشريط للمحور Y وارتفاعه للمحور X */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;  /* المحور Y (الرأسي) */
+  height: 6px; /* المحور X (الأفقي) */
+}
+
+.custom-scrollbar::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+/* خلفية المسار */
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* شكل المقبض (Thumb) */
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1; 
+  border-radius: 20px;
+}
+
+/* عند تحريك الماوس فوق المقبض */
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #94a3b8;
+}
+
+/* الزاوية بين الشريطين الأفقي والرأسي */
+.custom-scrollbar::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+
+/* --- دعم الوضع الداكن (Dark Mode) --- */
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #475569;
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #64748b;
+}
+
+
+/* --- دعم متصفح Firefox --- */
+/* .custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+} */
+
+/* .dark .custom-scrollbar {
+  scrollbar-color: #475569 transparent;
+} */

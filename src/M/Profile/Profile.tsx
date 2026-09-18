@@ -221,7 +221,7 @@ const ModernProfilePage = () => {
       {/* بطاقة الرأس */}
       <div className="relative rounded-3xl shadow-xl overflow-hidden border border-gray-100 dark:border-slate-700 profileContainer">
         <div className="h-32 bg-linear-to-r from-indigo-500 to-purple-600 opacity-30"></div>
-        <div className="px-8 pb-8">
+        <div className="px-4 sm:px-8 pb-8">
           <div className="relative flex flex-col md:flex-row justify-between items-center md:items-end -mt-12 gap-4">
             <div className="flex flex-col md:flex-row items-center md:items-end gap-5">
               {/* صورة المستخدم */}
@@ -638,16 +638,16 @@ const ModernProfilePage = () => {
             </div>
           </div>
 
-          <div className="border-t-2 mt-5 pt-5 flex justify-evenly divide-x-2  font-extrabold text-2xl">
-            <div className="flex flex-col element-center gap-4 mt-5 flex-1">
+          <div className="border-t-2 mt-5 pt-5 grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-3 sm:divide-x-2 font-extrabold text-2xl text-center">
+            <div className="flex flex-col element-center gap-1 sm:gap-2 break-words">
               <h2 className="">المتابعون</h2>
               <h2 className="text-blue-500">{formData.stats?.followers}</h2>
             </div>
-            <div className="flex flex-col element-center gap-4 mt-5 flex-1">
+            <div className="flex flex-col element-center gap-1 sm:gap-2 break-words">
               <h2 className="">المنشورات</h2>
               <h2 className="text-blue-500">{formData.stats?.posts_count}</h2>
             </div>
-            <div className="flex flex-col element-center gap-4 mt-5 flex-1">
+            <div className="flex flex-col element-center gap-1 sm:gap-2 break-words">
               <h2 className="">اتابع</h2>
               <h2 className="text-blue-500">{formData.stats?.following}</h2>
             </div>

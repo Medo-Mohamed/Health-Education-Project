@@ -12,7 +12,11 @@ import StatisticalSummaryTab from "./StatisticalSummaryTab";
 import { SeminarModal } from "../EditSeminarModal";
 import { useDispatch } from "react-redux";
 import type { AppDispatch } from "../../../../../../../../store";
-import { loading, open, close } from "../../../../../../../Redux-Store/SuccessFaildState/SFS";
+import {
+  loading,
+  open,
+  close,
+} from "../../../../../../../Redux-Store/SuccessFaildState/SFS";
 import { LocationType } from "../../../../types";
 
 export interface ITargetAttendeeBreakdown {
@@ -532,14 +536,14 @@ export default function PlanReviewPage() {
   return (
     <div className="space-y-6" dir="rtl">
       {/* أزرار التنقل بين الأقسام */}
-      <div className="flex border-b border-slate-200">
+      <div className="flex flex-wrap max-lg:justify-center border-b border-slate-200 dark:border-slate-800 overflow-x-auto no-scrollbar">
         <button
           type="button"
           onClick={() => setActiveTab("drafts")}
-          className={`flex items-center gap-2 py-3 px-6 font-bold text-sm border-b-2 transition-colors ${
+          className={`cursor-pointer flex items-center gap-2 py-3 px-3 sm:px-6 font-bold text-xs sm:text-sm border-b-2 transition-colors whitespace-nowrap shrink-0 ${
             activeTab === "drafts"
-              ? "border-blue-600 text-blue-600"
-              : "border-transparent text-slate-500 hover:text-slate-800"
+              ? "border-blue-600 dark:border-blue-500 text-blue-600 dark:text-blue-400"
+              : "border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200!"
           }`}
         >
           <FileText className="w-4 h-4" />
@@ -549,10 +553,10 @@ export default function PlanReviewPage() {
         <button
           type="button"
           onClick={() => setActiveTab("stats")}
-          className={`flex items-center gap-2 py-3 px-6 font-bold text-sm border-b-2 transition-colors ${
+          className={`cursor-pointer flex items-center gap-2 py-3 px-3 sm:px-6 font-bold text-xs sm:text-sm border-b-2 transition-colors whitespace-nowrap shrink-0 ${
             activeTab === "stats"
-              ? "border-blue-600 text-blue-600"
-              : "border-transparent text-slate-500 hover:text-slate-800"
+              ? "border-blue-600 dark:border-blue-500 text-blue-600 dark:text-blue-400"
+              : "border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200!"
           }`}
         >
           <PieChart className="w-4 h-4" />

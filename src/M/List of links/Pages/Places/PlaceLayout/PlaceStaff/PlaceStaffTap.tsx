@@ -11,7 +11,11 @@ import {
 import AxiosApi from "../../../../../../AxiosApi";
 import { useDispatch } from "react-redux";
 import type { AppDispatch } from "../../../../../../store";
-import { loading, open, close } from "../../../../../Redux-Store/SuccessFaildState/SFS";
+import {
+  loading,
+  open,
+  close,
+} from "../../../../../Redux-Store/SuccessFaildState/SFS";
 import { AddStaffModal } from "./AddStaffModal";
 // import { PlacePermission } from "../PlaceLayout";
 import { usePlacePermissions } from "../../../../../Redux-Store/PlacePermissions/usePlacePermissions";
@@ -84,6 +88,7 @@ export const PlaceStaffTab: React.FC = () => {
       hasPermission(PlacePermission.MANAGE_MEMBERS);
 
     if (id && canView) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       void fetchStaffList();
     }
     // eslint-disable-next-deps — نكتفي بـ id و fetchStaffList للحد من إعادة التنفيذ غير المطلوبة
@@ -109,9 +114,7 @@ export const PlaceStaffTab: React.FC = () => {
       await AxiosApi.delete(
         `/auth/withlogin/places/place-staff/place-staff-access/${accessId}/${id}`,
       );
-      dispatch(
-        open({ state: "success", title: "تم إزالة الموظف بنجاح" }),
-      );
+      dispatch(open({ state: "success", title: "تم إزالة الموظف بنجاح" }));
       fetchStaffList();
     } catch (err: any) {
       dispatch(
@@ -126,7 +129,7 @@ export const PlaceStaffTab: React.FC = () => {
   const canManageMembers = hasPermission(PlacePermission.MANAGE_MEMBERS);
 
   return (
-    <div className="bg-white border border-gray-200/80 rounded-2xl p-6 shadow-sm space-y-6 dir-rtl">
+    <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm space-y-6 dir-rtl">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b">
         <div>
           <h3 className="font-bold text-lg text-gray-900 flex items-center gap-2">
@@ -159,7 +162,7 @@ export const PlaceStaffTab: React.FC = () => {
       </div>
 
       {staffList.length === 0 ? (
-        <div className="text-center py-12 bg-gray-50/70 rounded-2xl border border-dashed border-gray-200">
+        <div className="text-center py-12 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
           <Users className="w-12 h-12 text-gray-300 mx-auto mb-3" />
           <p className="text-sm font-bold text-gray-700">
             لا يوجد موظفون مضافون في هذا المكان حالياً.
@@ -172,10 +175,10 @@ export const PlaceStaffTab: React.FC = () => {
           )}
         </div>
       ) : (
-        <div className="border border-gray-200/70 rounded-2xl overflow-hidden bg-white">
+        <div className="  rounded-2xl overflow-hidden bg-white">
           <div className="overflow-x-auto">
-            <table className="w-full text-right text-xs">
-              <thead className="bg-gray-50/80 text-gray-700 border-b font-bold">
+            <table className="w-full text-right text-xs max-md:block max-md:whitespace-normal">
+              <thead className="bg-gray-50 text-gray-700 border-b font-bold max-md:hidden">
                 <tr>
                   <th className="p-3.5">الموظف</th>
                   <th className="p-3.5">الدور الوظيفي</th>
@@ -186,7 +189,7 @@ export const PlaceStaffTab: React.FC = () => {
                   )}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100 font-medium">
+              <tbody className="divide-y divide-gray-100 font-medium max-md:block max-md:space-y-3 max-md:divide-y-0">
                 {staffList.map((item: StaffItem) => {
                   const userName =
                     item.user?.first_name || item.user?.last_name
@@ -205,14 +208,17 @@ export const PlaceStaffTab: React.FC = () => {
                   return (
                     <tr
                       key={item._id}
-                      className={`hover:bg-gray-50/80 transition ${
+                      className={`hover:bg-gray-100 dark:hover:bg-gray-800 transition max-md:block max-md:rounded-xl max-md:border max-md:border-gray-200 max-md:p-2 max-md:shadow-sm ${
                         item.role_expires_at &&
                         new Date(item.role_expires_at) < new Date()
                           ? "bg-orange-100"
                           : ""
                       }`}
                     >
-                      <td className="p-3.5">
+                      <td
+                        data-label="الموظف"
+                        className="p-3.5 max-md:flex max-md:items-center max-md:justify-evenly max-md:gap-3 max-md:py-2 max-md:px-2 max-md:border-b max-md:border-dashed max-md:border-gray-100 max-md:last:border-b-0 max-md:before:content-[attr(data-label)] max-md:before:text-[10px] max-md:before:font-bold max-md:before:text-gray-500 max-md:before:shrink-0"
+                      >
                         <div className="flex items-center gap-3">
                           {item.user?.avatar_url ? (
                             <img
@@ -236,30 +242,39 @@ export const PlaceStaffTab: React.FC = () => {
                         </div>
                       </td>
 
-                      <td className="p-3.5">
-                        <span className="inline-block bg-blue-50 text-blue-700 text-xs font-bold px-2.5 py-1 rounded-lg border border-blue-100">
+                      <td
+                        data-label="الدور الوظيفي"
+                        className="p-3.5 max-md:flex max-md:items-center max-md:justify-evenly max-md:gap-3 max-md:py-2 max-md:px-2 max-md:border-b max-md:border-dashed max-md:border-gray-100 max-md:last:border-b-0 max-md:before:content-[attr(data-label)] max-md:before:text-[10px] max-md:before:font-bold max-md:before:text-gray-500 max-md:before:shrink-0"
+                      >
+                        <span className="inline-block bg-slate-50 text-blue-600 text-xs font-bold px-2.5 py-1 rounded-lg border border-gray-100">
                           {roleLabel}
                         </span>
                       </td>
 
-                      <td className="p-3.5">
+                      <td
+                        data-label="نوع التعيين"
+                        className="p-3.5 max-md:flex max-md:items-center max-md:justify-evenly max-md:gap-3 max-md:py-2 max-md:px-2 max-md:border-b max-md:border-dashed max-md:border-gray-100 max-md:last:border-b-0 max-md:before:content-[attr(data-label)] max-md:before:text-[10px] max-md:before:font-bold max-md:before:text-gray-500 max-md:before:shrink-0"
+                      >
                         {item.is_direct !== false ? (
-                          <span className="inline-flex items-center gap-1.5 text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-lg font-bold">
+                          <span className="inline-flex items-center gap-1.5 text-xs bg-slate-50 text-blue-600 px-2.5 py-1 rounded-lg font-bold">
                             <UserCheck className="w-3.5 h-3.5" />
                             <span>مباشر على المكان</span>
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1.5 text-xs text-amber-700 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-lg font-bold">
+                          <span className="inline-flex items-center gap-1.5 text-xs bg-slate-50 text-blue-600 px-2.5 py-1 rounded-lg font-bold">
                             <ShieldAlert className="w-3.5 h-3.5" />
                             <span>موروث من مكان أعلى</span>
                           </span>
                         )}
                       </td>
 
-                      <td className="p-3.5 text-center">
+                      <td
+                        data-label="الصلاحيات المخصصة"
+                        className="p-3.5 text-center max-md:flex max-md:items-center max-md:justify-evenly max-md:gap-3 max-md:py-2 max-md:px-2 max-md:border-b max-md:border-dashed max-md:border-gray-100 max-md:last:border-b-0 max-md:before:content-[attr(data-label)] max-md:before:text-[10px] max-md:before:font-bold max-md:before:text-gray-500 max-md:before:shrink-0"
+                      >
                         {item.custom_permissions &&
                         item.custom_permissions.length > 0 ? (
-                          <span className="inline-flex items-center gap-1 text-[11px] font-bold text-purple-700 bg-purple-50 border border-purple-200 px-2.5 py-0.5 rounded-md">
+                          <span className="inline-flex items-center gap-1 text-[11px] font-bold text-purple-700 bg-purple-50/70 border border-purple-200 px-2.5 py-0.5 rounded-md">
                             {item.custom_permissions.length} إضافية
                           </span>
                         ) : (
@@ -270,8 +285,11 @@ export const PlaceStaffTab: React.FC = () => {
                       </td>
 
                       {canManageMembers && (
-                        <td className="p-3.5 text-center">
-                          <div className="flex items-center justify-center gap-1">
+                        <td
+                          data-label="الإجراءات"
+                          className="p-3.5 text-center max-md:flex max-md:items-center max-md:justify-evenly max-md:gap-3 max-md:py-2 max-md:px-2 max-md:border-b max-md:border-dashed max-md:border-gray-100 max-md:last:border-b-0 max-md:before:content-[attr(data-label)] max-md:before:text-[10px] max-md:before:font-bold max-md:before:text-gray-500 max-md:before:shrink-0"
+                        >
+                          <div className="flex items-center justify-center gap-1 max-md:justify-end">
                             <button
                               onClick={() =>
                                 handleEditPermissions(item.user._id)

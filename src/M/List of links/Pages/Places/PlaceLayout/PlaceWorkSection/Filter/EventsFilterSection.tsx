@@ -216,24 +216,24 @@ export const EventsFilterSection: React.FC<EventsFilterSectionProps> = ({
 
   return (
     <div
-      className="bg-white border border-gray-200/80 rounded-2xl p-5 shadow-sm space-y-4 dir-rtl"
+      className="bg-white border border-gray-200/80 dark:border-gray-700 rounded-2xl p-5 shadow-sm space-y-4 dir-rtl"
       dir="rtl"
     >
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Filter className="w-4 h-4 text-gray-600" />
           <h4 className="font-bold text-sm text-gray-800">
-            تحديات الفلترة والتصفية الشاملة
+            تحديدات الفلترة والتصفية الشاملة
           </h4>
-          <span className="text-[10px] bg-blue-50 text-blue-700 font-bold px-2.5 py-0.5 rounded-full border border-blue-100">
-            تصفية المخرجات والندوات
+          <span className="text-[10px] bg-gray-50 text-blue-500 font-bold px-2.5 py-0.5 rounded-full border border-gray-100">
+            تصفية الخطط والندوات
           </span>
         </div>
 
         <button
           type="button"
           onClick={onToggleShowFilters}
-          className="flex items-center gap-1.5 text-xs font-bold text-blue-600 hover:text-blue-800 bg-blue-50/50 hover:bg-blue-50 px-3 py-1.5 rounded-xl border border-blue-100 transition"
+          className="flex items-center dark:hover:bg-[#ffffff] gap-1.5 text-xs font-bold text-blue-600 hover:text-blue-800 hover:bg-slate-400 px-3 py-1.5 rounded-xl border transition"
         >
           <SlidersHorizontal className="w-3.5 h-3.5" />
           <span>{showFilters ? "إخفاء الفلترة" : "تخصيص الفلترة"}</span>
@@ -242,7 +242,7 @@ export const EventsFilterSection: React.FC<EventsFilterSectionProps> = ({
 
       {showFilters && (
         <div className="p-4 bg-gray-50 border border-gray-200 rounded-xl space-y-5 animate-fadeIn">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
             {/* 1. نطاق الأماكن */}
             <div className="space-y-1.5" ref={dropdownRef}>
               <label className="text-xs font-bold text-gray-700 flex items-center gap-1">
@@ -250,7 +250,7 @@ export const EventsFilterSection: React.FC<EventsFilterSectionProps> = ({
                 <span>نطاق الأماكن:</span>
               </label>
 
-              <div className="relative">
+              <div className="relative ">
                 <button
                   type="button"
                   onClick={() => setIsPlacesDropdownOpen((prev) => !prev)}
@@ -265,7 +265,7 @@ export const EventsFilterSection: React.FC<EventsFilterSectionProps> = ({
                 </button>
 
                 {isPlacesDropdownOpen && (
-                  <div className="absolute z-30 right-0 left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg p-2 space-y-2 max-h-60 overflow-y-auto">
+                  <div className="custom-scrollbar absolute z-30 right-0 left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg p-2 space-y-2 max-h-60 overflow-y-auto">
                     <div className="relative">
                       <Search className="w-3.5 h-3.5 text-gray-400 absolute right-2.5 top-2.5" />
                       <input
@@ -277,8 +277,8 @@ export const EventsFilterSection: React.FC<EventsFilterSectionProps> = ({
                       />
                     </div>
 
-                    <div className="space-y-1">
-                      <label className="flex items-center gap-2 p-1.5 text-xs rounded hover:bg-gray-50 cursor-pointer border-b pb-1.5">
+                    <div className="space-y-1 ">
+                      <label className="flex items-center gap-2 p-1.5 text-xs rounded hover:bg-gray-50 dark:hover:bg-[#111827] cursor-pointer border-b pb-1.5">
                         <input
                           type="checkbox"
                           checked={filters.selectedPlaces.includes("ALL")}
@@ -297,7 +297,7 @@ export const EventsFilterSection: React.FC<EventsFilterSectionProps> = ({
                         return (
                           <label
                             key={place.id}
-                            className="flex items-center justify-between p-1.5 text-xs rounded hover:bg-gray-50 cursor-pointer"
+                            className="flex items-center justify-between p-1.5 text-xs rounded hover:bg-gray-50 dark:hover:bg-[#111827] cursor-pointer"
                           >
                             <div className="flex items-center gap-2">
                               <input
@@ -335,7 +335,7 @@ export const EventsFilterSection: React.FC<EventsFilterSectionProps> = ({
                 <span>نوع الندوة:</span>
               </label>
 
-              <div className="p-2 bg-white border border-gray-300 rounded-lg space-y-1.5 max-h-36 overflow-y-auto">
+              <div className="custom-scrollbar p-2 bg-white border border-gray-300 rounded-lg space-y-1.5 max-h-36 overflow-y-auto">
                 <label className="flex items-center gap-2 text-xs font-bold text-blue-700 cursor-pointer border-b pb-1">
                   <input
                     type="checkbox"
@@ -439,7 +439,7 @@ export const EventsFilterSection: React.FC<EventsFilterSectionProps> = ({
 
           {/* 4. فلترة الموضوعات */}
           <div className="pt-3 border-t border-gray-200 space-y-3">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-2">
               <label className="text-xs font-bold text-gray-700 flex items-center gap-1">
                 <BookOpen className="w-3.5 h-3.5 text-gray-500" />
                 <span>تحديد الموضوعات المطلوب فلترتها:</span>
@@ -528,7 +528,7 @@ export const EventsFilterSection: React.FC<EventsFilterSectionProps> = ({
                   type="button"
                   onClick={handleAddCustomTopic}
                   disabled={!tempScheduleId}
-                  className="flex items-center gap-1 text-xs bg-blue-600 hover:bg-blue-700 text-white font-medium px-3 py-1.5 rounded-lg disabled:bg-gray-300 transition"
+                  className="flex items-center gap-1 text-xs bg-blue-600 hover:bg-blue-700 text-white font-medium px-3 py-1.5 rounded-lg disabled:bg-gray-300 dark:disabled:bg-[#3b4a63] transition"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>إضافة شرط فلترة الموضوعات</span>

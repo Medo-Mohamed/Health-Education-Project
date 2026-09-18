@@ -5,7 +5,11 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Plus, Trash2, CheckCircle2, Upload } from "lucide-react";
 import type { PlaceType, IPlace } from "../types";
 import type { AppDispatch, RootState } from "../../../../../store";
-import { loading, open, close } from "../../../../Redux-Store/SuccessFaildState/SFS";
+import {
+  loading,
+  open,
+  close,
+} from "../../../../Redux-Store/SuccessFaildState/SFS";
 import AxiosApi from "../../../../../AxiosApi";
 
 export const CreatePlacePage: React.FC = () => {
@@ -329,7 +333,7 @@ export const CreatePlacePage: React.FC = () => {
             <button
               type="button"
               onClick={() => navigate(-1)}
-              className="px-5 py-2.5 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 transition"
+              className="px-5 py-2.5 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-500 transition"
             >
               إلغاء
             </button>

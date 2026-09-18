@@ -15,7 +15,11 @@ import {
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../../../../../../store";
-import { loading, open, close } from "../../../../../../Redux-Store/SuccessFaildState/SFS";
+import {
+  loading,
+  open,
+  close,
+} from "../../../../../../Redux-Store/SuccessFaildState/SFS";
 import AxiosApi from "../../../../../../../AxiosApi";
 import { LocationType } from "../../../types";
 
@@ -348,9 +352,7 @@ export const CreatePlaceEvent: React.FC = () => {
     }
 
     if (!formData.instructor_info) {
-      dispatch(
-        open({ state: "faild", title: "يرجى تحديد محاضر الفعالية." }),
-      );
+      dispatch(open({ state: "faild", title: "يرجى تحديد محاضر الفعالية." }));
       return;
     }
 
@@ -442,13 +444,16 @@ export const CreatePlaceEvent: React.FC = () => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto dir-rtl" dir="rtl">
+    <div
+      className="max-w-4xl mx-auto sm:p-0 lg:px-8 py-6 dir-rtl"
+      dir="rtl"
+    >
       {/* الهيدر */}
-      <div className="flex items-center justify-between mb-4 border-gray-200">
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-            <BookOpen className="w-7 h-7 text-indigo-600" />
-            إضافة ندوة / فعالية جديدة
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-100 flex items-center gap-2">
+            <BookOpen className="w-6 h-6 sm:w-7 sm:h-7 text-indigo-600 dark:text-indigo-400 shrink-0" />
+            <span>إضافة ندوة / فعالية جديدة</span>
           </h1>
         </div>
       </div>
@@ -456,33 +461,39 @@ export const CreatePlaceEvent: React.FC = () => {
       {/* النموذج */}
       <form
         onSubmit={handleSubmit}
-        className="space-y-6 bg-white p-6 rounded-xl shadow-sm border border-gray-100"
+        className="space-y-6 bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 transition-colors duration-200"
       >
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           {/* اختيار اسم جدول العمل */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
               اسم جدول العمل <span className="text-red-500">*</span>
             </label>
             <div className="relative">
-              <FileText className="w-5 h-5 text-gray-400 absolute right-3 top-2.5" />
+              <FileText className="w-5 h-5 text-gray-400 dark:text-gray-500 absolute right-3 top-2.5 pointer-events-none" />
               <select
                 name="schedule_id"
                 value={formData.schedule_id}
                 onChange={handleChange}
                 required
-                className="w-full pr-10 pl-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white"
+                className="w-full pr-10 pl-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm sm:text-base transition-colors"
               >
-                <option value="">-- اختر جدول العمل --</option>
+                <option value="" className="bg-white dark:bg-gray-700">
+                  -- اختر جدول العمل --
+                </option>
                 {schedules.map((sch) => (
-                  <option key={sch._id} value={sch._id}>
+                  <option
+                    key={sch._id}
+                    value={sch._id}
+                    className="bg-white dark:bg-gray-700"
+                  >
                     {sch.title}
                   </option>
                 ))}
               </select>
             </div>
             {fetchingTableDetails && (
-              <span className="text-xs text-indigo-600 mt-1 block">
+              <span className="text-xs text-indigo-600 dark:text-indigo-400 mt-1 block">
                 جاري تحميل موضوعات الجدول...
               </span>
             )}
@@ -490,7 +501,7 @@ export const CreatePlaceEvent: React.FC = () => {
 
           {/* اختيار المحاضر المخصص */}
           <div ref={instructorDropdownRef} className="relative">
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
               محاضر الفعالية <span className="text-red-500">*</span>
             </label>
 
@@ -499,7 +510,7 @@ export const CreatePlaceEvent: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setIsInstructorDropdownOpen((prev) => !prev)}
-                  className="w-full flex items-center justify-between pr-3 pl-3 py-1.5 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                  className="w-full flex items-center justify-between pr-3 pl-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-colors"
                 >
                   <div className="flex items-center gap-2 truncate">
                     {selectedInstructorObj?.avatar_url ? (
@@ -509,21 +520,21 @@ export const CreatePlaceEvent: React.FC = () => {
                         className="w-7 h-7 rounded-full object-cover shrink-0"
                       />
                     ) : (
-                      <div className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 shrink-0">
+                      <div className="w-7 h-7 rounded-full bg-gray-100 dark:bg-gray-600 flex items-center justify-center text-gray-500 dark:text-gray-300 shrink-0">
                         <UserIcon className="w-4 h-4" />
                       </div>
                     )}
-                    <span className="text-sm text-gray-800 font-medium truncate">
+                    <span className="text-sm font-medium truncate">
                       {selectedInstructorObj
                         ? `${selectedInstructorObj.first_name} ${selectedInstructorObj.last_name}`
                         : "-- اختر المحاضر --"}
                     </span>
                   </div>
-                  <ChevronDown className="w-4 h-4 text-gray-400 shrink-0" />
+                  <ChevronDown className="w-4 h-4 text-gray-400 dark:text-gray-500 shrink-0" />
                 </button>
 
                 {isInstructorDropdownOpen && (
-                  <div className="absolute z-20 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                  <div className="absolute z-20 w-full mt-1 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto">
                     {instructors.map((inst) => (
                       <div
                         key={inst._id}
@@ -534,9 +545,9 @@ export const CreatePlaceEvent: React.FC = () => {
                           }));
                           setIsInstructorDropdownOpen(false);
                         }}
-                        className={`flex items-center gap-3 p-2.5 cursor-pointer transition hover:bg-indigo-50 ${
+                        className={`flex items-center gap-3 p-2.5 cursor-pointer transition hover:bg-indigo-50 dark:hover:bg-gray-600 ${
                           formData.instructor_info === inst._id
-                            ? "bg-indigo-50/70 font-semibold"
+                            ? "bg-indigo-50/70 dark:bg-indigo-950/50 font-semibold"
                             : ""
                         }`}
                       >
@@ -544,19 +555,19 @@ export const CreatePlaceEvent: React.FC = () => {
                           <img
                             src={inst.avatar_url}
                             alt={`${inst.first_name}`}
-                            className="w-8 h-8 rounded-full object-cover shrink-0 border border-gray-200"
+                            className="w-8 h-8 rounded-full object-cover shrink-0 border border-gray-200 dark:border-gray-600"
                           />
                         ) : (
-                          <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center shrink-0">
+                          <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
                             <UserIcon className="w-4 h-4" />
                           </div>
                         )}
                         <div className="flex flex-col min-w-0">
-                          <span className="text-sm text-gray-800 truncate">
+                          <span className="text-sm text-gray-800 dark:text-gray-200 truncate">
                             {inst.first_name} {inst.last_name}
                           </span>
                           {inst.email && (
-                            <span className="text-xs text-gray-400 truncate">
+                            <span className="text-xs text-gray-400 dark:text-gray-400 truncate">
                               {inst.email}
                             </span>
                           )}
@@ -567,7 +578,7 @@ export const CreatePlaceEvent: React.FC = () => {
                 )}
               </div>
             ) : (
-              <div className="flex items-center gap-2 pr-3 pl-3 py-2 border border-gray-200 bg-gray-50 rounded-lg">
+              <div className="flex items-center gap-2 pr-3 pl-3 py-2 border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
                 {currentUser?.avatar_url ? (
                   <img
                     src={currentUser.avatar_url}
@@ -575,11 +586,11 @@ export const CreatePlaceEvent: React.FC = () => {
                     className="w-7 h-7 rounded-full object-cover shrink-0"
                   />
                 ) : (
-                  <div className="w-7 h-7 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 shrink-0">
+                  <div className="w-7 h-7 rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center text-gray-500 dark:text-gray-300 shrink-0">
                     <UserIcon className="w-4 h-4" />
                   </div>
                 )}
-                <span className="text-sm text-gray-600 font-semibold truncate">
+                <span className="text-sm text-gray-600 dark:text-gray-300 font-semibold truncate">
                   {currentUser
                     ? `${currentUser.first_name} ${currentUser.last_name} (أنت)`
                     : ""}
@@ -590,11 +601,11 @@ export const CreatePlaceEvent: React.FC = () => {
 
           {/* الموضوع الرئيسي */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
               الموضوع الرئيسي <span className="text-red-500">*</span>
             </label>
             <div className="relative">
-              <Layers className="w-5 h-5 text-gray-400 absolute right-3 top-2.5" />
+              <Layers className="w-5 h-5 text-gray-400 dark:text-gray-500 absolute right-3 top-2.5 pointer-events-none" />
               <select
                 name="main_topic"
                 value={formData.main_topic}
@@ -603,15 +614,19 @@ export const CreatePlaceEvent: React.FC = () => {
                 disabled={
                   !formData.schedule_id || availableMainTopics.length === 0
                 }
-                className="w-full pr-10 pl-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white disabled:bg-gray-100 disabled:cursor-not-allowed"
+                className="w-full pr-10 pl-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm sm:text-base disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:text-gray-400 dark:disabled:text-gray-500 disabled:cursor-not-allowed transition-colors"
               >
-                <option value="">
+                <option value="" className="bg-white dark:bg-gray-700">
                   {!formData.schedule_id
                     ? "-- اختر جدول العمل أولاً --"
                     : "-- اختر الموضوع الرئيسي --"}
                 </option>
                 {availableMainTopics.map((topic, index) => (
-                  <option key={index} value={topic}>
+                  <option
+                    key={index}
+                    value={topic}
+                    className="bg-white dark:bg-gray-700"
+                  >
                     {topic}
                   </option>
                 ))}
@@ -621,11 +636,11 @@ export const CreatePlaceEvent: React.FC = () => {
 
           {/* الموضوع الفرعي */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
               الموضوع الفرعي <span className="text-red-500">*</span>
             </label>
             <div className="relative">
-              <BookOpen className="w-5 h-5 text-gray-400 absolute right-3 top-2.5" />
+              <BookOpen className="w-5 h-5 text-gray-400 dark:text-gray-500 absolute right-3 top-2.5 pointer-events-none" />
               <select
                 name="sub_topic"
                 value={formData.sub_topic}
@@ -634,15 +649,19 @@ export const CreatePlaceEvent: React.FC = () => {
                 disabled={
                   !formData.main_topic || availableSubTopics.length === 0
                 }
-                className="w-full pr-10 pl-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white disabled:bg-gray-100 disabled:cursor-not-allowed"
+                className="w-full pr-10 pl-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm sm:text-base disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:text-gray-400 dark:disabled:text-gray-500 disabled:cursor-not-allowed transition-colors"
               >
-                <option value="">
+                <option value="" className="bg-white dark:bg-gray-700">
                   {!formData.main_topic
                     ? "-- اختر الموضوع الرئيسي أولاً --"
                     : "-- اختر الموضوع الفرعي --"}
                 </option>
                 {availableSubTopics.map((row, index) => (
-                  <option key={row._id || index} value={row.supTopic}>
+                  <option
+                    key={row._id || index}
+                    value={row.supTopic}
+                    className="bg-white dark:bg-gray-700"
+                  >
                     {row.supTopic}
                   </option>
                 ))}
@@ -654,13 +673,13 @@ export const CreatePlaceEvent: React.FC = () => {
         {/* صندوق عرض الملاحظات الخاص بالـ SubTopic */}
         {selectedSubTopicDetails && selectedSubTopicDetails.comments && (
           <div
-            className="p-4 rounded-lg border flex items-start gap-3 shadow-sm transition-all"
+            className="p-4 rounded-lg border flex items-start gap-3 shadow-sm transition-all dark:bg-opacity-20"
             style={{
-              backgroundColor: selectedSubTopicDetails.bg_color || "#f9fafb",
-              color: selectedSubTopicDetails.text_color || "#1f2937",
+              backgroundColor: selectedSubTopicDetails.bg_color || undefined,
+              color: selectedSubTopicDetails.text_color || undefined,
               borderColor: selectedSubTopicDetails.text_color
                 ? `${selectedSubTopicDetails.text_color}40`
-                : "#e5e7eb",
+                : undefined,
             }}
           >
             <Info className="w-5 h-5 shrink-0 mt-0.5" />
@@ -676,13 +695,13 @@ export const CreatePlaceEvent: React.FC = () => {
         )}
 
         {/* قسم تاريخ الفعالية وعدد الندوات */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
               عدد الندوات <span className="text-red-500">*</span>
             </label>
             <div className="relative">
-              <Hash className="w-5 h-5 text-gray-400 absolute right-3 top-2.5" />
+              <Hash className="w-5 h-5 text-gray-400 dark:text-gray-500 absolute right-3 top-2.5 pointer-events-none" />
               <input
                 type="number"
                 name="seminars_count"
@@ -690,42 +709,42 @@ export const CreatePlaceEvent: React.FC = () => {
                 value={formData.seminars_count}
                 onChange={handleChange}
                 required
-                className="w-full pr-10 pl-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                className="w-full pr-10 pl-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm sm:text-base transition-colors"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
               تاريخ الندوة / الفعالية <span className="text-red-500">*</span>
             </label>
             <div className="relative">
-              <Calendar className="w-5 h-5 text-gray-400 absolute right-3 top-2.5" />
+              <Calendar className="w-5 h-5 text-gray-400 dark:text-gray-500 absolute right-3 top-2.5 pointer-events-none" />
               <input
                 type="date"
                 name="event_date"
                 value={formData.event_date}
                 onChange={handleChange}
                 required
-                className="w-full pr-10 pl-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                className="w-full pr-10 pl-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm sm:text-base transition-colors"
               />
             </div>
           </div>
         </div>
 
         {/* قسم موقع الانعقاد المحدث بخيارات الـ 5 المتاحة */}
-        <div className="pt-4 border-t border-gray-200">
-          <label className="block text-sm font-semibold text-gray-700 mb-3">
+        <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+          <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
             موقع انعقاد الندوة <span className="text-red-500">*</span>
           </label>
           <div className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
               {/* ندوة داخلية */}
               <label
-                className={`flex items-center gap-2 p-3 rounded-lg border cursor-pointer font-medium text-xs transition ${
+                className={`flex items-center gap-2 p-3 rounded-lg border cursor-pointer font-medium text-xs sm:text-sm transition ${
                   formData.location_type === LocationType.INTERNAL_SEMINAR
-                    ? "bg-indigo-50 border-indigo-500 text-indigo-700 font-semibold"
-                    : "bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100"
+                    ? "bg-indigo-50 dark:bg-indigo-950/40 border-indigo-500 text-indigo-700 dark:text-indigo-300 font-semibold"
+                    : "bg-gray-50 dark:bg-gray-700/50 border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                 }`}
               >
                 <input
@@ -736,17 +755,17 @@ export const CreatePlaceEvent: React.FC = () => {
                     formData.location_type === LocationType.INTERNAL_SEMINAR
                   }
                   onChange={handleChange}
-                  className="w-4 h-4 text-indigo-600 focus:ring-indigo-500"
+                  className="w-4 h-4 text-indigo-600 focus:ring-indigo-500 dark:bg-gray-800 dark:border-gray-600"
                 />
-                ندوة داخلية
+                <span>ندوة داخلية</span>
               </label>
 
               {/* ندوة خارجية */}
               <label
-                className={`flex items-center gap-2 p-3 rounded-lg border cursor-pointer font-medium text-xs transition ${
+                className={`flex items-center gap-2 p-3 rounded-lg border cursor-pointer font-medium text-xs sm:text-sm transition ${
                   formData.location_type === LocationType.EXTERNAL_SEMINAR
-                    ? "bg-indigo-50 border-indigo-500 text-indigo-700 font-semibold"
-                    : "bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100"
+                    ? "bg-indigo-50 dark:bg-indigo-950/40 border-indigo-500 text-indigo-700 dark:text-indigo-300 font-semibold"
+                    : "bg-gray-50 dark:bg-gray-700/50 border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                 }`}
               >
                 <input
@@ -757,17 +776,17 @@ export const CreatePlaceEvent: React.FC = () => {
                     formData.location_type === LocationType.EXTERNAL_SEMINAR
                   }
                   onChange={handleChange}
-                  className="w-4 h-4 text-indigo-600 focus:ring-indigo-500"
+                  className="w-4 h-4 text-indigo-600 focus:ring-indigo-500 dark:bg-gray-800 dark:border-gray-600"
                 />
-                ندوة خارجية
+                <span>ندوة خارجية</span>
               </label>
 
               {/* مشورة عامة */}
               <label
-                className={`flex items-center gap-2 p-3 rounded-lg border cursor-pointer font-medium text-xs transition ${
+                className={`flex items-center gap-2 p-3 rounded-lg border cursor-pointer font-medium text-xs sm:text-sm transition ${
                   formData.location_type === LocationType.GENERAL_CONSULTATION
-                    ? "bg-indigo-50 border-indigo-500 text-indigo-700 font-semibold"
-                    : "bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100"
+                    ? "bg-indigo-50 dark:bg-indigo-950/40 border-indigo-500 text-indigo-700 dark:text-indigo-300 font-semibold"
+                    : "bg-gray-50 dark:bg-gray-700/50 border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                 }`}
               >
                 <input
@@ -778,17 +797,17 @@ export const CreatePlaceEvent: React.FC = () => {
                     formData.location_type === LocationType.GENERAL_CONSULTATION
                   }
                   onChange={handleChange}
-                  className="w-4 h-4 text-indigo-600 focus:ring-indigo-500"
+                  className="w-4 h-4 text-indigo-600 focus:ring-indigo-500 dark:bg-gray-800 dark:border-gray-600"
                 />
-                مشورة عامة
+                <span>مشورة عامة</span>
               </label>
 
               {/* لقاء جماهيري */}
               <label
-                className={`flex items-center gap-2 p-3 rounded-lg border cursor-pointer font-medium text-xs transition ${
+                className={`flex items-center gap-2 p-3 rounded-lg border cursor-pointer font-medium text-xs sm:text-sm transition ${
                   formData.location_type === LocationType.PUBLIC_MEETING
-                    ? "bg-indigo-50 border-indigo-500 text-indigo-700 font-semibold"
-                    : "bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100"
+                    ? "bg-indigo-50 dark:bg-indigo-950/40 border-indigo-500 text-indigo-700 dark:text-indigo-300 font-semibold"
+                    : "bg-gray-50 dark:bg-gray-700/50 border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                 }`}
               >
                 <input
@@ -799,17 +818,17 @@ export const CreatePlaceEvent: React.FC = () => {
                     formData.location_type === LocationType.PUBLIC_MEETING
                   }
                   onChange={handleChange}
-                  className="w-4 h-4 text-indigo-600 focus:ring-indigo-500"
+                  className="w-4 h-4 text-indigo-600 focus:ring-indigo-500 dark:bg-gray-800 dark:border-gray-600"
                 />
-                لقاء جماهيري
+                <span>لقاء جماهيري</span>
               </label>
 
               {/* ندوات قوافل */}
               <label
-                className={`flex items-center gap-2 p-3 rounded-lg border cursor-pointer font-medium text-xs transition ${
+                className={`flex items-center gap-2 p-3 rounded-lg border cursor-pointer font-medium text-xs sm:text-sm transition ${
                   formData.location_type === LocationType.CONVOY_SEMINARS
-                    ? "bg-indigo-50 border-indigo-500 text-indigo-700 font-semibold"
-                    : "bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100"
+                    ? "bg-indigo-50 dark:bg-indigo-950/40 border-indigo-500 text-indigo-700 dark:text-indigo-300 font-semibold"
+                    : "bg-gray-50 dark:bg-gray-700/50 border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                 }`}
               >
                 <input
@@ -820,16 +839,16 @@ export const CreatePlaceEvent: React.FC = () => {
                     formData.location_type === LocationType.CONVOY_SEMINARS
                   }
                   onChange={handleChange}
-                  className="w-4 h-4 text-indigo-600 focus:ring-indigo-500"
+                  className="w-4 h-4 text-indigo-600 focus:ring-indigo-500 dark:bg-gray-800 dark:border-gray-600"
                 />
-                ندوات قوافل
+                <span>ندوات قوافل</span>
               </label>
             </div>
 
-            {/* إظهار اسم المكان الخارجي للأنواع الثلاثة المطلوبة بـ Backend */}
+            {/* إظهار اسم المكان الخارجي */}
             {requiresExternalLocation && (
               <div className="relative mt-2">
-                <MapPin className="w-5 h-5 text-gray-400 absolute right-3 top-2.5" />
+                <MapPin className="w-5 h-5 text-gray-400 dark:text-gray-500 absolute right-3 top-2.5 pointer-events-none" />
                 <input
                   type="text"
                   name="external_location_name"
@@ -837,7 +856,7 @@ export const CreatePlaceEvent: React.FC = () => {
                   onChange={handleChange}
                   required={requiresExternalLocation}
                   placeholder="اكتب اسم المكان الخارجي..."
-                  className="w-full pr-10 pl-3 py-2 border border-indigo-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-indigo-50/30 text-sm"
+                  className="w-full pr-10 pl-3 py-2 border border-indigo-300 dark:border-indigo-600/60 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-indigo-50/30 dark:bg-indigo-950/20 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 text-sm transition-colors"
                 />
               </div>
             )}
@@ -845,20 +864,20 @@ export const CreatePlaceEvent: React.FC = () => {
         </div>
 
         {/* تفكيك الحضور */}
-        <div className="pt-6 border-t border-gray-200">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-md font-bold text-gray-800 flex items-center gap-2">
-              <Users className="w-5 h-5 text-indigo-600" />
-              تفكيك أعداد الحضور
+        <div className="pt-6 border-t border-gray-200 dark:border-gray-700">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+            <h3 className="text-md font-bold text-gray-800 dark:text-gray-200 flex items-center gap-2">
+              <Users className="w-5 h-5 text-indigo-600 dark:text-indigo-400 shrink-0" />
+              <span>تفكيك أعداد الحضور</span>
             </h3>
-            <span className="text-sm bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full font-bold">
+            <span className="text-xs sm:text-sm bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 px-3 py-1 rounded-full font-bold w-fit">
               إجمالي الحضور: {totalAttendees}
             </span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-              <label className="block text-xs font-semibold text-gray-600 mb-1">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+            <div className="bg-gray-50 dark:bg-gray-700/40 p-3 sm:p-4 rounded-lg border border-gray-200 dark:border-gray-600 transition-colors">
+              <label className="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">
                 الرجال
               </label>
               <input
@@ -866,12 +885,12 @@ export const CreatePlaceEvent: React.FC = () => {
                 min="0"
                 value={formData.attendees.males}
                 onChange={(e) => handleAttendeesChange(e, "males")}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm transition-colors"
               />
             </div>
 
-            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-              <label className="block text-xs font-semibold text-gray-600 mb-1">
+            <div className="bg-gray-50 dark:bg-gray-700/40 p-3 sm:p-4 rounded-lg border border-gray-200 dark:border-gray-600 transition-colors">
+              <label className="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">
                 النساء
               </label>
               <input
@@ -879,12 +898,12 @@ export const CreatePlaceEvent: React.FC = () => {
                 min="0"
                 value={formData.attendees.females}
                 onChange={(e) => handleAttendeesChange(e, "females")}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm transition-colors"
               />
             </div>
 
-            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-              <label className="block text-xs font-semibold text-gray-600 mb-1">
+            <div className="bg-gray-50 dark:bg-gray-700/40 p-3 sm:p-4 rounded-lg border border-gray-200 dark:border-gray-600 transition-colors">
+              <label className="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">
                 الأطفال
               </label>
               <input
@@ -892,17 +911,17 @@ export const CreatePlaceEvent: React.FC = () => {
                 min="0"
                 value={formData.attendees.children}
                 onChange={(e) => handleAttendeesChange(e, "children")}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm transition-colors"
               />
             </div>
           </div>
         </div>
 
         {/* زر الإرسال */}
-        <div className="pt-6 border-t border-gray-200 flex justify-end">
+        <div className="pt-6 border-t border-gray-200 dark:border-gray-700 flex justify-end">
           <button
             type="submit"
-            className="flex items-center gap-2 px-6 py-2.5 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-200 transition disabled:bg-indigo-300"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-2.5 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-200 dark:focus:ring-indigo-900 transition disabled:bg-indigo-300 dark:disabled:bg-indigo-800/50"
           >
             حفظ الندوة
           </button>

@@ -595,7 +595,7 @@ const EditStaffPermissionsPage: React.FC = () => {
                     {/* تاريخ انتهاء الصلاحية المخصصة إن وجدت */}
                     {isCustom && (
                       <div className="mt-3 pt-2.5 border-t border-blue-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                        <span className="text-[11px] font-bold text-blue-900 flex items-center gap-1">
+                        <span className="text-[11px] font-bold text-blue-900 dark:text-blue-300 flex items-center gap-1">
                           <Clock className="w-3.5 h-3.5 text-blue-600" />
                           تاريخ انتهاء الصلاحية الاستثنائية:
                         </span>

@@ -14,7 +14,11 @@ import {
 } from "lucide-react";
 import type { IPlace, PlaceType } from "../types";
 import type { AppDispatch, RootState } from "../../../../../store";
-import { loading, open, close } from "../../../../Redux-Store/SuccessFaildState/SFS";
+import {
+  loading,
+  open,
+  close,
+} from "../../../../Redux-Store/SuccessFaildState/SFS";
 import AxiosApi from "../../../../../AxiosApi"; // تأكد من مسار AxiosApi لديك
 
 interface PlacesResponse {
@@ -197,38 +201,40 @@ export const MyPlacesPage: React.FC = () => {
         </div>
 
         {/* زر مفتاح التبديل (Direct vs All) */}
-        <div className="flex items-center gap-2 w-full md:w-auto justify-end">
-          <span className="text-xs text-gray-500 flex items-center gap-1">
-            <Filter className="w-3.5 h-3.5" /> النطاق:
-          </span>
-          <div className="bg-gray-100 p-1 rounded-lg flex gap-1">
-            <button
-              onClick={() => handleScopeChange("direct")}
-              className={`px-3 py-1.5 text-xs font-medium rounded-md transition ${
-                scopeFromUrl === "direct"
-                  ? "bg-white text-blue-600 shadow-sm"
-                  : "text-gray-600 hover:text-gray-900"
-              }`}
-            >
-              المباشرة فقط (الافتراضي)
-            </button>
-            <button
-              onClick={() => handleScopeChange("all")}
-              className={`px-3 py-1.5 text-xs font-medium rounded-md transition ${
-                scopeFromUrl === "all"
-                  ? "bg-white text-blue-600 shadow-sm"
-                  : "text-gray-600 hover:text-gray-900"
-              }`}
-            >
-              إظهار الكل (المباشرة والفرعية)
-            </button>
+        <div className="flex flex-wrap items-center gap-2 w-full md:w-auto justify-end">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-xs text-gray-700 flex items-center gap-1">
+              <Filter className="w-3.5 h-3.5" /> النطاق:
+            </span>
+            <div className="bg-gray-300 p-1 rounded-lg flex flex-wrap gap-1 justify-center">
+              <button
+                onClick={() => handleScopeChange("direct")}
+                className={`px-3 py-1.5 text-xs font-medium rounded-md transition ${
+                  scopeFromUrl === "direct"
+                    ? "bg-white text-blue-600 shadow-sm"
+                    : "text-gray-600 hover:text-gray-900"
+                }`}
+              >
+                المباشرة فقط (الافتراضي)
+              </button>
+              <button
+                onClick={() => handleScopeChange("all")}
+                className={`px-3 py-1.5 text-xs font-medium rounded-md transition ${
+                  scopeFromUrl === "all"
+                    ? "bg-white text-blue-600 shadow-sm"
+                    : "text-gray-600 hover:text-gray-900"
+                }`}
+              >
+                إظهار الكل (المباشرة والفرعية)
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
       {/* 3. عرض البطاقات أو رسائل التحميل/الفراغ */}
       {places.length === 0 ? (
-        <div className="bg-gray-50 border border-dashed rounded-xl p-12 text-center text-gray-500">
+        <div className="bg-gray-50 border border-dashed rounded-xl p-6 sm:p-12 text-center text-gray-500">
           {searchFromUrl
             ? "لا توجد نتائج تطابق بحثك الحالي."
             : "لا توجد أماكن مسندة إليك ضمن هذا النطاق."}

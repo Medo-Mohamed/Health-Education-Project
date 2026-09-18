@@ -46,7 +46,14 @@ export const PdfPreviewModal: React.FC<PdfPreviewModalProps> = ({
     <div style={modalOverlayStyle}>
       <div style={modalContentStyle}>
         <div style={toolbarStyle}>
-          <div style={{ display: "flex", gap: "15px", alignItems: "center" }}>
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: "10px",
+              alignItems: "center",
+            }}
+          >
             <label>
               حجم الورقة:
               <select
@@ -74,7 +81,7 @@ export const PdfPreviewModal: React.FC<PdfPreviewModalProps> = ({
             </label>
           </div>
 
-          <div style={{ display: "flex", gap: "10px" }}>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
             <PDFDownloadLink
               key={`${pageSize}-${orientation}-${schedules.length}-${rawList.length}`}
               document={
@@ -134,10 +141,12 @@ const modalContentStyle: React.CSSProperties = {
 };
 
 const toolbarStyle: React.CSSProperties = {
-  padding: "12px 20px",
+  padding: "10px 12px",
   backgroundColor: "#F8FAFC",
   borderBottom: "1px solid #E2E8F0",
   display: "flex",
+  flexWrap: "wrap",
+  gap: "10px",
   justifyContent: "space-between",
   alignItems: "center",
 };

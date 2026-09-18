@@ -1,66 +1,73 @@
-import { BsList } from "react-icons/bs";
-import { GoX } from "react-icons/go";
+// import { BsList } from "react-icons/bs";
+// import { GoX } from "react-icons/go";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../../store";
 import { IoMdPerson } from "react-icons/io";
 import { CiLight } from "react-icons/ci";
 import { IoMoon } from "react-icons/io5";
 import { changeTheme } from "../../Redux-Store/ThemesControle/ThemeSlice";
-import { useEffect, useState } from "react";
+// import { useEffect, useState } from "react";
+// import { useState } from "react";
 import {
   logOutUser,
   openLoginModal,
 } from "../../Redux-Store/UserControle/UserDisplatSlice";
 import { MdOutlineLogout } from "react-icons/md";
-import UserList from "./UserList";
+// import UserList from "./UserList";
+import { Link } from "react-router-dom";
 
-function Left({
-  isClicked,
-  openMobileBar,
-  closeMobileBar,
-}: {
-  isClicked: boolean;
-  openMobileBar: () => void;
-  closeMobileBar: () => void;
-}) {
-  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    e.stopPropagation();
-    if (isClicked) {
-      closeMobileBar();
-    } else {
-      openMobileBar();
-    }
-  };
-  const handleResize = () => {
-    if (window.innerWidth >= 1024) {
-      closeMobileBar();
-    }
-  };
-  useEffect(() => {
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+function Left() {
+  //   {
+  //   isClicked,
+  //   openMobileBar,
+  //   closeMobileBar,
+  // }: {
+  //   isClicked: boolean;
+  //   openMobileBar: () => void;
+  //   closeMobileBar: () => void;
+  // }
+  // const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+  //   e.stopPropagation();
+  //   if (isClicked) {
+  //     closeMobileBar();
+  //   } else {
+  //     openMobileBar();
+  //   }
+  // };
+  // const handleResize = () => {
+  //   if (window.innerWidth >= 1024) {
+  //     closeMobileBar();
+  //   }
+  // };
+  // useEffect(() => {
+  //   window.addEventListener("resize", handleResize);
+  //   return () => window.removeEventListener("resize", handleResize);
+  // }, []);
   const User = useSelector((state: RootState) => state.User);
   const Theme = useSelector((state: RootState) => state.Theme.value);
   const Dispatch = useDispatch<AppDispatch>();
 
-  const [openUserList, setOpenUserList] = useState(false);
-  const handleOpenUserList = (e: React.MouseEvent<HTMLDivElement>) => {
-    e.stopPropagation();
-    setOpenUserList((prev) => !prev);
-  };
-  const handleCloseUserList = () => {
-    setOpenUserList(false);
-  };
+  // const [openUserList, setOpenUserList] = useState(false);
+  // const handleOpenUserList = (e: React.MouseEvent<HTMLDivElement>) => {
+  //   e.stopPropagation();
+  //   setOpenUserList((prev) => !prev);
+  // };
+  // const handleCloseUserList = () => {
+  //   setOpenUserList(false);
+  // };
   return (
     <div className="element-center gap-4">
       {User.status == "idle" ? (
         <div className="element-center gap-2">
           <div
             className="element-center gap-0.5 text-xl  p-1 rounded-md  transition-colors duration-300 cursor-pointer group relative"
-            onClick={handleOpenUserList}
+            // onClick={handleOpenUserList}
           >
-            <div className="flex items-center gap-2 group cursor-pointer">
+            <Link
+              to={"/profile"}
+              className="flex items-center gap-2 group cursor-pointer"
+              title="الصفحة الشخصية"
+            >
               <div
                 className="w-9 h-9 rounded-full flex items-center justify-center overflow-hidden bg-black/20 border border-gray-500/50 group-hover:bg-black/60 transition-all duration-300 relative"
                 style={{
@@ -81,11 +88,11 @@ function Left({
               <div className="hidden md:block text-sm font-medium transition-colors group-hover:text-blue-500">
                 {User.data.user?.first_name}
               </div>
-            </div>
-            <UserList
+            </Link>
+            {/* <UserList
               isOpen={openUserList}
               handelCloseUserList={handleCloseUserList}
-            />
+            /> */}
           </div>
         </div>
       ) : (
@@ -108,12 +115,12 @@ function Left({
       >
         {Theme === "light" ? <IoMoon /> : <CiLight />}
       </div>
-      <div
+      {/* <div
         className="cursor-pointer hoverAction text-3xl p-1 rounded-md lg:hidden"
         onClick={handleClick}
       >
         {isClicked ? <GoX /> : <BsList />}
-      </div>
+      </div> */}
       {/* to test now */}
       {User.status === "idle" && (
         <button

@@ -1,35 +1,41 @@
+/* خلفية متدرجة هادئة ومتجاوبة */
 .register-container {
-  background: url("../../assets/llxvisuals-eSLJG0y5S4U-unsplash.jpg");
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
-}
-.form-background-dark {
-  /* background: rgba(255, 255, 255, 0.847);
-  box-shadow: 0 0 30px 3px rgb(255, 255, 255); */
-  background: rgba(0, 0, 0, 0.847);
-  box-shadow: 0 0 30px 3px rgba(0, 0, 0, 1);
-}
-.form-background-dark input {
-  /* background: rgba(255, 255, 255, 0.847); */
-  /* box-shadow: 0 0 10px 0px rgb(255, 255, 255); */
-  /* color: black; */
-  background-color: var(--bg-input);
-  color: var(--color-inpute);
-  outline: none;
-  border: none;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f1f5f9 100%);
+  transition: background 0.3s ease;
 }
 
-.form-background-light {
-  background: rgba(255, 255, 255, 0.847);
-  box-shadow: 0 0 30px 3px rgb(255, 255, 255);
+/* تحويل الخلفية تلقائياً عند تفعيل الوضع الداكن على مستوى الـ HTML أو Body */
+.dark .register-container {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
 }
+
+/* بطاقة النموذج - الوضع الداكن */
+.form-background-dark {
+  background-color: rgba(30, 41, 59, 0.75) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.3),
+    0 8px 10px -6px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* بطاقة النموذج - الوضع الفاتح */
+.form-background-light {
+  background-color: rgba(255, 255, 255, 0.85) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(226, 232, 240, 0.8) !important;
+  box-shadow:
+    0 20px 25px -5px rgba(148, 163, 184, 0.15),
+    0 8px 10px -6px rgba(148, 163, 184, 0.1) !important;
+}
+
+/* تحسين انتقال حقول الإدخال */
+.form-background-dark input,
 .form-background-light input {
-  /* background: rgba(0, 0, 0, 0.847);
-  box-shadow: 0 0 10px 0px rgb(0, 0, 0);
-  color: rgb(255, 255, 255); */
-  background-color: var(--bg-input);
-  color: var(--color-inpute);
-  outline: none;
-  border: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }

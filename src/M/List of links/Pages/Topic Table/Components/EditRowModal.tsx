@@ -68,7 +68,7 @@ const EditRowModal: React.FC<EditRowModalProps> = ({
       onClick={onClose}
     >
       <div
-        className="createTopicModelBox rounded-2xl shadow-xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in duration-200"
+        className="createTopicModelBox rounded-2xl shadow-xl w-full max-w-lg max-h-full overflow-y-auto animate-in fade-in zoom-in duration-200"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="p-6 border-b  flex justify-between items-center">

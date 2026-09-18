@@ -176,14 +176,14 @@ const HealthPosts = () => {
             />
 
             {/* --- جزء تحديد الوقت --- */}
-            <div className="mt-4 p-3 bg-indigo-50/50 rounded-xl border border-indigo-100 dark:bg-gray-700 dark:border-gray-600">
+            <div className="mt-4 p-3 bg-gray-200 rounded-xl border border-gray-200">
               <label className="block text-xs font-bold text-indigo-900 mb-2 mr-1 dark:text-gray-300">
                 مدة عرض المنشور (بحد أقصى شهر):
               </label>
               <div className="flex items-center gap-4 flex-col md:flex-row">
                 <div className="flex flex-1 items-center gap-2 w-full">
                   <label
-                    className="text-xs text-gray-500 dark:text-gray-300"
+                    className="text-xs text-gray-700 dark:text-gray-300"
                     htmlFor="numberOfDays"
                   >
                     أيام:
@@ -210,13 +210,13 @@ const HealthPosts = () => {
                               : postTime.hours,
                       });
                     }}
-                    className="w-full p-1.5 text-center border border-gray-200 rounded-lg text-sm focus:ring-1 focus:ring-blue-400 outline-none"
+                    className="w-full p-1.5 text-center border border-gray-400 rounded-lg text-sm focus:ring-1 focus:ring-blue-400 outline-none"
                   />
                 </div>
 
                 <div className="flex flex-1 items-center gap-2 w-full">
                   <label
-                    className="text-xs text-gray-500 dark:text-gray-300"
+                    className="text-xs text-gray-700 dark:text-gray-300"
                     htmlFor="numberOfHours"
                   >
                     ساعات:
@@ -238,7 +238,7 @@ const HealthPosts = () => {
                         hours: postTime.days === 0 ? Math.max(h, 1) : h,
                       });
                     }}
-                    className={`w-full p-1.5 text-center border border-gray-200 rounded-lg text-sm focus:ring-1 focus:ring-blue-400 outline-none ${
+                    className={`w-full p-1.5 text-center border border-gray-400  rounded-lg text-sm focus:ring-1 focus:ring-blue-400 outline-none ${
                       postTime.days >= 30
                         ? "bg-transparent/10 text-gray-400 cursor-not-allowed"
                         : ""
@@ -286,7 +286,7 @@ const HealthPosts = () => {
                 key={post._id}
                 className="bg-white rounded-2xl shadow-sm border border-gray-200 dark:bg-gray-700 dark:border-gray-600 overflow-hidden"
               >
-                <div className="p-4 flex items-center justify-between border-b border-gray-50 bg-black/10">
+                <div className="p-4 flex flex-wrap items-center justify-between gap-2 bg-black/10">
                   <div className="flex items-center gap-3">
                     <img
                       src={`${post.ownerDocument?.avatar_url}`}
@@ -312,7 +312,7 @@ const HealthPosts = () => {
                     </div>
                   </div>
 
-                  <div className="text-[10px] font-bold text-orange-600 bg-orange-50 px-2 py-1 rounded-lg border border-orange-100 text-center">
+                  <div className="text-[10px] font-bold text-orange-600 bg-orange-50 px-2 py-1 rounded-lg border border-orange-100 text-center whitespace-nowrap">
                     {calculateTimeLeft(post.expiresAt)}
                   </div>
                 </div>

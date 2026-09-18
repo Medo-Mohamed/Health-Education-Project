@@ -10,7 +10,7 @@ import type { RootState } from "../store";
 
 function App() {
   const isGLoading = useSelector(
-    (state: RootState) => state.SuccFaildComponent.state,
+    (state: RootState) => (state.SuccFaildComponent as { state: string }).state,
   );
   return (
     <div>

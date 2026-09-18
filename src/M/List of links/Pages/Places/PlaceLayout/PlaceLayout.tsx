@@ -131,7 +131,7 @@ export const PlaceLayout: React.FC = () => {
   return (
     <div className="space-y-6 dir-rtl" dir="rtl">
       {/* 📌 الجزء الثابت العلوي: Breadcrumbs + Tabs */}
-      <div className="bg-gray-50/95 pt-2 pb-2 space-y-1 rounded">
+      <div className="bg-gray-50/80 pt-2 pb-2 space-y-1 rounded">
         {/* 1. شريط التنقل الهرمي (Breadcrumbs) */}
         <nav className="flex items-center gap-2 text-xs md:text-sm text-gray-600 border-b border-dashed border-b-2 p-3 overflow-x-auto">
           <NavLink
@@ -162,15 +162,15 @@ export const PlaceLayout: React.FC = () => {
 
         {/* 2. شريط التبويبات التنقلي */}
         <div className="p-1.5">
-          <div className="flex items-center gap-2 overflow-x-auto justify-start md:justify-center">
+          <div className="flex items-center gap-2 flex-wrap justify-center">
             <NavLink
               to=""
               end
               className={({ isActive }) =>
                 `flex items-center gap-2 py-2.5 px-5 font-semibold text-sm rounded-lg transition whitespace-nowrap ${
                   isActive
-                    ? "bg-blue-50 text-blue-600 shadow-sm"
-                    : "text-gray-500 hover:text-gray-800 hover:bg-gray-50"
+                    ? "bg-slate-300 text-blue-500 shadow-sm"
+                    : "text-gray-500 hover:text-gray-800 hover:bg-gray-50 dark:hover:bg-slate-300"
                 }`
               }
             >
@@ -185,8 +185,8 @@ export const PlaceLayout: React.FC = () => {
                 className={({ isActive }) =>
                   `flex items-center gap-2 py-2.5 px-5 font-semibold text-sm rounded-lg transition whitespace-nowrap ${
                     isActive
-                      ? "bg-blue-50 text-blue-600 shadow-sm"
-                      : "text-gray-500 hover:text-gray-800 hover:bg-gray-50"
+                      ? "bg-slate-300 text-blue-500 shadow-sm"
+                      : "text-gray-500 hover:text-gray-800 hover:bg-gray-50 dark:hover:bg-slate-300"
                   }`
                 }
               >
@@ -200,8 +200,8 @@ export const PlaceLayout: React.FC = () => {
               className={({ isActive }) =>
                 `flex items-center gap-2 py-2.5 px-5 font-semibold text-sm rounded-lg transition whitespace-nowrap ${
                   isActive
-                    ? "bg-blue-50 text-blue-600 shadow-sm"
-                    : "text-gray-500 hover:text-gray-800 hover:bg-gray-50"
+                    ? "bg-slate-300 text-blue-500 shadow-sm"
+                    : "text-gray-500 hover:text-gray-800 hover:bg-gray-50 dark:hover:bg-slate-300"
                 }`
               }
             >

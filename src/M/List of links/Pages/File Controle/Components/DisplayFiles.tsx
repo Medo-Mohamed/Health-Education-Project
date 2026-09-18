@@ -392,7 +392,7 @@ const ArchiveManager = () => {
                 onClick={(e) =>
                   handleDownloadFile(e, file.fileUrl, file.fileName)
                 }
-                className="group relative bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg hover:border-blue-300 transition-all duration-200 cursor-pointer flex flex-col justify-between"
+                className="group relative bg-slate-200 text-gray-900 border border-gray-300 p-4 sm:p-5 rounded-2xl shadow-sm hover:shadow-lg hover:border-blue-300 transition-all duration-200 cursor-pointer flex flex-col justify-between"
               >
                 {/* الجزء العلوي: الأيقونة مع نوع الملف و الحذف */}
                 <div className="flex items-start justify-between gap-2 mb-3">
@@ -427,14 +427,14 @@ const ArchiveManager = () => {
                   </h3>
 
                   {/* نبذة ومعلومات الحجم والتاريخ */}
-                  <div className="pt-2 border-t border-gray-50 flex items-center justify-between text-[11px] sm:text-xs text-gray-400">
+                  <div className="pt-2 border-t border-gray-50 flex items-center justify-between text-[11px] sm:text-xs text-gray-600">
                     <span>{file.fileSize || "غير محدد"}</span>
                     <span>{new Date(file.createdAt).toLocaleDateString()}</span>
                   </div>
                 </div>
 
                 {/* زر تحميل */}
-                <div className="mt-3 pt-2.5 border-t border-gray-100 flex items-center justify-center gap-2 text-xs font-medium text-blue-600 group-hover:bg-blue-600 group-hover:text-white py-2 rounded-xl transition-all">
+                <div className="mt-3 pt-2.5  border-gray-100 flex items-center justify-center gap-2 text-xs font-medium text-blue-600 group-hover:bg-blue-600 group-hover:text-white py-2 rounded-xl transition-all">
                   <Download size={14} />
                   <span>تحميل الملف</span>
                 </div>

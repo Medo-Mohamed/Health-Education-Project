@@ -14,7 +14,6 @@ import {
 import type { IPlacePlan } from "./PlanReviewPage";
 import { LocationType } from "../../../../types";
 
-
 // ==========================================
 // Component 1: قسم إدارة وتعديل المسودات
 // ==========================================
@@ -55,40 +54,40 @@ export default function DraftManagementTab({
       case LocationType.EXTERNAL_SEMINAR:
         return (
           <span
-            className="inline-flex items-center gap-1 text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md font-bold"
+            className="inline-flex items-center gap-1 text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/50 px-2 py-0.5 rounded-md font-bold"
             title="ندوة خارجية"
           >
-            <MapPin className="w-3 h-3 shrink-0 text-amber-600" />
+            <MapPin className="w-3 h-3 shrink-0 text-amber-600 dark:text-amber-400" />
             {plan.external_location_name || "ندوة خارجية"}
           </span>
         );
       case LocationType.GENERAL_CONSULTATION:
         return (
           <span
-            className="inline-flex items-center gap-1 text-purple-700 bg-purple-50 px-2 py-0.5 rounded-md font-bold"
+            className="inline-flex items-center gap-1 text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-950/50 px-2 py-0.5 rounded-md font-bold"
             title="مشورة عامة"
           >
-            <MapPin className="w-3 h-3 shrink-0 text-purple-600" />
+            <MapPin className="w-3 h-3 shrink-0 text-purple-600 dark:text-purple-400" />
             مشورة عامة
           </span>
         );
       case LocationType.PUBLIC_MEETING:
         return (
           <span
-            className="inline-flex items-center gap-1 text-blue-700 bg-blue-50 px-2 py-0.5 rounded-md font-bold"
+            className="inline-flex items-center gap-1 text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/50 px-2 py-0.5 rounded-md font-bold"
             title="لقاء جماهيري"
           >
-            <MapPin className="w-3 h-3 shrink-0 text-blue-600" />
+            <MapPin className="w-3 h-3 shrink-0 text-blue-600 dark:text-blue-400" />
             {plan.external_location_name || "لقاء جماهيري"}
           </span>
         );
       case LocationType.CONVOY_SEMINARS:
         return (
           <span
-            className="inline-flex items-center gap-1 text-teal-700 bg-teal-50 px-2 py-0.5 rounded-md font-bold"
+            className="inline-flex items-center gap-1 text-teal-700 dark:text-teal-300 bg-teal-50 dark:bg-teal-950/50 px-2 py-0.5 rounded-md font-bold"
             title="ندوات القوافل"
           >
-            <MapPin className="w-3 h-3 shrink-0 text-teal-600" />
+            <MapPin className="w-3 h-3 shrink-0 text-teal-600 dark:text-teal-400" />
             {plan.external_location_name || "ندوات القوافل"}
           </span>
         );
@@ -96,10 +95,10 @@ export default function DraftManagementTab({
       default:
         return (
           <span
-            className="inline-flex items-center gap-1 text-shadow-zinc-700 bg-zinc-50 px-2 py-0.5 rounded-md font-bold"
+            className="inline-flex items-center gap-1 text-zinc-700 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded-md font-bold"
             title="ندوة داخلية"
           >
-            <MapPin className="w-3 h-3 shrink-0 text-shadow-zinc-600" />
+            <MapPin className="w-3 h-3 shrink-0 text-zinc-600 dark:text-zinc-400" />
             ندوة داخلية
           </span>
         );
@@ -110,8 +109,8 @@ export default function DraftManagementTab({
     <div className="space-y-4">
       <div className="flex flex-wrap justify-between items-center gap-4">
         <div className="flex items-center gap-2">
-          <FileText className="w-5 h-5 text-blue-600" />
-          <h2 className="text-lg font-black text-slate-800">
+          <FileText className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+          <h2 className="text-lg font-black text-slate-800 dark:text-slate-100">
             إدارة وتعديل المسودات (جدول الموضوعات والصفوف)
           </h2>
         </div>
@@ -129,98 +128,129 @@ export default function DraftManagementTab({
       </div>
 
       {error && (
-        <div className="p-4 bg-rose-50 text-rose-700 rounded-2xl border border-rose-200 flex items-center gap-2 text-sm font-bold">
+        <div className="p-4 bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400 rounded-2xl border border-rose-200 dark:border-rose-900/50 flex items-center gap-2 text-sm font-bold">
           <AlertCircle className="w-5 h-5 shrink-0" />
           {error}
         </div>
       )}
 
       {plans.length === 0 ? (
-        <div className="p-8 text-center text-slate-400 font-bold border border-dashed border-slate-200 rounded-3xl">
+        <div className="p-8 text-center text-slate-400 dark:text-slate-500 font-bold border border-dashed border-slate-200 dark:border-slate-800 rounded-3xl">
           لا توجد ندوات في وضع المسودة (Draft) مضافة لهذا المكان.
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-2xl border border-slate-200 shadow-sm bg-white">
-          <table className="w-full text-right text-xs">
-            <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold">
-              <tr>
-                <th className="p-3.5">اسم الجدول الفعلي</th>
-                <th className="p-3.5">الموضوع الرئيسي</th>
-                <th className="p-3.5">الموضوع الفرعي</th>
-                <th className="p-3.5">تاريخ الفعالية</th>
-                <th className="p-3.5">نوع المكان</th>
-                <th className="p-3.5 text-center">العدد</th>
-                <th className="p-3.5 text-center">التغطية الإعلامية</th>
-                <th className="p-3.5 text-center">الحضور المستهدف</th>
-                <th className="p-3.5 text-center">الحالة / الإجراءات</th>
+        <div className="custom-scrollbar overflow-x-auto overflow-y-auto max-h-[70vh] rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm bg-white dark:bg-slate-900 max-lg:bg-transparent max-lg:border-0 max-lg:shadow-none">
+          <table className="w-full custom-scrollbar text-right text-xs max-lg:block max-lg:whitespace-normal">
+            <thead className="sticky top-0 z-10 bg-slate-100 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-bold max-lg:hidden shadow-sm max-lg:bg-transparent">
+              <tr className="text-center">
+                <th className="p-1">اسم الجدول الفعلي</th>
+                <th className="p-1">الموضوع الرئيسي</th>
+                <th className="p-1">الموضوع الفرعي</th>
+                <th className="p-1">تاريخ الفعالية</th>
+                <th className="p-1">نوع المكان</th>
+                <th className="p-1 text-center">العدد</th>
+                <th className="p-1 text-center">التغطية الإعلامية</th>
+                <th className="p-1 text-center">الحضور المستهدف</th>
+                <th className="p-1 text-center">الحالة / الإجراءات</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800 max-lg:block max-lg:space-y-4 max-lg:divide-y-0 max-lg:bg-transparent">
               {plans.map((plan) => {
                 const actualTableName = getActualTableName(
                   plan.main_topic,
                   plan.sub_topic,
                   plan.schedule_name,
                 );
-                // console.log("from darft",plan)
                 return (
                   <tr
                     key={plan.id}
-                    className="hover:bg-blue-50/40 transition-colors"
+                    className="hover:bg-blue-50/40 dark:hover:bg-blue-950/20 transition-colors max-lg:block max-lg:rounded-2xl max-lg:border max-lg:border-slate-200 dark:max-lg:border-slate-800 max-lg:bg-white dark:max-lg:bg-slate-900 max-lg:p-4 max-lg:shadow-sm max-lg:hover:bg-white dark:max-lg:hover:bg-slate-900"
                   >
-                    <td className="p-3.5 font-bold text-slate-800">
-                      {actualTableName}
+                    <td
+                      data-label="اسم الجدول الفعلي"
+                      className="p-1 font-bold text-slate-800 dark:text-slate-100 max-lg:grid max-lg:grid-cols-3 max-lg:items-center max-lg:gap-3 max-lg:py-2.5 max-lg:px-1 max-lg:border-b max-lg:border-dashed max-lg:border-slate-100 dark:max-lg:border-slate-800 max-lg:before:content-[attr(data-label)] max-lg:before:col-span-1 max-lg:before:text-xs max-lg:before:font-bold max-lg:before:text-slate-500 dark:max-lg:before:text-slate-400"
+                    >
+                      <div className="max-lg:col-span-2">{actualTableName}</div>
                     </td>
 
-                    <td className="p-3.5 text-slate-700 font-medium">
-                      {plan.main_topic || "—"}
+                    <td
+                      data-label="الموضوع الرئيسي"
+                      className="p-1 text-slate-700 dark:text-slate-300 font-medium max-lg:grid max-lg:grid-cols-3 max-lg:items-center max-lg:gap-3 max-lg:py-2.5 max-lg:px-1 max-lg:border-b max-lg:border-dashed max-lg:border-slate-100 dark:max-lg:border-slate-800 max-lg:before:content-[attr(data-label)] max-lg:before:col-span-1 max-lg:before:text-xs max-lg:before:font-bold max-lg:before:text-slate-500 dark:max-lg:before:text-slate-400"
+                    >
+                      <div className="max-lg:col-span-2">
+                        {plan.main_topic || "—"}
+                      </div>
                     </td>
 
-                    <td className="p-3.5 text-slate-600">
-                      {plan.sub_topic || "—"}
+                    <td
+                      data-label="الموضوع الفرعي"
+                      className="p-1  text-slate-600 dark:text-slate-400 max-lg:grid max-lg:grid-cols-3 max-lg:items-center max-lg:gap-3 max-lg:py-2.5 max-lg:px-1 max-lg:border-b max-lg:border-dashed max-lg:border-slate-100 dark:max-lg:border-slate-800 max-lg:before:content-[attr(data-label)] max-lg:before:col-span-1 max-lg:before:text-xs max-lg:before:font-bold max-lg:before:text-slate-500 dark:max-lg:before:text-slate-400"
+                    >
+                      <div className="max-lg:col-span-2">
+                        {plan.sub_topic || "—"}
+                      </div>
                     </td>
 
-                    <td className="p-3.5 text-slate-600 whitespace-nowrap">
-                      <span className="flex items-center gap-1">
-                        <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                    <td
+                      data-label="تاريخ الفعالية"
+                      className="p-1 text-slate-600 dark:text-slate-400 whitespace-nowrap max-lg:grid max-lg:grid-cols-3 max-lg:items-center max-lg:gap-3 max-lg:py-2.5 max-lg:px-1 max-lg:border-b max-lg:border-dashed max-lg:border-slate-100 dark:max-lg:border-slate-800 max-lg:whitespace-normal max-lg:before:content-[attr(data-label)] max-lg:before:col-span-1 max-lg:before:text-xs max-lg:before:font-bold max-lg:before:text-slate-500 dark:max-lg:before:text-slate-400"
+                    >
+                      <div className="max-lg:col-span-2 flex items-center gap-1">
+                        <Calendar className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" />
                         {plan.planned_date
                           ? plan.planned_date.substring(0, 10)
                           : "—"}
-                      </span>
+                      </div>
                     </td>
 
-                    <td className="p-3.5 text-slate-600">
-                      {renderLocationBadge(plan)}
+                    <td
+                      data-label="نوع المكان"
+                      className="p-1 text-slate-600 dark:text-slate-400 max-lg:grid max-lg:grid-cols-3 max-lg:items-center max-lg:gap-3 max-lg:py-2.5 max-lg:px-1 max-lg:border-b max-lg:border-dashed max-lg:border-slate-100 dark:max-lg:border-slate-800 max-lg:before:content-[attr(data-label)] max-lg:before:col-span-1 max-lg:before:text-xs max-lg:before:font-bold max-lg:before:text-slate-500 dark:max-lg:before:text-slate-400"
+                    >
+                      <div className="max-lg:col-span-2">
+                        {renderLocationBadge(plan)}
+                      </div>
                     </td>
 
-                    <td className="p-3.5 text-center">
-                      <span className="px-2 py-1 bg-indigo-50 text-indigo-700 font-black rounded-lg">
-                        {plan.count}
-                      </span>
+                    <td
+                      data-label="العدد"
+                      className="p-1 text-center max-lg:text-right max-lg:grid max-lg:grid-cols-3 max-lg:items-center max-lg:gap-3 max-lg:py-2.5 max-lg:px-1 max-lg:border-b max-lg:border-dashed max-lg:border-slate-100 dark:max-lg:border-slate-800 max-lg:before:content-[attr(data-label)] max-lg:before:col-span-1 max-lg:before:text-xs max-lg:before:font-bold max-lg:before:text-slate-500 dark:max-lg:before:text-slate-400"
+                    >
+                      <div className="max-lg:col-span-2">
+                        <span className="px-2 py-1 bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 font-black rounded-lg inline-block">
+                          {plan.count}
+                        </span>
+                      </div>
                     </td>
 
-                    <td className="p-3.5 text-center">
-                      <div className="flex items-center justify-center gap-2 text-[11px] text-slate-600">
+                    <td
+                      data-label="التغطية الإعلامية"
+                      className="p-1 text-center max-lg:text-right max-lg:grid max-lg:grid-cols-3 max-lg:items-center max-lg:gap-3 max-lg:py-2.5 max-lg:px-1 max-lg:border-b max-lg:border-dashed max-lg:border-slate-100 dark:max-lg:border-slate-800 max-lg:before:content-[attr(data-label)] max-lg:before:col-span-1 max-lg:before:text-xs max-lg:before:font-bold max-lg:before:text-slate-500 dark:max-lg:before:text-slate-400"
+                    >
+                      <div className="max-lg:col-span-2 flex lg:flex-col xl:flex-row items-center gap-2 text-[11px] text-slate-600 dark:text-slate-400 justify-center max-lg:justify-start">
                         <span
-                          className="flex items-center gap-0.5"
+                          className="flex items-center gap-1"
                           title="وسائل الإعلام"
                         >
-                          <Radio className="w-3 h-3 text-cyan-600" />
+                          <Radio className="w-3 h-3 text-cyan-600 dark:text-cyan-400" />
                           {plan.media_outlets_count || 0}
                         </span>
                         <span>•</span>
                         <span
-                          className="flex items-center gap-0.5"
+                          className="flex items-center gap-1"
                           title="الأنشطة الرقمية"
                         >
-                          <Globe className="w-3 h-3 text-indigo-600" />
+                          <Globe className="w-3 h-3 text-indigo-600 dark:text-indigo-400" />
                           {plan.digital_media_activities_count || 0}
                         </span>
                       </div>
                     </td>
 
-                    <td className="p-3.5 text-center">
-                      <div className="flex items-center justify-center gap-1.5 text-[11px]">
+                    <td
+                      data-label="الحضور المستهدف"
+                      className="p-1 text-center max-lg:text-right max-lg:grid max-lg:grid-cols-3 max-lg:items-center max-lg:gap-3 max-lg:py-2.5 max-lg:px-1 max-lg:border-b max-lg:border-dashed max-md:border-slate-100 dark:max-lg:border-slate-800 max-lg:before:content-[attr(data-label)] max-lg:before:col-span-1 max-lg:before:text-xs max-lg:before:font-bold max-lg:before:text-slate-500 dark:max-lg:before:text-slate-400"
+                    >
+                      <div className="max-lg:col-span-2 flex lg:flex-col xl:flex-row items-center gap-1.5 text-[11px] justify-center max-lg:justify-start max-lg:flex-wrap text-slate-700 dark:text-slate-300">
                         <span title="ذكور">
                           👨 {plan.target_attendees?.males || 0}
                         </span>
@@ -232,14 +262,14 @@ export default function DraftManagementTab({
                         <span title="أطفال">
                           👶 {plan.target_attendees?.children || 0}
                         </span>
-                        <span className="font-bold text-emerald-600 mr-1 bg-emerald-50 px-1.5 py-0.5 rounded">
-                          (إجمالي {plan.target_total_attendees})
-                        </span>
                       </div>
                     </td>
 
-                    <td className="p-3.5 text-center whitespace-nowrap">
-                      <div className="flex items-center justify-center gap-2">
+                    <td
+                      data-label="الحالة / الإجراءات"
+                      className="p-1 text-center whitespace-nowrap max-lg:grid max-lg:grid-cols-3 max-lg:items-center max-lg:gap-3 max-lg:py-2.5 max-lg:px-1 max-lg:whitespace-normal max-lg:before:content-[attr(data-label)] max-lg:before:col-span-1 max-lg:before:text-xs max-lg:before:font-bold max-lg:before:text-slate-500 dark:max-lg:before:text-slate-400"
+                    >
+                      <div className="max-lg:col-span-2 flex lg:flex-col xl:flex-row items-center justify-center max-lg:justify-start gap-2 max-lg:flex-wrap">
                         {savingId === plan.id && (
                           <Loader2 className="w-4 h-4 text-amber-500 animate-spin" />
                         )}
@@ -250,11 +280,10 @@ export default function DraftManagementTab({
                         <button
                           type="button"
                           onClick={() => handleOpenEditModal(plan)}
-                          className="p-1.5 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white rounded-lg transition-colors flex items-center gap-1 font-bold"
+                          className="p-1.5 bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 hover:bg-blue-600 dark:hover:bg-blue-500 hover:text-white dark:hover:text-white rounded-lg transition-colors flex items-center gap-1 font-bold"
                           title="تعديل الندوة"
                         >
                           <Edit className="w-3.5 h-3.5" />
-                          <span>تعديل</span>
                         </button>
 
                         <button
@@ -263,7 +292,7 @@ export default function DraftManagementTab({
                           onClick={() =>
                             handlePlanAction(plan.id, { action: "DELETE" })
                           }
-                          className="p-1.5 bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white rounded-lg transition-colors flex items-center gap-1 font-bold disabled:opacity-50"
+                          className="p-1.5 bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 hover:bg-rose-600 dark:hover:bg-rose-500 hover:text-white dark:hover:text-white rounded-lg transition-colors flex items-center gap-1 font-bold disabled:opacity-50"
                           title="حذف الندوة"
                         >
                           {deletingId === plan.id ? (
@@ -271,7 +300,6 @@ export default function DraftManagementTab({
                           ) : (
                             <Trash2 className="w-3.5 h-3.5" />
                           )}
-                          <span>حذف</span>
                         </button>
                       </div>
                     </td>

@@ -79,40 +79,46 @@ export default function PlanManagementLayout() {
       : "مستخدم";
 
   return (
-    <div className="min-h-screen font-sans" dir="rtl">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div
+      className="min-h-screen font-sans bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 transition-colors duration-200 p-4 sm:p-6 md:p-8"
+      dir="rtl"
+    >
+      <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
         {/* ==================== 1. Header Card (عرض البيانات فقط) ==================== */}
-        <div className="bg-white rounded-3xl p-4 sm:p-5 shadow-sm border border-slate-200/80 relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-32 h-32 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-br-full -z-0 opacity-60" />
+        <div className="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm border border-slate-200/80 dark:border-slate-800 relative overflow-hidden transition-colors">
+          {/* الخلفية التجميلية للتدرج (تم ضبط التعتيم للدارك مود) */}
+          <div className="absolute top-0 left-0 w-32 h-32 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/40 dark:to-indigo-950/20 rounded-br-full -z-0 opacity-60 dark:opacity-40 pointer-events-none" />
 
-          <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div className="relative z-10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div className="space-y-2">
-              <div className="flex flex-wrap items-center gap-3">
-                <span className="p-2 bg-blue-600/10 text-blue-600 rounded-xl">
-                  <Sparkles className="w-5 h-5" />
+              <div className="flex items-center gap-3">
+                <span className="p-2 sm:p-2.5 bg-blue-600/10 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 rounded-xl flex-shrink-0">
+                  <Sparkles className="w-5 h-5 sm:w-6 sm:h-6" />
                 </span>
-                <h1 className="text-xl sm:text-2xl font-black text-slate-800 tracking-tight">
+                <h1 className="text-lg sm:text-2xl font-black text-slate-800 dark:text-slate-100 tracking-tight">
                   خطة التوعية الصحية
                 </h1>
               </div>
             </div>
 
-            <div className="flex items-center gap-2 w-full md:w-auto justify-end">
-              <div className="px-3 py-1.5 bg-slate-100 border border-slate-200 text-slate-600 text-[11px] font-bold rounded-xl flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                الدور الحالي:{" "}
-                <strong className="text-slate-800">{currentRoleLabel}</strong>
+            <div className="flex items-center gap-2 w-full sm:w-auto justify-start sm:justify-end border-t sm:border-t-0 pt-3 sm:pt-0 border-slate-100 dark:border-slate-800">
+              <div className="px-3 py-1.5 bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/60 text-slate-600 dark:text-slate-300 text-[11px] sm:text-xs font-bold rounded-xl flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse flex-shrink-0" />
+                <span>الدور الحالي:</span>
+                <strong className="text-slate-800 dark:text-slate-100">
+                  {currentRoleLabel}
+                </strong>
               </div>
             </div>
           </div>
         </div>
 
         {/* ==================== 2. Tabs Navigation ==================== */}
-        <div className="bg-white p-1.5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center gap-1 overflow-x-auto">
+        <div className="bg-white dark:bg-slate-900 p-1.5 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm flex items-center flex-wrap gap-1.5 overflow-x-auto no-scrollbar scroll-smooth">
           {tabs.map((tab) => {
             const hasAccess = canAccessTab(tab.id);
 
-            // تحديد حالة النشاط: زر "إنشاء الخطة" يكون Active إذا لم نكن في الصفحات الفرعية الأخرى
+            // تحديد حالة النشاط
             const isActive =
               tab.id === "BUILDER"
                 ? !location.pathname.endsWith("/review") &&
@@ -137,27 +143,27 @@ export default function PlanManagementLayout() {
                     ? "ليس لديك الصلاحية المطلوبة لفتح هذا التبويب"
                     : ""
                 }
-                className={`flex-1 min-w-[160px] flex items-center justify-center gap-2.5 py-3 px-4 text-xs sm:text-sm font-bold rounded-xl transition-all ${
+                className={`flex-1 min-w-[130px] sm:min-w-[160px] flex items-center justify-center gap-2 py-2.5 sm:py-3 px-3 sm:px-4 text-xs sm:text-sm font-bold rounded-xl transition-all duration-150 whitespace-nowrap select-none ${
                   isActive
-                    ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
+                    ? "bg-blue-600 text-white shadow-md shadow-blue-500/20 dark:bg-blue-600 dark:text-white dark:shadow-blue-900/30"
                     : !hasAccess
-                      ? "text-slate-300 bg-slate-50/50 cursor-not-allowed opacity-60"
-                      : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                      ? "text-slate-400 dark:text-slate-600 bg-slate-50/50 dark:bg-slate-800/30 cursor-not-allowed opacity-60"
+                      : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100/70 dark:hover:bg-slate-800/60"
                 }`}
               >
                 {hasAccess ? (
-                  <Icon className="w-4 h-4" />
+                  <Icon className="w-4 h-4 flex-shrink-0" />
                 ) : (
-                  <Lock className="w-4 h-4 text-slate-400" />
+                  <Lock className="w-4 h-4 text-slate-400 dark:text-slate-600 flex-shrink-0" />
                 )}
-                {tab.label}
+                <span>{tab.label}</span>
               </NavLink>
             );
           })}
         </div>
 
         {/* ==================== 3. Content Area ==================== */}
-        <div className="">
+        <div className="w-full">
           <Outlet />
         </div>
       </div>

@@ -26,7 +26,7 @@ function Loading() {
         {/* Spinner احترافي بدلاً من حرف z */}
         <div className="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
 
-        <p className="text-indigo-900 font-bold text-lg animate-pulse">
+        <p className="text-indigo-900 dark:text-indigo-300 font-bold text-lg animate-pulse">
           جاري حفظ البيانات...
         </p>
 

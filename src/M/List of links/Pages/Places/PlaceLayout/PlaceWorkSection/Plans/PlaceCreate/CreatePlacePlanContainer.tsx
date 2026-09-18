@@ -19,7 +19,11 @@ import {
 import AxiosApi from "../../../../../../../../AxiosApi.ts";
 import { useDispatch } from "react-redux";
 import type { AppDispatch } from "../../../../../../../../store";
-import { loading, open, close } from "../../../../../../../Redux-Store/SuccessFaildState/SFS";
+import {
+  loading,
+  open,
+  close,
+} from "../../../../../../../Redux-Store/SuccessFaildState/SFS";
 import { SeminarModal } from "../EditSeminarModal.tsx";
 import { useParams } from "react-router-dom";
 import { locationTypeLabels, type LocationType } from "../../../../types.ts";
@@ -67,7 +71,6 @@ export interface IPlanCondition {
   location_type: LocationType;
   external_location_name?: string;
 
-  // الحقول الإعلامية الجديدة
   media_outlets_count: number;
   digital_media_activities_count: number;
 
@@ -126,7 +129,6 @@ export const CreatePlacePlanContainer: React.FC = () => {
     useState<LocationType>("internal_seminar");
   const [condExternalLocName, setCondExternalLocName] = useState<string>("");
 
-  // أعداد الإعلام
   const [condMediaOutletsCount, setCondMediaOutletsCount] = useState<number>(0);
   const [condDigitalActivitiesCount, setCondDigitalActivitiesCount] =
     useState<number>(0);
@@ -143,7 +145,6 @@ export const CreatePlacePlanContainer: React.FC = () => {
   const [seminars, setSeminars] = useState<IGroupedSeminar[]>([]);
   const [isGenerated, setIsGenerated] = useState<boolean>(false);
 
-  // حالة التحكم بمودال الإضافة والتعديل
   const [activeSeminar, setActiveSeminar] = useState<IGroupedSeminar | null>(
     null,
   );
@@ -159,7 +160,6 @@ export const CreatePlacePlanContainer: React.FC = () => {
     setIsModalOpen(true);
   };
 
-  // دالة تجميع ودمج العناصر المتشابهة في الصفوف بما يشمل الحقول الإعلامية
   const mergeSeminars = (list: IGroupedSeminar[]): IGroupedSeminar[] => {
     const map = new Map<string, IGroupedSeminar>();
 
@@ -360,13 +360,28 @@ export const CreatePlacePlanContainer: React.FC = () => {
       return;
     }
     if (
-      condLocationType === "external_seminar" &&
+      (condLocationType === "external_seminar" ||
+        condLocationType === "public_meeting" ||
+        condLocationType === "convoy_seminars") &&
       !condExternalLocName.trim()
     ) {
       dispatch(
         open({
           state: "faild",
           title: "تنبيه: يرجى كتابة اسم المكان الخارجي عند اختيار ندوة خارجية.",
+        }),
+      );
+      return;
+    }
+
+    if (
+      condAttendees.children + condAttendees.females + condAttendees.males <=
+      0
+    ) {
+      dispatch(
+        open({
+          state: "faild",
+          title: "تنبيه: يرجى تحديد عدد المنتفعين.",
         }),
       );
       return;
@@ -431,7 +446,6 @@ export const CreatePlacePlanContainer: React.FC = () => {
       sub: string;
       schedule: string;
     }[] = [];
-    // console.log({ availableSchedules });
 
     availableSchedules.forEach((s) => {
       s.rows.forEach((o) => {
@@ -593,6 +607,10 @@ export const CreatePlacePlanContainer: React.FC = () => {
           title: res.data?.message || "تم حفظ الخطة بنجاح!",
         }),
       );
+
+      setSeminars([]);
+      setIsGenerated(false);
+      setConditions([]);
     } catch (err: any) {
       dispatch(
         open({
@@ -603,7 +621,6 @@ export const CreatePlacePlanContainer: React.FC = () => {
     }
   };
 
-  // دالة تحويل البيانات للفرمات المطلوب للمودال
   const transformSchedulesForModal = (schedules: IServerAvailableTopic[]) => {
     const transformed: Array<{
       schedule_name: string;
@@ -613,7 +630,6 @@ export const CreatePlacePlanContainer: React.FC = () => {
     }> = [];
 
     schedules.forEach((schedule) => {
-      // تجميع الموضوعات الفرعية حسب الموضوع الرئيسي من مصفوفة rows
       const topicGroupMap = new Map<string, Set<string>>();
 
       if (schedule.rows && schedule.rows.length > 0) {
@@ -624,7 +640,6 @@ export const CreatePlacePlanContainer: React.FC = () => {
           topicGroupMap.get(row.mainTopic)!.add(row.supTopic);
         });
 
-        // تحويل الخريطة إلى الهيكل المطلوب
         topicGroupMap.forEach((subTopicsSet, mainTopic) => {
           transformed.push({
             schedule_name: schedule.schedule_name,
@@ -634,7 +649,6 @@ export const CreatePlacePlanContainer: React.FC = () => {
           });
         });
       } else {
-        // حالة احتياطية إذا لم تحتوي القائمة على rows
         transformed.push({
           schedule_name: schedule.schedule_name,
           main_topic: schedule.main_topic,
@@ -650,12 +664,14 @@ export const CreatePlacePlanContainer: React.FC = () => {
   if (isAuthorized === false) {
     return (
       <div
-        className="max-w-2xl mx-auto my-12 p-6 bg-red-50 border border-red-200 rounded-xl text-center space-y-3"
+        className="max-w-2xl mx-auto my-12 p-6 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 rounded-xl text-center space-y-3 transition-colors"
         dir="rtl"
       >
-        <ShieldAlert className="w-12 h-12 text-red-600 mx-auto" />
-        <h2 className="text-xl font-bold text-red-800">غير مصرح بالوصول</h2>
-        <p className="text-sm text-red-600">{authError}</p>
+        <ShieldAlert className="w-12 h-12 text-red-600 dark:text-red-400 mx-auto" />
+        <h2 className="text-xl font-bold text-red-800 dark:text-red-300">
+          غير مصرح بالوصول
+        </h2>
+        <p className="text-sm text-red-600 dark:text-red-400">{authError}</p>
       </div>
     );
   }
@@ -664,55 +680,58 @@ export const CreatePlacePlanContainer: React.FC = () => {
   let lastSeenDate = "";
 
   return (
-    <div className="max-w-7xl mx-auto space-y-4 text-right font-sans" dir="rtl">
+    <div
+      className="max-w-7xl mx-auto space-y-4 text-right font-sans transition-colors"
+      dir="rtl"
+    >
       {/* SECTION 1: النطاق الزمني والعطلات */}
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 space-y-4">
-        <h2 className="text-base font-bold text-gray-800 flex items-center gap-2 border-b pb-2">
-          <CalendarDays className="w-5 h-5 text-blue-600" />
+      <div className="bg-white dark:bg-slate-900 p-4 sm:p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 space-y-4 transition-colors">
+        <h2 className="text-base font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
+          <CalendarDays className="w-5 h-5 text-blue-600 dark:text-blue-400" />
           1. النطاق الزمني واستثناء العطلات
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-semibold text-gray-600 mb-1">
+            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
               تاريخ بداية الخطة
             </label>
             <input
               type="date"
-              className="w-full border rounded-lg p-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-lg p-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
             />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-gray-600 mb-1">
+            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
               تاريخ نهاية الخطة
             </label>
             <input
               type="date"
-              className="w-full border rounded-lg p-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-lg p-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
             />
           </div>
         </div>
 
-        <div className="border-t pt-3 space-y-2">
-          <label className="block text-xs font-semibold text-gray-600 flex items-center gap-1">
-            <CalendarOff className="w-4 h-4 text-red-500" /> استثناء أيام
-            العطلات الرسمية
+        <div className="border-t border-slate-200 dark:border-slate-800 pt-3 space-y-2">
+          <label className="text-xs font-semibold text-slate-600 dark:text-slate-300 flex items-center gap-1">
+            <CalendarOff className="w-4 h-4 text-red-500 dark:text-red-400" />{" "}
+            استثناء أيام العطلات الرسمية
           </label>
-          <div className="flex gap-2 max-w-md">
+          <div className="flex flex-wrap gap-2 max-w-md">
             <input
               type="date"
-              className="border rounded-lg p-2 text-xs flex-1"
+              className="border  border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-lg p-2 text-xs flex-1 outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
               value={newHolidayInput}
               onChange={(e) => setNewHolidayInput(e.target.value)}
             />
             <button
               type="button"
               onClick={handleAddHoliday}
-              className="bg-gray-800 hover:bg-gray-900 text-white text-xs px-3 py-2 rounded-lg"
+              className="max-sm:w-full bg-slate-800 hover:bg-slate-900 dark:bg-slate-700 dark:hover:bg-slate-600 text-white text-xs px-3 py-2 rounded-lg transition-colors"
             >
               إضافة عطلة
             </button>
@@ -722,11 +741,11 @@ export const CreatePlacePlanContainer: React.FC = () => {
             {holidays.map((hDate) => (
               <span
                 key={hDate}
-                className="bg-red-50 text-red-700 border border-red-200 text-xs px-2.5 py-1 rounded-full flex items-center gap-1 font-mono"
+                className="bg-red-50 dark:bg-red-950/50 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-900/60 text-xs px-2.5 py-1 rounded-full flex items-center gap-1 font-mono transition-colors"
               >
                 {hDate}
                 <button onClick={() => handleRemoveHoliday(hDate)}>
-                  <X className="w-3 h-3 text-red-500 hover:text-red-700" />
+                  <X className="w-3 h-3 text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-200" />
                 </button>
               </span>
             ))}
@@ -735,23 +754,23 @@ export const CreatePlacePlanContainer: React.FC = () => {
       </div>
 
       {/* SECTION 2: المجموعات المخصصة */}
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 space-y-4">
-        <h2 className="text-base font-bold text-gray-800 flex items-center gap-2 border-b pb-2">
-          <ListPlus className="w-5 h-5 text-indigo-600" />
+      <div className="bg-white dark:bg-slate-900 p-4 sm:p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 space-y-4 transition-colors">
+        <h2 className="text-base font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
+          <ListPlus className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
           2. المجموعات المخصصة للموضوعات
         </h2>
 
-        <div className="flex gap-2 max-w-md">
+        <div className="flex flex-wrap gap-2 max-w-md">
           <input
             type="text"
-            className="border rounded-lg p-2 text-xs flex-1"
+            className="border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-lg p-2 text-xs flex-1 outline-none focus:ring-2 focus:ring-indigo-500 transition-colors"
             placeholder="اسم مجموعة مخصصة جديدة..."
             value={newGroupName}
             onChange={(e) => setNewGroupName(e.target.value)}
           />
           <button
             onClick={handleCreateGroup}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-3 py-2 rounded-lg font-semibold"
+            className="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-600 dark:hover:bg-indigo-500 text-white text-xs px-3 py-2 rounded-lg font-semibold transition-colors max-sm:w-full"
           >
             إنشاء مجموعة
           </button>
@@ -776,14 +795,12 @@ export const CreatePlacePlanContainer: React.FC = () => {
               );
             });
 
-            // console.log({ availableSchedules, allOptions, filteredOptions });
-
             return (
               <div
                 key={group.id}
-                className="border rounded-lg p-3 bg-indigo-50/30 space-y-2"
+                className="border border-indigo-100 dark:border-indigo-900/50 rounded-lg p-3 bg-indigo-50/30 dark:bg-indigo-950/20 space-y-2 transition-colors"
               >
-                <span className="font-bold text-xs text-indigo-900 block">
+                <span className="font-bold text-xs text-indigo-900 dark:text-indigo-300 block">
                   {group.name}
                 </span>
 
@@ -791,20 +808,22 @@ export const CreatePlacePlanContainer: React.FC = () => {
                   {group.topics.map((t, i) => (
                     <div
                       key={i}
-                      className="text-xs bg-white p-1.5 rounded border text-gray-700 flex items-center justify-between gap-2"
+                      className="text-xs bg-white dark:bg-slate-800 p-1.5 rounded border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 flex items-center justify-between gap-2 transition-colors"
                     >
-                      <div className="truncate">
-                        <span className="font-medium text-indigo-950">
+                      <div className="truncate" title={t.sub_topic}>
+                        <span className="font-medium text-indigo-950 dark:text-indigo-300">
                           [{t.schedule_name}]
                         </span>{" "}
                         {t.main_topic} -{" "}
-                        <span className="text-gray-500">{t.sub_topic}</span>
+                        <span className="text-slate-500 dark:text-slate-400">
+                          {t.sub_topic}
+                        </span>
                       </div>
 
                       <button
                         type="button"
                         onClick={() => handleRemoveTopicFromGroup(group.id, i)}
-                        className="text-red-500 hover:text-red-700 hover:bg-red-50 p-0.5 rounded transition-colors text-xs font-bold"
+                        className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-950/50 p-0.5 rounded transition-colors text-xs font-bold"
                         title="حذف الموضوع"
                       >
                         ✕
@@ -814,7 +833,7 @@ export const CreatePlacePlanContainer: React.FC = () => {
                 </div>
 
                 <select
-                  className="w-full border rounded p-1 text-xs bg-white"
+                  className="custom-scrollbar w-full border border-slate-300 dark:border-slate-700 rounded p-1 text-xs bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 transition-colors"
                   onChange={(e) => {
                     if (!e.target.value) return;
                     const [sched, main, sub] = e.target.value.split("||");
@@ -839,19 +858,19 @@ export const CreatePlacePlanContainer: React.FC = () => {
       </div>
 
       {/* SECTION 3: إعداد إضافة شرط مخصص */}
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 space-y-5">
-        <h2 className="text-base font-bold text-gray-800 flex items-center gap-2 border-b pb-2">
-          <Sparkles className="w-5 h-5 text-amber-500" />
+      <div className="bg-white dark:bg-slate-900 p-4 sm:p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 space-y-5 transition-colors">
+        <h2 className="text-base font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
+          <Sparkles className="w-5 h-5 text-amber-500 dark:text-amber-400" />
           3. إضافة شروط توليد الندوات والأنشطة
         </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="custom-scrollbar grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="block text-xs font-semibold text-gray-600 mb-1">
+            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
               نوع اختيار الموضوع
             </label>
             <select
-              className="w-full border rounded-lg p-2 text-xs outline-none"
+              className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-lg p-2 text-xs outline-none focus:ring-2 focus:ring-amber-500 transition-colors"
               value={condSelectionType}
               onChange={(e) =>
                 setCondSelectionType(e.target.value as SelectionType)
@@ -869,11 +888,11 @@ export const CreatePlacePlanContainer: React.FC = () => {
 
           {condSelectionType === "SINGLE" && (
             <div className="md:col-span-2">
-              <label className="block text-xs font-semibold text-gray-600 mb-1">
+              <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
                 اختر الموضوع الرئيسي والفرعي *
               </label>
               <select
-                className="w-full border rounded-lg p-2 text-xs"
+                className="custom-scrollbar w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-lg p-2 text-xs outline-none focus:ring-2 focus:ring-amber-500 transition-colors"
                 value={`${condMainTopic}||${condSubTopic}`}
                 onChange={(e) => {
                   if (!e.target.value) {
@@ -903,11 +922,11 @@ export const CreatePlacePlanContainer: React.FC = () => {
 
           {condSelectionType === "RANDOM_GROUP" && (
             <div className="md:col-span-2">
-              <label className="block text-xs font-semibold text-gray-600 mb-1">
+              <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
                 اختر المجموعة *
               </label>
               <select
-                className="w-full border rounded-lg p-2 text-xs"
+                className="custom-scrollbar w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-lg p-2 text-xs outline-none focus:ring-2 focus:ring-amber-500 transition-colors"
                 value={condGroupId}
                 onChange={(e) => setCondGroupId(e.target.value)}
               >
@@ -923,15 +942,15 @@ export const CreatePlacePlanContainer: React.FC = () => {
         </div>
 
         {/* نوع الفعالية، المكان، والوسائل الإعلامية */}
-        <div className="border-t pt-4 space-y-4">
+        <div className="border-t border-slate-200 dark:border-slate-800 pt-4 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1 flex items-center gap-1">
-                <MapPin className="w-3.5 h-3.5 text-blue-600" /> نوع / مكان
-                الفعالية *
+              <label className="w-fit text-nowrap text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1 flex items-center gap-1">
+                <MapPin className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />{" "}
+                نوع / مكان الفعالية *
               </label>
               <select
-                className="w-full border rounded-lg p-2 text-xs outline-none focus:ring-2 focus:ring-blue-500 font-medium"
+                className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-lg p-2 text-xs outline-none focus:ring-2 focus:ring-blue-500 font-medium transition-colors"
                 value={condLocationType}
                 onChange={(e) =>
                   setCondLocationType(e.target.value as LocationType)
@@ -949,13 +968,13 @@ export const CreatePlacePlanContainer: React.FC = () => {
               condLocationType === "convoy_seminars" ||
               condLocationType === "public_meeting") && (
               <div className="md:col-span-2">
-                <label className="block text-xs font-semibold text-gray-600 mb-1">
+                <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
                   اسم أو عنوان المكان الخارجي *
                 </label>
                 <input
                   type="text"
                   placeholder="مثال: قاعة المؤتمرات - مركز الشباب..."
-                  className="w-full border rounded-lg p-2 text-xs outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-lg p-2 text-xs outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                   value={condExternalLocName}
                   onChange={(e) => setCondExternalLocName(e.target.value)}
                 />
@@ -964,21 +983,21 @@ export const CreatePlacePlanContainer: React.FC = () => {
           </div>
 
           {/* التغطية الإعلامية */}
-          <div className="bg-purple-50/50 p-3 rounded-lg border border-purple-100 space-y-2">
-            <label className="block text-xs font-bold text-purple-900 flex items-center gap-1">
-              <Radio className="w-4 h-4 text-purple-600" /> الأنشطة والوسائل
-              الإعلامية المرافقة:
+          <div className="bg-purple-50/50 dark:bg-purple-950/20 p-3 rounded-lg border border-purple-100 dark:border-purple-900/40 space-y-2 transition-colors">
+            <label className="text-xs font-bold text-purple-900 dark:text-purple-300 flex items-center gap-1">
+              <Radio className="w-4 h-4 text-purple-600 dark:text-purple-400" />{" "}
+              الأنشطة والوسائل الإعلامية المرافقة:
             </label>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div>
-                <label className="block text-[11px] font-semibold text-gray-600 mb-1 flex items-center gap-1">
-                  <Tv className="w-3 h-3 text-purple-600" /> عدد استخدام الوسائل
-                  الإعلامية
+                <label className="text-[11px] font-semibold text-slate-600 dark:text-slate-300 mb-1 flex items-center gap-1">
+                  <Tv className="w-3 h-3 text-purple-600 dark:text-purple-400" />{" "}
+                  عدد استخدام الوسائل الإعلامية
                 </label>
                 <input
                   type="number"
                   min="0"
-                  className="w-full border rounded-lg p-1.5 text-xs font-bold bg-white"
+                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-lg p-1.5 text-xs font-bold transition-colors"
                   value={condMediaOutletsCount}
                   onChange={(e) =>
                     setCondMediaOutletsCount(parseInt(e.target.value) || 0)
@@ -986,14 +1005,14 @@ export const CreatePlacePlanContainer: React.FC = () => {
                 />
               </div>
               <div>
-                <label className="block text-[11px] font-semibold text-gray-600 mb-1 flex items-center gap-1">
-                  <Radio className="w-3 h-3 text-purple-600" /> عدد الأنشطة
-                  الإعلامية الرقمية
+                <label className="text-[11px] font-semibold text-slate-600 dark:text-slate-300 mb-1 flex items-center gap-1">
+                  <Radio className="w-3 h-3 text-purple-600 dark:text-purple-400" />{" "}
+                  عدد الأنشطة الإعلامية الرقمية
                 </label>
                 <input
                   type="number"
                   min="0"
-                  className="w-full border rounded-lg p-1.5 text-xs font-bold bg-white"
+                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-lg p-1.5 text-xs font-bold transition-colors"
                   value={condDigitalActivitiesCount}
                   onChange={(e) =>
                     setCondDigitalActivitiesCount(parseInt(e.target.value) || 0)
@@ -1004,20 +1023,20 @@ export const CreatePlacePlanContainer: React.FC = () => {
           </div>
 
           {/* أعداد الحضور المستهدفين */}
-          <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
-            <label className="block text-xs font-bold text-gray-700 mb-2 flex items-center gap-1">
-              <Users className="w-4 h-4 text-indigo-600" /> أعداد الحضور
-              المستهدفين لكل ندوة:
+          <div className="bg-slate-50 dark:bg-slate-800/50 p-3 rounded-lg border border-slate-200 dark:border-slate-700/60 transition-colors">
+            <label className="text-xs font-bold text-slate-700 dark:text-slate-200 mb-2 flex items-center gap-1">
+              <Users className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />{" "}
+              أعداد الحضور المستهدفين لكل ندوة:
             </label>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
-                <label className="block text-[11px] font-semibold text-gray-600 mb-1">
+                <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-300 mb-1">
                   👨 ذكور
                 </label>
                 <input
                   type="number"
                   min="0"
-                  className="w-full border rounded-lg p-1.5 text-xs font-bold bg-white"
+                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-lg p-1.5 text-xs font-bold transition-colors"
                   value={condAttendees.males}
                   onChange={(e) =>
                     setCondAttendees({
@@ -1029,13 +1048,13 @@ export const CreatePlacePlanContainer: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-gray-600 mb-1">
+                <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-300 mb-1">
                   👩 إناث
                 </label>
                 <input
                   type="number"
                   min="0"
-                  className="w-full border rounded-lg p-1.5 text-xs font-bold bg-white"
+                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-lg p-1.5 text-xs font-bold transition-colors"
                   value={condAttendees.females}
                   onChange={(e) =>
                     setCondAttendees({
@@ -1047,13 +1066,13 @@ export const CreatePlacePlanContainer: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-gray-600 mb-1">
+                <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-300 mb-1">
                   👶 أطفال
                 </label>
                 <input
                   type="number"
                   min="0"
-                  className="w-full border rounded-lg p-1.5 text-xs font-bold bg-white"
+                  className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-lg p-1.5 text-xs font-bold transition-colors"
                   value={condAttendees.children}
                   onChange={(e) =>
                     setCondAttendees({
@@ -1068,13 +1087,13 @@ export const CreatePlacePlanContainer: React.FC = () => {
         </div>
 
         {/* التكرار والتحديد الزمني */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border-t pt-3">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border-t border-slate-200 dark:border-slate-800 pt-3">
           <div>
-            <label className="block text-xs font-semibold text-gray-600 mb-1">
+            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
               نمط التكرار
             </label>
             <select
-              className="w-full border rounded-lg p-2 text-xs"
+              className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-lg p-2 text-xs outline-none transition-colors"
               value={condRecurrence}
               onChange={(e) =>
                 setCondRecurrence(e.target.value as RecurrenceType)
@@ -1089,7 +1108,7 @@ export const CreatePlacePlanContainer: React.FC = () => {
 
           {condRecurrence === "WEEKLY" && (
             <div className="md:col-span-2">
-              <label className="block text-xs font-semibold text-gray-600 mb-1">
+              <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
                 أيام التنفيذ *
               </label>
               <div className="flex gap-1 flex-wrap">
@@ -1112,10 +1131,10 @@ export const CreatePlacePlanContainer: React.FC = () => {
                           : [...prev, d.v],
                       )
                     }
-                    className={`px-2.5 py-1 rounded text-xs border font-medium ${
+                    className={`px-2.5 py-1 rounded text-xs border font-medium transition-colors ${
                       condDaysOfWeek.includes(d.v)
-                        ? "bg-blue-600 text-white border-blue-600"
-                        : "bg-gray-50 border-gray-300 text-gray-700"
+                        ? "bg-blue-600 text-white border-blue-600 dark:bg-blue-600 dark:border-blue-500"
+                        : "bg-slate-50 dark:bg-slate-800 border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
                     }`}
                   >
                     {d.l}
@@ -1127,10 +1146,10 @@ export const CreatePlacePlanContainer: React.FC = () => {
 
           {condRecurrence === "MONTHLY" && (
             <div className="md:col-span-2 space-y-1">
-              <label className="block text-xs font-semibold text-gray-600 mb-1">
+              <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
                 حدد أيام الشهر (من 1 إلى 31) *
               </label>
-              <div className="flex flex-wrap gap-1 max-h-28 overflow-y-auto border p-2 rounded-lg bg-gray-50">
+              <div className="flex flex-wrap justify-center gap-1 overflow-y-auto border border-slate-300 dark:border-slate-700 p-2 rounded-lg bg-slate-50 dark:bg-slate-800/60 transition-colors">
                 {Array.from({ length: 31 }, (_, i) => i + 1).map((dayNum) => {
                   const isSelected = condDaysOfMonth.includes(dayNum);
                   return (
@@ -1144,10 +1163,10 @@ export const CreatePlacePlanContainer: React.FC = () => {
                             : [...prev, dayNum],
                         )
                       }
-                      className={`w-7 h-7 text-xs rounded border flex items-center justify-center font-mono ${
+                      className={`w-7 h-7 text-xs rounded border flex items-center justify-center font-mono transition-colors ${
                         isSelected
-                          ? "bg-indigo-600 text-white border-indigo-600 font-bold"
-                          : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
+                          ? "bg-indigo-600 text-white border-indigo-600 dark:bg-indigo-600 dark:border-indigo-500 font-bold"
+                          : "bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700"
                       }`}
                     >
                       {dayNum}
@@ -1160,12 +1179,12 @@ export const CreatePlacePlanContainer: React.FC = () => {
 
           {condRecurrence === "ONCE" && (
             <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1">
+              <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
                 التاريخ المحدد *
               </label>
               <input
                 type="date"
-                className="w-full border rounded-lg p-2 text-xs"
+                className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-lg p-2 text-xs transition-colors"
                 value={condSpecificDate}
                 onChange={(e) => setCondSpecificDate(e.target.value)}
               />
@@ -1173,15 +1192,15 @@ export const CreatePlacePlanContainer: React.FC = () => {
           )}
         </div>
 
-        <div className="border-t pt-3 grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+        <div className="border-t border-slate-200 dark:border-slate-800 pt-3 grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
           <div>
-            <label className="block text-xs font-semibold text-gray-600 mb-1">
+            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
               عدد الأنشطة المطلوبة في كل يوم/مرة مطابقة
             </label>
             <input
               type="number"
               min="1"
-              className="w-full border rounded-lg p-2 text-xs font-bold"
+              className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-lg p-2 text-xs font-bold transition-colors"
               value={condSeminarsCount}
               onChange={(e) =>
                 setCondSeminarsCount(parseInt(e.target.value) || 1)
@@ -1192,15 +1211,15 @@ export const CreatePlacePlanContainer: React.FC = () => {
 
         <button
           onClick={handleAddCondition}
-          className="bg-amber-600 hover:bg-amber-700 text-white font-semibold text-xs px-4 py-2 rounded-lg flex items-center gap-1 shadow-sm transition-all"
+          className="bg-amber-600 hover:bg-amber-700 dark:bg-amber-600 dark:hover:bg-amber-500 text-white font-semibold text-xs px-4 py-2 rounded-lg flex items-center gap-1 shadow-sm transition-all"
         >
           <Plus className="w-4 h-4" /> إضافة الشرط للقائمة
         </button>
 
         {/* قائمة الشروط */}
-        <div className="border-t pt-4 space-y-3">
-          <span className="text-xs font-bold text-gray-800 flex items-center gap-1.5">
-            <ListPlus className="w-4 h-4 text-amber-600" />
+        <div className="border-t border-slate-200 dark:border-slate-800 pt-4 space-y-3">
+          <span className="text-xs font-bold text-slate-800 dark:text-slate-100 flex items-center gap-1.5">
+            <ListPlus className="w-4 h-4 text-amber-600 dark:text-amber-400" />
             الشروط المحددة حالياً ({conditions.length})
           </span>
 
@@ -1211,15 +1230,15 @@ export const CreatePlacePlanContainer: React.FC = () => {
             return (
               <div
                 key={cond.id}
-                className="bg-white border rounded-xl p-3.5 shadow-sm space-y-2.5 relative border-r-4 border-r-amber-500 text-xs"
+                className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3.5 shadow-sm space-y-2.5 relative border-r-4 border-r-amber-500 dark:border-r-amber-500 text-xs transition-colors"
               >
-                <div className="flex justify-between items-start border-b pb-2">
+                <div className="flex justify-between items-start border-b border-slate-100 dark:border-slate-700 pb-2">
                   <div className="space-y-1">
                     <div>
-                      <span className="font-bold text-gray-800">
+                      <span className="font-bold text-slate-800 dark:text-slate-100">
                         شرط #{idx + 1}:{" "}
                       </span>
-                      <span className="text-blue-700 font-bold">
+                      <span className="text-blue-700 dark:text-blue-400 font-bold">
                         {cond.selection_type === "SINGLE" &&
                           `موضوع محدد: ${cond.selected_main_topic} (${cond.selected_sub_topic})`}
                         {cond.selection_type === "RANDOM_GROUP" &&
@@ -1229,12 +1248,12 @@ export const CreatePlacePlanContainer: React.FC = () => {
                       </span>
                     </div>
 
-                    <div className="flex items-center gap-1.5 text-gray-600 pt-0.5">
-                      <Clock className="w-3.5 h-3.5 text-amber-600" />
-                      <span className="font-semibold text-gray-700">
+                    <div className="flex items-center gap-1.5 text-slate-600 dark:text-slate-400 pt-0.5">
+                      <Clock className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+                      <span className="font-semibold text-slate-700 dark:text-slate-300">
                         التكرار:{" "}
                       </span>
-                      <span className="bg-amber-50 text-amber-800 border border-amber-200 px-2 py-0.5 rounded font-medium">
+                      <span className="bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60 px-2 py-0.5 rounded font-medium">
                         {cond.recurrence_type === "DAILY" && "يومي (كل الأيام)"}
                         {cond.recurrence_type === "WEEKLY" &&
                           `أسبوعي [ ${cond.selected_days_of_week
@@ -1252,53 +1271,57 @@ export const CreatePlacePlanContainer: React.FC = () => {
 
                   <button
                     onClick={() => handleRemoveCondition(cond.id)}
-                    className="p-1 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                    className="p-1 text-red-500 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/50 rounded-lg transition-colors"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 text-gray-600 pt-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 text-slate-600 dark:text-slate-300 pt-1">
                   <div>
-                    <span className="font-semibold text-gray-700">النوع: </span>
-                    <span className="text-blue-800 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200 font-semibold">
+                    <span className="font-semibold text-slate-700 dark:text-slate-200">
+                      النوع:{" "}
+                    </span>
+                    <span className="text-blue-800 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/60 px-1.5 py-0.5 rounded border border-blue-200 dark:border-blue-800/60 font-semibold">
                       {locationTypeLabels[cond.location_type]}
                     </span>
                     {(cond.location_type === "external_seminar" ||
                       cond.location_type === "convoy_seminars" ||
                       cond.location_type === "public_meeting") && (
-                      <span className="text-gray-500 block truncate text-[11px]">
+                      <span className="text-slate-500 dark:text-slate-400 block truncate text-[11px]">
                         ({cond.external_location_name})
                       </span>
                     )}
                   </div>
 
                   <div>
-                    <span className="font-semibold text-gray-700">
+                    <span className="font-semibold text-slate-700 dark:text-slate-200">
                       الإعلام:{" "}
                     </span>
-                    <span>
-                      📺 {cond.media_outlets_count} | 📡{" "}
-                      {cond.digital_media_activities_count}
+                    <span title="وسائل إعلامية">
+                      📺 {cond.media_outlets_count}{" "}
+                    </span>
+                    <span title="الإعلام الرقمي">
+                      | 📡{cond.digital_media_activities_count}
                     </span>
                   </div>
 
                   <div>
-                    <span className="font-semibold text-gray-700">
+                    <span className="font-semibold text-slate-700 dark:text-slate-200">
                       الجمهور:{" "}
                     </span>
-                    <span>
+                    <p className="inline-flex flex-nowrap">
                       👨 {cond.target_attendees.males} | 👩{" "}
                       {cond.target_attendees.females} | 👶{" "}
                       {cond.target_attendees.children}
-                    </span>
+                    </p>
                   </div>
 
                   <div>
-                    <span className="font-semibold text-gray-700">
+                    <span className="font-semibold text-slate-700 dark:text-slate-200">
                       العدد/المرة:{" "}
                     </span>
-                    <span className="font-mono font-bold text-indigo-600">
+                    <span className="font-mono font-bold text-indigo-600 dark:text-indigo-400">
                       {cond.seminars_per_occurrence}
                     </span>
                   </div>
@@ -1312,7 +1335,7 @@ export const CreatePlacePlanContainer: React.FC = () => {
       <div className="flex justify-center pt-2">
         <button
           onClick={handleGeneratePlan}
-          className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm px-8 py-3 rounded-xl shadow-lg flex items-center gap-2 transition-all transform hover:scale-105"
+          className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-500 text-white font-bold text-sm px-8 py-3 rounded-xl shadow-lg flex items-center gap-2 transition-all transform hover:scale-105"
         >
           <Sparkles className="w-5 h-5" /> توليد جدول الندوات والأنشطة من الشروط
         </button>
@@ -1320,18 +1343,18 @@ export const CreatePlacePlanContainer: React.FC = () => {
 
       {/* SECTION 4: الجدول المقترح */}
       {isGenerated && (
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 space-y-4">
-          <div className="flex justify-between items-center border-b pb-3 flex-wrap gap-2">
-            <h2 className="text-base font-bold text-gray-800 flex items-center gap-2">
-              <Calendar className="w-5 h-5 text-emerald-600" />
+        <div className="bg-white dark:bg-slate-900 p-4 sm:p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 space-y-4 transition-colors">
+          <div className="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3 flex-wrap gap-2">
+            <h2 className="text-base font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+              <Calendar className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
               الجدول التشغيلي المقترح (إجمالي الصفوف: {seminars.length})
             </h2>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
               <button
                 type="button"
                 onClick={handleOpenAddModal}
-                className="bg-green-600 hover:bg-green-700 text-white font-bold text-xs px-4 py-2.5 rounded-lg flex items-center gap-1.5 shadow-sm transition-all"
+                className="bg-green-600 hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-500 text-white font-bold text-xs px-4 py-2.5 rounded-lg flex items-center gap-1.5 shadow-sm transition-all"
               >
                 <Plus className="w-4 h-4" /> إضافة نشاط يدويًا
               </button>
@@ -1339,16 +1362,16 @@ export const CreatePlacePlanContainer: React.FC = () => {
               <button
                 onClick={handleSaveFinalPlan}
                 disabled={seminars.length === 0}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-5 py-2.5 rounded-lg flex items-center gap-1.5 shadow-sm transition-all disabled:opacity-50"
+                className="bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-600 dark:hover:bg-emerald-500 text-white font-bold text-xs px-5 py-2.5 rounded-lg flex items-center gap-1.5 shadow-sm transition-all disabled:opacity-50"
               >
                 حفظ الخطة النهائية
               </button>
             </div>
           </div>
 
-          <div className="overflow-x-auto border rounded-lg">
-            <table className="w-full text-right text-xs">
-              <thead className="bg-gray-50 text-gray-700 font-semibold border-b">
+          <div className="overflow-x-auto border border-slate-200 dark:border-slate-800 rounded-lg max-lg:border-0">
+            <table className="w-full text-right text-xs max-md:block max-md:whitespace-normal">
+              <thead className="bg-slate-50 dark:bg-slate-800/80 text-slate-700 dark:text-slate-200 font-semibold border-b border-slate-200 dark:border-slate-800 max-lg:hidden">
                 <tr>
                   <th className="p-3">#</th>
                   <th className="p-3">التاريخ</th>
@@ -1360,7 +1383,7 @@ export const CreatePlacePlanContainer: React.FC = () => {
                   <th className="p-3 text-center">إجراءات</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800 max-lg:block max-lg:space-y-3 max-lg:divide-y-0 ">
                 {seminars.map((sem) => {
                   let displayIndex = "-";
                   if (sem.planned_date !== lastSeenDate) {
@@ -1370,64 +1393,103 @@ export const CreatePlacePlanContainer: React.FC = () => {
                   }
 
                   return (
-                    <tr key={sem.id} className="hover:bg-gray-50/80">
-                      <td className="p-3 font-mono font-bold text-gray-500">
-                        {displayIndex}
+                    <tr
+                      key={sem.id}
+                      className="hover:bg-slate-50/80 dark:hover:bg-slate-800/50 max-lg:block max-lg:rounded-xl max-lg:border max-lg:border-slate-200 dark:max-lg:border-slate-800 max-lg:bg-white dark:max-lg:bg-slate-800/60 max-lg:p-2 max-lg:shadow-sm transition-colors"
+                    >
+                      <td
+                        data-label="#"
+                        className="p-3 font-mono font-bold text-slate-500 dark:text-slate-400 max-lg:grid max-lg:grid-cols-3 max-lg:items-center max-lg:justify-between max-lg:gap-3 max-lg:py-2 max-lg:px-2 max-lg:border-b max-lg:border-dashed max-lg:border-slate-200 dark:max-lg:border-slate-800 max-lg:last:border-b-0 max-lg:before:content-[attr(data-label)] max-lg:before:text-[10px] max-lg:before:font-bold max-lg:before:col-span-1  max-lg:before:text-slate-500 dark:max-lg:before:text-slate-400 max-lg:before:shrink-0"
+                      >
+                        <p className="col-span-2">{displayIndex}</p>
                       </td>
-                      <td className="p-3 font-mono font-bold text-gray-800">
-                        {sem.planned_date}
+                      <td
+                        data-label="التاريخ"
+                        className="p-3 font-mono font-bold text-slate-800 dark:text-slate-100 max-lg:grid max-lg:grid-cols-3  max-lg:border-b max-lg:border-dashed max-lg:border-slate-200 dark:max-lg:border-slate-800 max-lg:last:border-b-0 max-lg:before:content-[attr(data-label)] max-lg:before:text-[10px] max-lg:before:font-bold max-lg:before:text-slate-500 dark:max-lg:before:text-slate-400  max-lg:before:shrink-0"
+                      >
+                        <p className="col-span-2">{sem.planned_date}</p>
                       </td>
-                      <td className="p-3 space-y-1">
-                        <div className="font-bold text-gray-800">
-                          {sem.main_topic}
+                      <td
+                        data-label="الموضوع الرئيسي والفرعي"
+                        className="p-3 space-y-1 max-lg:grid max-lg:grid-cols-3 max-lg:gap-3 max-lg:py-2 max-lg:px-2 max-lg:border-b max-lg:border-dashed max-lg:border-slate-200 dark:max-lg:border-slate-800 max-lg:last:border-b-0 max-lg:before:content-[attr(data-label)] max-lg:before:text-[10px] max-lg:before:font-bold max-lg:before:text-slate-500 dark:max-lg:before:text-slate-400 max-lg:before:col-span-1 max-lg:before:shrink-0"
+                      >
+                        <div className="flex flex-col gap-2 col-span-2 ">
+                          <div className="font-bold text-slate-800 dark:text-slate-100">
+                            {sem.main_topic}
+                          </div>
+                          <div className="text-slate-500 dark:text-slate-400">
+                            {sem.sub_topic}
+                          </div>
                         </div>
-                        <div className="text-gray-500">{sem.sub_topic}</div>
                       </td>
-                      <td className="p-3">
-                        <span className="text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200 font-semibold inline-block">
-                          {locationTypeLabels[sem.location_type]}
-                        </span>
-                        {(sem.location_type === "external_seminar" ||
-                          sem.location_type === "convoy_seminars" ||
-                          sem.location_type === "public_meeting") &&
-                          sem.external_location_name && (
-                            <div className="text-purple-700 text-[11px] truncate max-w-xs mt-0.5">
-                              ({sem.external_location_name})
-                            </div>
-                          )}
+                      <td
+                        data-label="نوع الفعالية"
+                        className="p-3 max-lg:grid max-lg:grid-cols-3 max-lg:px-2 max-lg:border-b max-lg:border-dashed max-lg:border-slate-200 dark:max-lg:border-slate-800 max-lg:last:border-b-0 max-lg:before:content-[attr(data-label)] max-lg:before:text-[10px] max-lg:before:font-bold max-lg:before:text-slate-500 dark:max-lg:before:text-slate-400 max-lg:before:shrink-0"
+                      >
+                        <div className="flex flex-col items-center col-span-2">
+                          <span className="block text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/60 px-2 py-0.5 rounded border border-blue-200 dark:border-blue-800/60 font-semibold text-xs sm:text-sm transition-colors">
+                            {locationTypeLabels[sem.location_type]}
+                          </span>
+                          {(sem.location_type === "external_seminar" ||
+                            sem.location_type === "convoy_seminars" ||
+                            sem.location_type === "public_meeting") &&
+                            sem.external_location_name && (
+                              <div className="text-purple-700 dark:text-purple-400 text-[11px] truncate max-w-xs mt-0.5 max-lg:max-w-full">
+                                ({sem.external_location_name})
+                              </div>
+                            )}
+                        </div>
                       </td>
-                      <td className="p-3">
-                        <div className="flex flex-col gap-0.5 text-gray-700 font-mono text-[11px]">
+                      <td
+                        data-label="الوسائل / الأنشطة الإعلامية"
+                        className="p-3 max-lg:grid max-lg:grid-cols-3 max-lg:gap-3 max-lg:py-2 max-lg:px-2 max-lg:border-b max-lg:border-dashed max-lg:border-slate-200 dark:max-lg:border-slate-800 max-lg:last:border-b-0 max-lg:before:content-[attr(data-label)] max-lg:before:text-[10px] max-lg:before:font-bold max-lg:before:text-slate-500 dark:max-lg:before:text-slate-400 max-lg:before:shrink-0"
+                      >
+                        <div className="flex flex-col gap-0.5 text-slate-700 dark:text-slate-300 font-mono text-[11px] col-span-2">
                           <span>📺 وسائل: {sem.media_outlets_count}</span>
                           <span>
                             📡 رقمية: {sem.digital_media_activities_count}
                           </span>
                         </div>
                       </td>
-                      <td className="p-3">
-                        <div className="flex gap-2 text-gray-700 font-mono">
-                          <span>👨{sem.target_attendees.males}</span>
-                          <span>👩{sem.target_attendees.females}</span>
-                          <span>👶{sem.target_attendees.children}</span>
+                      <td
+                        data-label="الحضور المستهدف"
+                        className="p-3  max-lg:grid max-lg:grid-cols-3 max-lg:gap-3 max-lg:py-2 max-lg:px-2 max-lg:border-b max-lg:border-dashed max-lg:border-slate-200 dark:max-lg:border-slate-800 max-lg:last:border-b-0 max-lg:before:content-[attr(data-label)] max-lg:before:text-[10px] max-lg:before:font-bold max-lg:before:text-slate-500 dark:max-lg:before:text-slate-400 max-lg:before:shrink-0"
+                      >
+                        <div className="flex gap-2 col-span-2 max-sm:flex-col text-slate-700 dark:text-slate-300 font-mono text-xs max-lg:flex-wrap">
+                          <span title="ذكور">
+                            👨 {sem.target_attendees.males}
+                          </span>
+                          <span title="إناث">
+                            👩 {sem.target_attendees.females}
+                          </span>
+                          <span title="أطفال">
+                            👶 {sem.target_attendees.children}
+                          </span>
                         </div>
                       </td>
-                      <td className="p-3 text-center">
-                        <span className="inline-block bg-indigo-50 text-indigo-700 border border-indigo-200 font-bold px-3 py-1 rounded-md font-mono">
+                      <td
+                        data-label="العدد"
+                        className="p-3 text-center max-lg:grid max-lg:grid-cols-3 max-lg:gap-3 max-lg:py-2 max-lg:px-2 max-lg:border-b max-lg:border-dashed max-lg:border-slate-200 dark:max-lg:border-slate-800 max-lg:last:border-b-0 max-lg:before:content-[attr(data-label)] max-lg:before:text-[10px] max-lg:before:font-bold max-lg:before:text-slate-500 dark:max-lg:before:text-slate-400 max-lg:before:shrink-0"
+                      >
+                        <span className="inline-block bg-indigo-50 col-span-2 max-w-fit dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/60 font-bold px-3 py-1 rounded-md font-mono text-xs sm:text-sm transition-colors">
                           {sem.count}
                         </span>
                       </td>
-                      <td className="p-3 text-center">
-                        <div className="flex items-center justify-center gap-1">
+                      <td
+                        data-label="إجراءات"
+                        className="p-3 text-center max-lg:grid max-lg:grid-cols-3 max-lg:gap-3 max-lg:py-2 max-lg:px-2 max-lg:border-b max-lg:border-dashed max-lg:border-slate-200 dark:max-lg:border-slate-800 max-lg:last:border-b-0 max-lg:before:content-[attr(data-label)] max-lg:before:text-[10px] max-lg:before:font-bold max-lg:before:text-slate-500 dark:max-lg:before:text-slate-400 max-lg:before:shrink-0"
+                      >
+                        <div className="flex gap-1 lg:flex-col col-span-2">
                           <button
                             onClick={() => handleOpenEditModal(sem)}
-                            className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            className="p-1.5 w-fit text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/50 rounded-lg transition-colors"
                             title="تعديل الصف"
                           >
                             <Edit className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => handleRemoveSeminar(sem.id)}
-                            className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                            className="p-1.5 w-fit text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/50 rounded-lg transition-colors"
                             title="حذف النشاط"
                           >
                             <Trash2 className="w-4 h-4" />

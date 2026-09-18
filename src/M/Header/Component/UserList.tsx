@@ -29,7 +29,7 @@ function UserList({
   return (
     <div
       onClick={(e) => e.stopPropagation()}
-      className="userList absolute top-full left-[50%] translate-x-[-50%]  p-1 rounded-md  filter  shadow-lg  backdrop-blur-sm  mt-2 z-50 cursor-default "
+      className="userList absolute top-full left-[50%] translate-x-[-50%]  p-1 rounded-md  filter  shadow-lg  backdrop-blur-sm  mt-2 z-50 cursor-default w-max max-w-[min(20rem,calc(100vw-2rem))]"
     >
       <div className="flex items-center gap-3 p-2 rounded-lg transition-colors ">
         {/* حاوية الصورة الشخصية أو الحرف */}
@@ -48,7 +48,7 @@ function UserList({
         </div>
 
         {/* حاوية النصوص (الاسم والإيميل) */}
-        <div className="flex flex-col justify-center overflow-hidden">
+        <div className="flex flex-col justify-center overflow-hidden min-w-0">
           <div className="text-sm font-bold  truncate leading-tight">
             {`${User.data.user?.first_name} ${User.data.user?.last_name}`}
           </div>

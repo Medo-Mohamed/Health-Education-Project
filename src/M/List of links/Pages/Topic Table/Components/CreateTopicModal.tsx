@@ -122,7 +122,7 @@ const CreateTopicModal = ({
       {/* حاوية المودال */}
 
       <div
-        className=" createTopicModelBox w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300"
+        className=" createTopicModelBox w-full max-w-md max-h-full overflow-y-auto rounded-2xl shadow-2xl animate-in fade-in zoom-in duration-300"
         onClick={(e) => e.stopPropagation()}
       >
         {/* الهيدر */}

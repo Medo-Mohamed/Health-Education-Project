@@ -27,7 +27,7 @@ const TablesGrid = () => {
           to={`${location.pathname}/topictabledetails/${table._id}`}
           key={table._id}
         >
-          <div className="group relative bg-white/80 text-black rounded-xl p-5 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between min-h-40 cursor-pointer">
+          <div className="group relative bg-slate-200 text-gray-900 border border-gray-300 rounded-xl p-5 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between min-h-40 cursor-pointer">
             <div>
               {/* المربع الكبير الرئيسي (العنوان/الفئة) */}
               <h3 className="text-xl text-center font-bold mb-2 group-hover:text-blue-600 transition-colors">
@@ -44,7 +44,7 @@ const TablesGrid = () => {
             </div>
 
             {/* خط زخرفي صغير في الأسفل */}
-            <div className="mt-4 w-10 h-1 bg-blue-300 group-hover:w-full transition-all duration-500 rounded-full" />
+            <div className="mt-4 w-0 h-1 bg-blue-300 group-hover:w-full transition-all duration-500 rounded-full" />
           </div>
         </NavLink>
       ))}

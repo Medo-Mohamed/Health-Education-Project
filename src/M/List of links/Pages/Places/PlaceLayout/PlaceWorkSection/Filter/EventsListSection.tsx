@@ -191,8 +191,8 @@ export const EventsListSection: React.FC = () => {
     const isActive = sortKey === key;
     return `group p-3.5 whitespace-nowrap cursor-pointer transition-all select-none ${
       isActive
-        ? "bg-indigo-50/80 text-indigo-900 font-extrabold border-b-2 border-indigo-600"
-        : "hover:bg-gray-100/80 text-gray-700 font-bold"
+        ? "bg-indigo-50/80 dark:bg-indigo-950/60 text-indigo-900 dark:text-indigo-200 font-extrabold border-b-2 border-indigo-600 dark:border-indigo-400"
+        : "hover:bg-gray-100/80 dark:hover:bg-gray-700/60 text-gray-700 dark:text-gray-300 font-bold"
     } ${alignCenter ? "text-center" : ""}`;
   };
 
@@ -333,27 +333,27 @@ export const EventsListSection: React.FC = () => {
 
   return (
     <div
-      className="bg-white border border-gray-200/80 rounded-2xl p-6 shadow-sm space-y-6 dir-rtl"
+      className="bg-white dark:bg-gray-800 border border-gray-200/80 dark:border-gray-700 rounded-2xl p-4 sm:p-6 shadow-sm space-y-6 dir-rtl"
       dir="rtl"
     >
       {/* الترويسة وأزرار التنقل */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 pb-4">
+      <div className="flex flex-col xl:flex-row sm:items-center md:justify-between md:items-start gap-4 border-b border-gray-100 dark:border-gray-700 pb-4">
         <div>
-          <h4 className="font-bold text-lg text-gray-900 flex items-center gap-2">
+          <h4 className="font-bold text-base sm:text-lg text-gray-900 dark:text-gray-100 flex items-center gap-2">
             <span>سجل الخطة والأعمال الميدانية</span>
           </h4>
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
             استعرض التكليفات المخططة والندوات والأنشطة المنجزة في المكان
           </p>
         </div>
 
-        <div className="flex items-center gap-1.5 bg-gray-100/80 p-1 rounded-xl self-start sm:self-auto border border-gray-200/50">
+        <div className="flex flex-wrap items-center gap-1.5 bg-gray-100/80 dark:bg-gray-700/60 p-1 rounded-xl self-start sm:self-auto border border-gray-200/50 dark:border-gray-600/50 w-full sm:w-auto overflow-x-hidden">
           <button
             onClick={() => setActiveTab("plans")}
-            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${
+            className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2 ${
               activeTab === "plans"
-                ? "bg-white text-indigo-700 shadow-sm border border-gray-200/60"
-                : "text-gray-600 hover:text-gray-900"
+                ? "bg-white dark:bg-gray-800 text-indigo-700 dark:text-indigo-400 shadow-sm border border-gray-200/60 dark:border-gray-600"
+                : "text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
             }`}
           >
             <FileText className="w-4 h-4" />
@@ -361,8 +361,8 @@ export const EventsListSection: React.FC = () => {
             <span
               className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold ${
                 activeTab === "plans"
-                  ? "bg-indigo-100 text-indigo-700"
-                  : "bg-gray-200 text-gray-600"
+                  ? "bg-indigo-100 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300"
+                  : "bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300"
               }`}
             >
               {plans.length}
@@ -371,10 +371,10 @@ export const EventsListSection: React.FC = () => {
 
           <button
             onClick={() => setActiveTab("events")}
-            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${
+            className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2 ${
               activeTab === "events"
-                ? "bg-white text-emerald-700 shadow-sm border border-gray-200/60"
-                : "text-gray-600 hover:text-gray-900"
+                ? "bg-white dark:bg-gray-800 text-emerald-700 dark:text-emerald-400 shadow-sm border border-gray-200/60 dark:border-gray-600"
+                : "text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
             }`}
           >
             <Calendar className="w-4 h-4" />
@@ -382,8 +382,8 @@ export const EventsListSection: React.FC = () => {
             <span
               className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold ${
                 activeTab === "events"
-                  ? "bg-emerald-100 text-emerald-700"
-                  : "bg-gray-200 text-gray-600"
+                  ? "bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300"
+                  : "bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300"
               }`}
             >
               {events.length}
@@ -394,30 +394,30 @@ export const EventsListSection: React.FC = () => {
 
       {/* محتوى الجدول / التحميل / الحالة الفارغة */}
       {filterLoading ? (
-        <div className="text-center py-16 bg-gray-50/50 rounded-2xl border border-dashed border-gray-200 flex flex-col items-center justify-center gap-3">
-          <Loader2 className="w-8 h-8 text-indigo-600 animate-spin" />
-          <p className="text-sm font-medium text-gray-600">
+        <div className="text-center py-16 bg-gray-50/50 dark:bg-gray-800/40 rounded-2xl border border-dashed border-gray-200 dark:border-gray-700 flex flex-col items-center justify-center gap-3">
+          <Loader2 className="w-8 h-8 text-indigo-600 dark:text-indigo-400 animate-spin" />
+          <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
             جاري تحميل البيانات المفلترة...
           </p>
         </div>
       ) : currentList.length === 0 ? (
-        <div className="text-center py-16 bg-gray-50/50 rounded-2xl border border-dashed border-gray-200">
-          <Sparkles className="w-10 h-10 text-gray-300 mx-auto mb-3" />
-          <p className="text-sm font-bold text-gray-700">
+        <div className="text-center py-16 bg-gray-50/50 dark:bg-gray-800/40 rounded-2xl border border-dashed border-gray-200 dark:border-gray-700">
+          <Sparkles className="w-10 h-10 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
+          <p className="text-sm font-bold text-gray-700 dark:text-gray-300">
             لا توجد {activeTab === "plans" ? "خطط" : "ندوات منفذة"} مسجلة ضمن
             نطاق الفلترة المحدد.
           </p>
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-gray-200/80 shadow-sm max-h-[600px] overflow-y-auto">
-          <table className="w-full text-right border-collapse text-xs">
-            <thead className="sticky top-0 z-10 bg-gray-50 border-b border-gray-200 shadow-xs">
+        <div className="custom-scrollbar overflow-x-auto rounded-xl border-0 md:border md:border-gray-200/80 md:dark:border-gray-700 shadow-none md:shadow-sm max-h-[600px] overflow-y-auto">
+          <table className="w-full text-right border-collapse text-xs md:table">
+            <thead className="hidden md:table-header-group sticky top-0 z-10 bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600 shadow-xs">
               <tr>
                 <th
                   onClick={() => handleSort("place")}
-                  className={getHeaderClass("place")}
+                  className={`${getHeaderClass("place")} min-w-[150px] p-0.5`}
                 >
-                  <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center justify-between gap-2 whitespace-nowrap">
                     <span>المكان</span>
                     <SortIcon
                       columnKey="place"
@@ -430,9 +430,9 @@ export const EventsListSection: React.FC = () => {
                 {activeTab === "events" && (
                   <th
                     onClick={() => handleSort("creator")}
-                    className={getHeaderClass("creator")}
+                    className={`${getHeaderClass("creator")} min-w-[150px] p-0.5`}
                   >
-                    <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center justify-between gap-2 whitespace-nowrap">
                       <span>القائم بالفعالية</span>
                       <SortIcon
                         columnKey="creator"
@@ -445,9 +445,9 @@ export const EventsListSection: React.FC = () => {
 
                 <th
                   onClick={() => handleSort("schedule")}
-                  className={getHeaderClass("schedule")}
+                  className={`${getHeaderClass("schedule")} min-w-[150px] p-0.5`}
                 >
-                  <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center justify-between gap-2 whitespace-nowrap">
                     <span>اسم الجدول</span>
                     <SortIcon
                       columnKey="schedule"
@@ -459,9 +459,9 @@ export const EventsListSection: React.FC = () => {
 
                 <th
                   onClick={() => handleSort("mainTopic")}
-                  className={getHeaderClass("mainTopic")}
+                  className={`${getHeaderClass("mainTopic")} min-w-[180px] p-0.5`}
                 >
-                  <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center justify-between gap-2 whitespace-nowrap">
                     <span>الموضوع الرئيسي</span>
                     <SortIcon
                       columnKey="mainTopic"
@@ -473,9 +473,9 @@ export const EventsListSection: React.FC = () => {
 
                 <th
                   onClick={() => handleSort("subTopic")}
-                  className={getHeaderClass("subTopic")}
+                  className={`${getHeaderClass("subTopic")} min-w-[180px] p-0.5`}
                 >
-                  <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center justify-between gap-2 whitespace-nowrap">
                     <span>الموضوع الفرعي</span>
                     <SortIcon
                       columnKey="subTopic"
@@ -487,9 +487,9 @@ export const EventsListSection: React.FC = () => {
 
                 <th
                   onClick={() => handleSort("date")}
-                  className={getHeaderClass("date")}
+                  className={`${getHeaderClass("date")} min-w-[120px] p-0.5`}
                 >
-                  <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center justify-between gap-2 whitespace-nowrap">
                     <span>تاريخ الفعالية</span>
                     <SortIcon
                       columnKey="date"
@@ -501,9 +501,9 @@ export const EventsListSection: React.FC = () => {
 
                 <th
                   onClick={() => handleSort("locationType")}
-                  className={getHeaderClass("locationType")}
+                  className={`${getHeaderClass("locationType")} min-w-[110px] p-0.5`}
                 >
-                  <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center justify-between gap-2 whitespace-nowrap">
                     <span>نوع المكان</span>
                     <SortIcon
                       columnKey="locationType"
@@ -515,9 +515,9 @@ export const EventsListSection: React.FC = () => {
 
                 <th
                   onClick={() => handleSort("count")}
-                  className={getHeaderClass("count", true)}
+                  className={`${getHeaderClass("count", true)} min-w-[50px] p-0.5`}
                 >
-                  <div className="flex items-center justify-center gap-1.5">
+                  <div className="flex items-center justify-center gap-1.5 whitespace-nowrap">
                     <span>العدد</span>
                     <SortIcon
                       columnKey="count"
@@ -529,9 +529,9 @@ export const EventsListSection: React.FC = () => {
 
                 <th
                   onClick={() => handleSort("media")}
-                  className={getHeaderClass("media")}
+                  className={`${getHeaderClass("media")} min-w-[140px] p-0.5`}
                 >
-                  <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center justify-between gap-2 whitespace-nowrap">
                     <span>التغطية الإعلامية</span>
                     <SortIcon
                       columnKey="media"
@@ -543,9 +543,9 @@ export const EventsListSection: React.FC = () => {
 
                 <th
                   onClick={() => handleSort("attendees")}
-                  className={getHeaderClass("attendees")}
+                  className={`${getHeaderClass("attendees")} min-w-[200px] p-0.5`}
                 >
-                  <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center justify-between gap-2 whitespace-nowrap">
                     <span>الحضور المستهدف / الفعلي</span>
                     <SortIcon
                       columnKey="attendees"
@@ -556,14 +556,14 @@ export const EventsListSection: React.FC = () => {
                 </th>
 
                 {hasActionPermissions && (
-                  <th className="p-3.5 whitespace-nowrap text-center font-bold text-gray-700">
+                  <th className="p-0.5 whitespace-nowrap text-center font-bold text-gray-700 dark:text-gray-300 min-w-[120px]">
                     الإجراءات
                   </th>
                 )}
               </tr>
             </thead>
 
-            <tbody className="divide-y divide-gray-100 bg-white">
+            <tbody className="divide-y divide-gray-100 dark:divide-gray-700/60 bg-white dark:bg-gray-800 space-y-3 md:space-y-0 block md:table-row-group">
               {currentList.map((item: any) => {
                 const itemId = item._id || item.id;
                 const placeName =
@@ -588,48 +588,60 @@ export const EventsListSection: React.FC = () => {
                 return (
                   <tr
                     key={itemId}
-                    className="hover:bg-indigo-50/30 transition-colors text-gray-800"
+                    className="block md:table-row grid grid-cols-1 md:grid-none p-3 md:p-0 rounded-xl md:rounded-none border border-gray-200 dark:border-gray-700 md:border-none shadow-sm md:shadow-none hover:bg-indigo-50/30 dark:hover:bg-indigo-950/20 transition-colors text-gray-800 dark:text-gray-200"
                   >
                     <td
-                      className={`p-3.5 font-semibold text-gray-900 whitespace-nowrap ${
-                        sortKey === "place" ? "bg-indigo-50/20" : ""
+                      data-label="المكان"
+                      className={`grid grid-cols-3 md:table-cell items-center p-1 md:p-0.5 font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-100 dark:border-gray-700/50 md:border-none ${
+                        sortKey === "place"
+                          ? "bg-indigo-50/20 dark:bg-indigo-950/10"
+                          : ""
                       }`}
                     >
-                      <div className="flex items-center gap-2">
+                      <span className="md:hidden font-bold text-gray-500 dark:text-gray-400 col-span-1">
+                        المكان:
+                      </span>
+                      <div className="flex items-center gap-2 col-span-2 md:col-span-1 ">
                         {item.place_id?.metadata?.photo_url ? (
                           <img
                             src={item.place_id.metadata.photo_url}
                             alt={placeName}
-                            className="w-5 h-5 rounded-full object-cover shrink-0 border border-gray-200"
+                            className="w-5 h-5 rounded-full object-cover shrink-0 border border-gray-200 dark:border-gray-600"
                           />
                         ) : (
-                          <div className="w-5 h-5 rounded-full bg-indigo-50 flex items-center justify-center shrink-0">
-                            <MapPin className="w-3 h-3 text-indigo-600" />
+                          <div className="w-5 h-5 rounded-full bg-indigo-50 dark:bg-indigo-950 flex items-center justify-center shrink-0">
+                            <MapPin className="w-3 h-3 text-indigo-600 dark:text-indigo-400" />
                           </div>
                         )}
-                        <span>{placeName}</span>
+                        <span className="truncate">{placeName}</span>
                       </div>
                     </td>
 
                     {activeTab === "events" && (
                       <td
-                        className={`p-3.5 whitespace-nowrap ${
-                          sortKey === "creator" ? "bg-indigo-50/20" : ""
+                        data-label="القائم بالفعالية"
+                        className={`grid grid-cols-3 md:table-cell items-center p-1 md:p-0.5 border-b border-gray-100 dark:border-gray-700/50 md:border-none ${
+                          sortKey === "creator"
+                            ? "bg-indigo-50/20 dark:bg-indigo-950/10"
+                            : ""
                         }`}
                       >
-                        <div className="flex items-center gap-2">
+                        <span className="md:hidden font-bold text-gray-500 dark:text-gray-400 col-span-1">
+                          القائم بالفعالية:
+                        </span>
+                        <div className="flex items-center gap-2 col-span-2 md:col-span-1">
                           {creator?.avatar_url ? (
                             <img
                               src={creator.avatar_url}
                               alt={creatorName}
-                              className="w-6 h-6 rounded-full object-cover border border-gray-200"
+                              className="w-6 h-6 rounded-full object-cover border border-gray-200 dark:border-gray-600 shrink-0"
                             />
                           ) : (
-                            <div className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center">
-                              <User className="w-3.5 h-3.5 text-gray-500" />
+                            <div className="w-6 h-6 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center shrink-0">
+                              <User className="w-3.5 h-3.5 text-gray-500 dark:text-gray-400" />
                             </div>
                           )}
-                          <span className="font-medium text-gray-800">
+                          <span className="font-medium text-gray-800 dark:text-gray-200 truncate">
                             {creatorName}
                           </span>
                         </div>
@@ -637,38 +649,68 @@ export const EventsListSection: React.FC = () => {
                     )}
 
                     <td
-                      className={`p-3.5 whitespace-nowrap ${
-                        sortKey === "schedule" ? "bg-indigo-50/20" : ""
+                      data-label="اسم الجدول"
+                      className={`grid grid-cols-3 md:table-cell items-center p-1 md:p-0.5 border-b border-gray-100 dark:border-gray-700/50 md:border-none ${
+                        sortKey === "schedule"
+                          ? "bg-indigo-50/20 dark:bg-indigo-950/10"
+                          : ""
                       }`}
                     >
-                      <span className="bg-gray-100 text-gray-700 px-2.5 py-1 rounded-md font-medium text-[11px] border border-gray-200/60">
-                        {item.schedule_name || "بدون جدول"}
+                      <span className="md:hidden font-bold text-gray-500 dark:text-gray-400 col-span-1">
+                        اسم الجدول:
+                      </span>
+                      <div className="col-span-2 md:col-span-1 flex ">
+                        <span className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-2.5 py-1 rounded-md font-medium text-[11px] border border-gray-200/60 dark:border-gray-600 inline-block truncate">
+                          {item.schedule_name || "بدون جدول"}
+                        </span>
+                      </div>
+                    </td>
+
+                    <td
+                      data-label="الموضوع الرئيسي"
+                      className={`grid grid-cols-3 md:table-cell items-center p-1 md:p-0.5 font-medium text-gray-900 dark:text-gray-100 border-b border-gray-100 dark:border-gray-700/50 md:border-none ${
+                        sortKey === "mainTopic"
+                          ? "bg-indigo-50/20 dark:bg-indigo-950/10"
+                          : ""
+                      }`}
+                    >
+                      <span className="md:hidden font-bold text-gray-500 dark:text-gray-400 col-span-1">
+                        الموضوع الرئيسي:
+                      </span>
+                      <span className="col-span-2 md:col-span-1 ">
+                        {item.main_topic || item.mainTopic || "-"}
                       </span>
                     </td>
 
                     <td
-                      className={`p-3.5 whitespace-nowrap font-medium text-gray-900 ${
-                        sortKey === "mainTopic" ? "bg-indigo-50/20" : ""
+                      data-label="الموضوع الفرعي"
+                      className={`grid grid-cols-3 md:table-cell items-center p-1 md:p-0.5 text-gray-600 dark:text-gray-300 border-b border-gray-100 dark:border-gray-700/50 md:border-none ${
+                        sortKey === "subTopic"
+                          ? "bg-indigo-50/20 dark:bg-indigo-950/10"
+                          : ""
                       }`}
                     >
-                      {item.main_topic || item.mainTopic || "-"}
+                      <span className="md:hidden font-bold text-gray-500 dark:text-gray-400 col-span-1">
+                        الموضوع الفرعي:
+                      </span>
+                      <span className="col-span-2 md:col-span-1 ">
+                        {item.sub_topic || item.subTopic || "-"}
+                      </span>
                     </td>
 
                     <td
-                      className={`p-3.5 whitespace-nowrap text-gray-600 ${
-                        sortKey === "subTopic" ? "bg-indigo-50/20" : ""
+                      data-label="تاريخ الفعالية"
+                      className={`grid grid-cols-3 md:table-cell items-center p-1 md:p-0.5 text-gray-700 dark:text-gray-300 border-b border-gray-100 dark:border-gray-700/50 md:border-none ${
+                        sortKey === "date"
+                          ? "bg-indigo-50/30 dark:bg-indigo-950/20"
+                          : ""
                       }`}
                     >
-                      {item.sub_topic || item.subTopic || "-"}
-                    </td>
-
-                    <td
-                      className={`p-3.5 whitespace-nowrap text-gray-700 ${
-                        sortKey === "date" ? "bg-indigo-50/30" : ""
-                      }`}
-                    >
-                      <div className="flex items-center gap-1.5 font-medium">
-                        <Calendar className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
+                      <span className="md:hidden font-bold text-gray-500 dark:text-gray-400 col-span-1">
+                        التاريخ:
+                      </span>
+                      <div className="flex items-center gap-1.5 font-medium col-span-2 md:col-span-1 ">
+                        <Calendar className="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-400 shrink-0" />
                         <span>
                           {formatDate(item.event_date || item.planned_date)}
                         </span>
@@ -676,45 +718,69 @@ export const EventsListSection: React.FC = () => {
                     </td>
 
                     <td
-                      className={`p-3.5 whitespace-nowrap ${
-                        sortKey === "locationType" ? "bg-indigo-50/20" : ""
+                      data-label="نوع المكان"
+                      className={`grid grid-cols-3 md:table-cell items-center p-1 md:p-0.5 border-b border-gray-100 dark:border-gray-700/50 md:border-none ${
+                        sortKey === "locationType"
+                          ? "bg-indigo-50/20 dark:bg-indigo-950/10"
+                          : ""
                       }`}
                     >
-                      <span className="bg-blue-50 text-blue-700 px-2.5 py-0.5 rounded-full text-[11px] font-medium border border-blue-100">
-                        {locationTypeLabels[
-                          item.location_type as LocationType
-                        ] ||
-                          item.location_type ||
-                          "غير محدد"}
+                      <span className="md:hidden font-bold text-gray-500 dark:text-gray-400 col-span-1">
+                        نوع المكان:
                       </span>
+                      <div className="col-span-2 md:col-span-1 flex ">
+                        <span className="bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 px-2.5 py-0.5 rounded-full text-[11px] font-medium border border-blue-100 dark:border-blue-900/50 inline-block">
+                          {locationTypeLabels[
+                            item.location_type as LocationType
+                          ] ||
+                            item.location_type ||
+                            "غير محدد"}
+                        </span>
+                      </div>
                     </td>
 
                     <td
-                      className={`p-3.5 whitespace-nowrap text-center font-extrabold text-gray-900 ${
-                        sortKey === "count" ? "bg-indigo-50/20" : ""
+                      data-label="العدد"
+                      className={`grid grid-cols-3 md:table-cell items-center p-1 md:p-0.5 text-center font-extrabold text-gray-900 dark:text-gray-100 border-b border-gray-100 dark:border-gray-700/50 md:border-none ${
+                        sortKey === "count"
+                          ? "bg-indigo-50/20 dark:bg-indigo-950/10"
+                          : ""
                       }`}
                     >
-                      <span className="inline-block bg-gray-100 text-gray-800 px-2 py-0.5 rounded-full min-w-[24px]">
-                        {item.target_seminars_count || item.seminars_count || 1}
+                      <span className="md:hidden font-bold text-gray-500 dark:text-gray-400 col-span-1 text-right">
+                        العدد:
                       </span>
+                      <div className="col-span-2 md:col-span-1 flex md:justify-center">
+                        <span className="inline-block bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-2 py-0.5 rounded-full min-w-[24px]">
+                          {item.target_seminars_count ||
+                            item.seminars_count ||
+                            1}
+                        </span>
+                      </div>
                     </td>
 
                     <td
-                      className={`p-3.5 whitespace-nowrap ${
-                        sortKey === "media" ? "bg-indigo-50/20" : ""
+                      data-label="التغطية الإعلامية"
+                      className={`grid grid-cols-3 md:table-cell items-center p-1 md:p-0.5 border-b border-gray-100 dark:border-gray-700/50 md:border-none ${
+                        sortKey === "media"
+                          ? "bg-indigo-50/20 dark:bg-indigo-950/10"
+                          : ""
                       }`}
                     >
-                      <div className="flex flex-col gap-1 text-[11px]">
-                        <span className="flex items-center gap-1 text-gray-600">
+                      <span className="md:hidden font-bold text-gray-500 dark:text-gray-400 col-span-1">
+                        التغطية الإعلامية:
+                      </span>
+                      <div className="flex flex-col gap-1 text-[11px] col-span-2 md:col-span-1">
+                        <span className="flex items-center gap-1 text-gray-600 dark:text-gray-400">
                           <Share2 className="w-3 h-3 text-sky-500 shrink-0" />
                           إعلام رقمي:{" "}
-                          <strong className="text-gray-900 font-bold">
+                          <strong className="text-gray-900 dark:text-gray-100 font-bold">
                             {digitalActivities}
                           </strong>
                         </span>
-                        <span className="flex items-center gap-1 text-gray-600">
+                        <span className="flex items-center gap-1 text-gray-600 dark:text-gray-400">
                           وسائل إعلامية:{" "}
-                          <strong className="text-gray-900 font-bold">
+                          <strong className="text-gray-900 dark:text-gray-100 font-bold">
                             {mediaOutlets}
                           </strong>
                         </span>
@@ -722,33 +788,49 @@ export const EventsListSection: React.FC = () => {
                     </td>
 
                     <td
-                      className={`p-3.5 whitespace-nowrap ${
-                        sortKey === "attendees" ? "bg-indigo-50/20" : ""
+                      data-label="الحضور المستهدف / الفعلي"
+                      className={`grid grid-cols-3 md:table-cell items-center p-1 md:p-0.5 border-b border-gray-100 dark:border-gray-700/50 md:border-none ${
+                        sortKey === "attendees"
+                          ? "bg-indigo-50/20 dark:bg-indigo-950/10"
+                          : ""
                       }`}
                     >
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-1 font-bold text-gray-900 text-[11px]">
-                          <Users className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                      <span className="md:hidden font-bold text-gray-500 dark:text-gray-400 col-span-1">
+                        الحضور:
+                      </span>
+                      <div className="space-y-1 md:text-right col-span-2 md:col-span-1 flex flex-col md:items-start">
+                        <div className="flex items-center gap-1 font-bold text-gray-900 dark:text-gray-100 text-[11px]">
+                          <Users className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
                           <span>الإجمالي: {totalAttendees}</span>
                         </div>
-                        <div className="flex items-center gap-1.5 text-[10px] text-gray-500 bg-gray-50 p-1 rounded border border-gray-100">
+                        <div className="flex w-fit items-center gap-1.5 text-[10px] text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-700/50 p-1 rounded border border-gray-100 dark:border-gray-600">
                           <span>ذكور: {attendees.males || 0}</span>
-                          <span className="text-gray-300">•</span>
+                          <span className="text-gray-300 dark:text-gray-600">
+                            •
+                          </span>
                           <span>إناث: {attendees.females || 0}</span>
-                          <span className="text-gray-300">•</span>
+                          <span className="text-gray-300 dark:text-gray-600">
+                            •
+                          </span>
                           <span>أطفال: {attendees.children || 0}</span>
                         </div>
                       </div>
                     </td>
 
                     {hasActionPermissions && (
-                      <td className="p-3.5 whitespace-nowrap text-center">
-                        <div className="flex items-center justify-center gap-1">
+                      <td
+                        data-label="الإجراءات"
+                        className="grid grid-cols-3 md:table-cell items-center p-1 md:p-0.5 text-center"
+                      >
+                        <span className="md:hidden font-bold text-gray-500 dark:text-gray-400 col-span-1 text-right">
+                          الإجراءات:
+                        </span>
+                        <div className="flex items-center  md:justify-center gap-1 col-span-2 md:col-span-1">
                           {((activeTab === "plans" && canEditPlan) ||
                             (activeTab === "events" && canEditEvent)) && (
                             <button
                               onClick={() => setEditingItem({ ...item })}
-                              className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
+                              className="p-1.5 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/50 rounded-lg transition-colors cursor-pointer"
                               title="تعديل"
                             >
                               <Edit className="w-4 h-4" />
@@ -758,7 +840,7 @@ export const EventsListSection: React.FC = () => {
                             (activeTab === "events" && canDeleteEvent)) && (
                             <button
                               onClick={() => setDeletingItem(item)}
-                              className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                              className="p-1.5 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/50 rounded-lg transition-colors cursor-pointer"
                               title="حذف"
                             >
                               <Trash2 className="w-4 h-4" />
@@ -777,17 +859,17 @@ export const EventsListSection: React.FC = () => {
 
       {/* مودال التأكيد للحذف */}
       {deletingItem && (
-        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-sm w-full space-y-4 shadow-xl border border-gray-100 animate-in fade-in zoom-in-95">
-            <div className="flex items-center gap-3 text-red-600">
-              <div className="p-3 bg-red-100 rounded-full">
+        <div className="fixed inset-0 z-50 bg-black/40 dark:bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-sm w-full space-y-4 shadow-xl border border-gray-100 dark:border-gray-700 animate-in fade-in zoom-in-95">
+            <div className="flex items-center gap-3 text-red-600 dark:text-red-400">
+              <div className="p-3 bg-red-100 dark:bg-red-950/60 rounded-full">
                 <AlertTriangle className="w-6 h-6" />
               </div>
-              <h3 className="font-bold text-base text-gray-900">
+              <h3 className="font-bold text-base text-gray-900 dark:text-gray-100">
                 تأكيد حذف {activeTab === "plans" ? "الخطة" : "الفعالية"}
               </h3>
             </div>
-            <p className="text-xs text-gray-600 leading-relaxed">
+            <p className="text-xs text-gray-600 dark:text-gray-300 leading-relaxed">
               هل أنت تأكد من رغبتك في حذف هذا العنصر؟ لن تتمكن من استعادته بعد
               الحذف.
             </p>
@@ -795,14 +877,14 @@ export const EventsListSection: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setDeletingItem(null)}
-                className="px-4 py-2 text-xs font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors cursor-pointer"
+                className="px-4 py-2 text-xs font-bold text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-xl transition-colors cursor-pointer"
               >
                 إلغاء
               </button>
               <button
                 type="button"
                 onClick={confirmDelete}
-                className="px-4 py-2 text-xs font-bold text-white bg-red-600 hover:bg-red-700 rounded-xl transition-colors shadow-sm cursor-pointer"
+                className="px-4 py-2 text-xs font-bold text-white bg-red-600 dark:bg-red-500 hover:bg-red-700 dark:hover:bg-red-600 rounded-xl transition-colors shadow-sm cursor-pointer"
               >
                 حذف نهائي
               </button>
@@ -823,19 +905,22 @@ export const EventsListSection: React.FC = () => {
         canCreateForOthers={canCreateForOthers}
       />
 
-      <button
-        onClick={() => setIsPdfModalOpenTables(true)}
-        className="px-4 py-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl transition-colors shadow-sm cursor-pointer"
-      >
-        عرض وتحميل الجداول PDF
-      </button>
+      {/* أزرار التحميل والتصدير */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
+        <button
+          onClick={() => setIsPdfModalOpenTables(true)}
+          className="flex-1 sm:flex-none px-4 py-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 rounded-xl transition-colors shadow-sm cursor-pointer text-center"
+        >
+          عرض وتحميل الجداول PDF
+        </button>
 
-      <button
-        onClick={() => setIsPdfModalOpenRows(true)}
-        className="px-4 py-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl transition-colors shadow-sm cursor-pointer"
-      >
-        عرض وتحميل الصفوف PDF
-      </button>
+        <button
+          onClick={() => setIsPdfModalOpenRows(true)}
+          className="flex-1 sm:flex-none px-4 py-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 rounded-xl transition-colors shadow-sm cursor-pointer text-center"
+        >
+          عرض وتحميل الصفوف PDF
+        </button>
+      </div>
 
       {isPdfModalOpenTables && (
         <PdfPreviewModal

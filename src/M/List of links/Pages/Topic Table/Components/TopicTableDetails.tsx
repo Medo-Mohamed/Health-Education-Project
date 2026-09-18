@@ -102,10 +102,18 @@ const SortableRow = ({
       }`}
     >
       <div className="col-span-1 md:col-span-3 py-2 font-bold md:font-medium">
+        <span className="md:hidden font-bold block mb-1">
+          الموضوع الرئيسي:
+        </span>
         {row.mainTopic}
       </div>
 
-      <div className="col-span-1 md:col-span-3 py-2  ">{row.supTopic}</div>
+      <div className="col-span-1 md:col-span-3 py-2  ">
+        <span className="md:hidden font-bold block mb-1">
+          الموضوع الفرعي:
+        </span>
+        {row.supTopic}
+      </div>
 
       <div className="col-span-1 md:col-span-4 py-2 text-sm italic ">
         <span className="md:hidden font-bold not-italic block mb-1">
@@ -357,7 +365,7 @@ const TopicTableDetails = () => {
   };
 
   return (
-    <div className="space-y-4 pb-10 relative">
+    <div className="space-y-4 pb-28 md:pb-10 relative">
       {/* الهيدر (بدون تغيير) */}
       <div className="p-2 rounded-2xl border shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4 ">
         <div>
@@ -443,7 +451,7 @@ const TopicTableDetails = () => {
       </div>
 
       {isEditable && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-md px-4">
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-md px-4 pb-[env(safe-area-inset-bottom)]">
           <button
             onClick={handleFinalSave}
             className="w-full bg-green-600 hover:bg-green-700 cursor-pointer text-white py-4 rounded-2xl font-bold shadow-2xl flex items-center justify-center gap-3"

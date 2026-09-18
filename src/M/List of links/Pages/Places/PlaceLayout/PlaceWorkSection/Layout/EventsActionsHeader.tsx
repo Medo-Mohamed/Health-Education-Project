@@ -1,19 +1,17 @@
 // components/EventsActionsHeader.tsx
 import { Calendar, Plus, Target } from "lucide-react";
+
 import { useNavigate } from "react-router-dom";
 
-interface EventsActionsHeaderProps {
-  canCreateEvent: boolean;
-  onOpenPlanModal?: () => void;
-}
+import { usePlacePermissions } from "../../../../../../Redux-Store/PlacePermissions/usePlacePermissions";
+import { PlacePermission } from "../../../types";
 
-export const EventsActionsHeader: React.FC<EventsActionsHeaderProps> = ({
-  canCreateEvent,
-}) => {
+export const EventsActionsHeader: React.FC = () => {
   const navigate = useNavigate();
+  const { isDev, hasPermission } = usePlacePermissions();
 
   return (
-    <div className="bg-white border border-gray-200/80 rounded-2xl p-6 shadow-sm">
+    <div className="bg-white border border-gray-200/80  dark:border-gray-700 rounded-2xl p-6 shadow-sm">
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
           <h3 className="font-bold text-lg text-gray-900 flex items-center gap-2">
@@ -29,16 +27,18 @@ export const EventsActionsHeader: React.FC<EventsActionsHeaderProps> = ({
         {/* أزرار التوجيه للصفحات الخارجية */}
         <div className="flex items-center gap-2.5 flex-wrap self-start lg:self-auto">
           {/* 1. زر التوجيه لصفحة إنشاء/إعداد الخطة المستهدفة */}
-          <button
-            onClick={() => navigate(`plan-manegment`)}
-            className="flex items-center gap-2 px-4 py-2.5 bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 rounded-xl text-xs font-bold transition shadow-sm"
-          >
-            <Target className="w-4 h-4 text-purple-600" />
-            <span>إعداد الخطة المستهدفة</span>
-          </button>
+          {(isDev || hasPermission(PlacePermission.CREATE_PLAN)) && (
+            <button
+              onClick={() => navigate(`plan-manegment`)}
+              className="flex items-center gap-2 px-4 py-2.5 bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 rounded-xl text-xs font-bold transition shadow-sm"
+            >
+              <Target className="w-4 h-4 text-purple-600" />
+              <span>إعداد الخطة المستهدفة</span>
+            </button>
+          )}
 
           {/* 2. زر التوجيه لصفحة إضافة ندوة جديدة */}
-          {canCreateEvent && (
+          {(isDev || hasPermission(PlacePermission.CREATE_EVENT)) && (
             <button
               onClick={() => navigate(`create-event`)}
               className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition shadow-sm"

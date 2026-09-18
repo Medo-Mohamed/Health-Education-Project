@@ -17,7 +17,7 @@ export default function Login() {
 
   return (
     <div
-      className="fixed inset-0 z-100 flex items-center justify-center bg-black/40 backdrop-blur-sm overflow-hidden"
+      className="fixed inset-0 z-100 flex bg-black/40 backdrop-blur-sm overflow-y-auto"
       dir="rtl"
     >
       {/* خلفية ديناميكية زجاجية */}
@@ -28,7 +28,7 @@ export default function Login() {
       ></div>
       <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 z-0"></div>
 
-      <div className="w-full max-w-md p-8 m-4 rounded-2xl shadow-2xl backdrop-blur-xl bg-white/40 border border-white/30 dark:bg-black/40 dark:border-gray-700/50 text-gray-800 dark:text-gray-100 relative z-10 transition-all duration-300 hover:shadow-blue-500/10">
+      <div className="w-full max-w-md p-8 m-auto rounded-2xl shadow-2xl backdrop-blur-xl bg-white/40 border border-white/30 dark:bg-black/40 dark:border-gray-700/50 text-gray-800 dark:text-gray-100 relative z-10 transition-all duration-300 hover:shadow-blue-500/10">
         {/* زر الإغلاق */}
         <button
           type="button"

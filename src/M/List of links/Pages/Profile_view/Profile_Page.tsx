@@ -79,7 +79,7 @@ const ModernProfilePage = () => {
       {/* بطاقة الرأس */}
       <div className="relative rounded-3xl shadow-xl overflow-hidden border border-gray-100 dark:border-slate-700 profileContainer">
         <div className="h-32 bg-linear-to-r from-indigo-500 to-purple-600 opacity-30"></div>
-        <div className="px-8 pb-8">
+        <div className="px-4 sm:px-8 pb-8">
           <div className="relative flex flex-col md:flex-row justify-between items-center md:items-start -mt-12 gap-4">
             <div className="flex flex-col md:flex-row items-center md:items-start gap-2 md:gap-5 w-full">
               {/* صورة المستخدم */}
@@ -242,7 +242,7 @@ const ModernProfilePage = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8  p-6 rounded-2xl border shadow-sm text-right items-start">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8 p-4 sm:p-6 rounded-2xl border shadow-sm text-right items-start">
               {/* الاسم الاول */}
               <div className="space-y-1">
                 <label className="block text-sm font-bold opacity-70">
@@ -350,22 +350,22 @@ const ModernProfilePage = () => {
           </div>
 
           {/* الإحصائيات */}
-          <div className="border  mt-10 p-6 rounded-3xl flex justify-evenly divide-x-2 font-extrabold text-2xl shadow-sm">
-            <div className="flex flex-col element-center gap-2 flex-1">
-              <h2 className=" text-lg">المتابعون</h2>
-              <h2 className="text-indigo-600 text-3xl">
+          <div className="border mt-10 p-4 sm:p-6 rounded-3xl grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-3 sm:divide-x-2 font-extrabold text-2xl shadow-sm text-center">
+            <div className="flex flex-col element-center gap-1 sm:gap-2 break-words">
+              <h2 className="text-lg">المتابعون</h2>
+              <h2 className="text-indigo-600 text-2xl sm:text-3xl">
                 {User?.stats?.followers || 0}
               </h2>
             </div>
-            <div className="flex flex-col element-center gap-2 flex-1">
-              <h2 className=" text-lg">المنشورات</h2>
-              <h2 className="text-indigo-600 text-3xl">
+            <div className="flex flex-col element-center gap-1 sm:gap-2 break-words">
+              <h2 className="text-lg">المنشورات</h2>
+              <h2 className="text-indigo-600 text-2xl sm:text-3xl">
                 {User?.stats?.posts_count || 0}
               </h2>
             </div>
-            <div className="flex flex-col element-center gap-2 flex-1">
-              <h2 className=" text-lg">أتابع</h2>
-              <h2 className="text-indigo-600 text-3xl">
+            <div className="flex flex-col element-center gap-1 sm:gap-2 break-words">
+              <h2 className="text-lg">أتابع</h2>
+              <h2 className="text-indigo-600 text-2xl sm:text-3xl">
                 {User?.stats?.following || 0}
               </h2>
             </div>

@@ -10,7 +10,7 @@ function Landing() {
     useSelector((state: RootState) => state.Theme.value) === "dark";
   const navigate = useNavigate();
   return (
-    <div id="landing" className="min-h-screen flex flex-col">
+    <div id="landing" className="min-h-[100dvh] flex flex-col">
       <div className="flex-1 element-center">
         <div className="container grid md:grid-cols-2 items-center gap-8 min-h-full grid-cols-1 p-4">
           <div className="text-content order-1" dir="rtl">
@@ -36,12 +36,12 @@ function Landing() {
               </button>
             </div>
           </div>
-          <div className="image-content order-0 md:order-2 element-center">
+          <div className="image-content order-0 md:order-2 element-center w-full">
             <img
               src={isDarkMode ? nightImg : LightImg}
               alt="Health and Education"
               draggable="false"
-              className="object-contain"
+              className="w-full max-w-full h-auto object-contain"
             />
           </div>
         </div>
