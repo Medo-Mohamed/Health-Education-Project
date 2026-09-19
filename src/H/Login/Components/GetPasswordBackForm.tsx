@@ -10,11 +10,15 @@ import {
 import { useEffect, useMemo, useState } from "react";
 let oldStage: number = 0;
 function GetPasswordBackForm() {
-  const UserStates = useSelector((state: RootState) => state.User);
+  const stage = useSelector(
+    (state: RootState) => state.User.logIn_or_lostPassword.stage,
+  );
+  const userError = useSelector((state: RootState) => state.User.error);
+  const userMessage = useSelector((state: RootState) => state.User.message);
+  const userLoading = useSelector((state: RootState) => state.User.loading);
   const dispatch = useDispatch<AppDispatch>();
   const [textInput, setTextInput] = useState("");
   const [username, setUsername] = useState("");
-  const stage = UserStates.logIn_or_lostPassword.stage;
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -92,7 +96,7 @@ function GetPasswordBackForm() {
           <input
             type={fieldInputInfo.type}
             id={fieldInputInfo.id}
-            disabled={UserStates.loading}
+            disabled={userLoading}
             value={textInput}
             onChange={(e) => setTextInput(e.target.value)}
             className="w-full px-4 py-3 bg-white/60 dark:bg-gray-800/60 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-4 focus:ring-blue-500/30 focus:border-blue-500 outline-none transition-all placeholder-gray-400"
@@ -102,15 +106,15 @@ function GetPasswordBackForm() {
         </div>
       )}
 
-      {UserStates.error && (
+      {userError && (
         <div className="p-4 text-sm font-medium text-red-600 bg-red-100/80 dark:bg-red-900/40 rounded-xl border border-red-200 dark:border-red-800 animate-pulse">
-          {UserStates.error}
+          {userError}
         </div>
       )}
 
-      {!UserStates.error && UserStates.message && (
+      {!userError && userMessage && (
         <div className="p-4 text-sm font-medium text-green-600 bg-green-100/80 rounded-xl border border-green-200  animate-pulse">
-          {UserStates.message}
+          {userMessage}
         </div>
       )}
 
@@ -124,17 +128,15 @@ function GetPasswordBackForm() {
       </div>
 
       <button
-        disabled={
-          UserStates.loading || UserStates.logIn_or_lostPassword.stage === 3
-        }
+        disabled={userLoading || stage === 3}
         className={`w-full py-3.5 px-4 flex justify-center rounded-xl text-lg font-bold text-white transition-all duration-300 shadow-lg ${
-          UserStates.loading
+          userLoading
             ? "bg-gray-400 cursor-not-allowed"
             : "bg-linear-to-r from-blue-600 to-red-500 hover:from-blue-700 hover:to-red-600 hover:shadow-xl hover:-translate-y-1"
         }`}
         onClick={handelSubmit}
       >
-        {UserStates.loading ? (
+        {userLoading ? (
           <svg className="animate-spin h-6 w-6 text-white" viewBox="0 0 24 24">
             <circle
               className="opacity-25"
@@ -150,9 +152,9 @@ function GetPasswordBackForm() {
               d="M4 12a8 8 0 018-8v8H4z"
             ></path>
           </svg>
-        ) : UserStates.logIn_or_lostPassword.stage === 2 ? (
+        ) : stage === 2 ? (
           "حفظ كلمة السر الجديدة"
-        ) : UserStates.logIn_or_lostPassword.stage === 3 ? (
+        ) : stage === 3 ? (
           "حفظ كلمة السر الجديدة"
         ) : (
           "المتابعة"

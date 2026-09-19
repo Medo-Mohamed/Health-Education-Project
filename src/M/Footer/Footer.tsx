@@ -1,8 +1,4 @@
-import { useSelector } from "react-redux";
-import type { RootState } from "../../store";
-
 function Footer() {
-  const User = useSelector((state: RootState) => state.User);
   return (
     <footer className="py-8 px-4 border-t-2 mt-1" dir="rtl">
       <div className="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -46,15 +42,6 @@ function Footer() {
           الحقوق محفوظة.
         </p>
       </div>
-
-      <button
-        onClick={() =>
-          // eslint-disable-next-line react-hooks/rules-of-hooks
-          console.log(User)
-        }
-      >
-        Show User State
-      </button>
     </footer>
   );
 }

@@ -43,7 +43,8 @@ function Left() {
   //   window.addEventListener("resize", handleResize);
   //   return () => window.removeEventListener("resize", handleResize);
   // }, []);
-  const User = useSelector((state: RootState) => state.User);
+  const UserStatus = useSelector((state: RootState) => state.User.status);
+  const UserData = useSelector((state: RootState) => state.User.data.user);
   const Theme = useSelector((state: RootState) => state.Theme.value);
   const Dispatch = useDispatch<AppDispatch>();
 
@@ -57,7 +58,7 @@ function Left() {
   // };
   return (
     <div className="element-center gap-4">
-      {User.status == "idle" ? (
+      {UserStatus == "idle" ? (
         <div className="element-center gap-2">
           <div
             className="element-center gap-0.5 text-xl  p-1 rounded-md  transition-colors duration-300 cursor-pointer group relative"
@@ -71,22 +72,22 @@ function Left() {
               <div
                 className="w-9 h-9 rounded-full flex items-center justify-center overflow-hidden bg-black/20 border border-gray-500/50 group-hover:bg-black/60 transition-all duration-300 relative"
                 style={{
-                  backgroundImage: User.data.user?.avatar_url
-                    ? `url(${User.data.user.avatar_url})`
+                  backgroundImage: UserData?.avatar_url
+                    ? `url(${UserData.avatar_url})`
                     : "none",
                   backgroundSize: "cover",
                   backgroundPosition: "center",
                 }}
               >
                 {/* إذا لم توجد صورة، نظهر الأيقونة في المنتصف تماماً */}
-                {!User.data.user?.avatar_url && (
+                {!UserData?.avatar_url && (
                   <IoMdPerson className="w-2/3 h-2/3 " />
                 )}
               </div>
 
               {/* اسم المستخدم بجانب الصورة */}
               <div className="hidden md:block text-sm font-medium transition-colors group-hover:text-blue-500">
-                {User.data.user?.first_name}
+                {UserData?.first_name}
               </div>
             </Link>
             {/* <UserList
@@ -122,7 +123,7 @@ function Left() {
         {isClicked ? <GoX /> : <BsList />}
       </div> */}
       {/* to test now */}
-      {User.status === "idle" && (
+      {UserStatus === "idle" && (
         <button
           onClick={() => Dispatch(logOutUser())}
           className="text-2xl rounded element-center text-red-600 hover:text-red-700 transition-colors duration-300 cursor-pointer rotate-180"

@@ -184,7 +184,7 @@ export const AddStaffModal: React.FC<AddStaffModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 dir-rtl">
-      <div className="w-full max-w-xl bg-white dark:bg-slate-900 rounded-2xl shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-800 animate-in fade-in zoom-in duration-200 max-h-[90vh] flex flex-col">
+      <div className="custom-scrollbar w-full max-w-xl bg-white dark:bg-slate-900 rounded-2xl shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-800 animate-in fade-in zoom-in duration-200 max-h-[90vh] flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 shrink-0">
           <div className="flex items-center gap-3">
@@ -209,7 +209,7 @@ export const AddStaffModal: React.FC<AddStaffModalProps> = ({
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-5 overflow-y-auto">
+        <form onSubmit={handleSubmit} className="custom-scrollbar p-6 space-y-5 overflow-y-auto">
           {/* User Search Field */}
           <div className="relative" ref={searchRef}>
             <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
@@ -259,7 +259,7 @@ export const AddStaffModal: React.FC<AddStaffModalProps> = ({
 
             {/* Dropdown Results */}
             {showDropdown && searchResults.length > 0 && (
-              <div className="absolute z-20 w-full mt-1 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 max-h-60 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-700/50">
+              <div className="custom-scrollbar absolute z-20 w-full mt-1 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 max-h-60 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-700/50">
                 {searchResults.map((user) => (
                   <div
                     key={user.id}
@@ -307,7 +307,7 @@ export const AddStaffModal: React.FC<AddStaffModalProps> = ({
             <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
               الرتبة / الدور الوظيفي <span className="text-red-500">*</span>
             </label>
-            <div className="grid grid-cols-2 gap-2.5">
+            <div className="grid grid-cols-2 gap-2.5 custom-scrollbar">
               {[
                 {
                   id: PlaceRole.ADMIN,

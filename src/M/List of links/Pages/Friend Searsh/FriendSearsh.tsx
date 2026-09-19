@@ -16,17 +16,21 @@ function UserSearchPage({ comesFrom }: { comesFrom: string }) {
   const pageFromUrl = Number(searchParams.get("page")) || 1;
 
   const [searchTerm, setSearchTerm] = useState(searchFromUrl);
-  const UserSearch = useSelector((state: RootState) => state.UserSearch);
+  const searchState = useSelector(
+    (state: RootState) => state.UserSearch.state,
+  );
+  const searchError = useSelector((state: RootState) => state.UserSearch.error);
+  const searchInfo = useSelector((state: RootState) => state.UserSearch.info);
   const dispatch = useDispatch<AppDispatch>();
 
   // ✅ الحل الصحيح: وضع الـ dispatch داخل useEffect
   useEffect(() => {
-    if (UserSearch.state === "loading") {
+    if (searchState === "loading") {
       dispatch(loading());
     } else {
       dispatch(close());
     }
-  }, [UserSearch.state, dispatch]);
+  }, [searchState, dispatch]);
 
   // مزامنة حقل المدخلات إذا تغير الـ URL
   useEffect(() => {
@@ -85,8 +89,8 @@ function UserSearchPage({ comesFrom }: { comesFrom: string }) {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          {UserSearch.error && (
-            <p className="text-red-500">{UserSearch.error}</p>
+          {searchError && (
+            <p className="text-red-500">{searchError}</p>
           )}
         </div>
         <button
@@ -99,10 +103,10 @@ function UserSearchPage({ comesFrom }: { comesFrom: string }) {
 
       {/* عرض النتائج */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-        {UserSearch.state === "loading" ? (
+        {searchState === "loading" ? (
           <p>جاري التحميل...</p>
         ) : (
-          UserSearch.info.data.map((user) => (
+          searchInfo.data.map((user) => (
             <Link
               key={user._id}
               to={`/profile_view/${user._id}`}
@@ -132,25 +136,25 @@ function UserSearchPage({ comesFrom }: { comesFrom: string }) {
       </div>
 
       {/* أزرار التنقل (Pagination) */}
-      {UserSearch.info.totalPages > 1 && (
+      {searchInfo.totalPages > 1 && (
         <div className="flex flex-wrap justify-center items-center gap-2 sm:gap-4 mt-8">
           <button
-            disabled={UserSearch.info.currentPage === 1}
-            onClick={() => handlePageChange(UserSearch.info.currentPage - 1)}
+            disabled={searchInfo.currentPage === 1}
+            onClick={() => handlePageChange(searchInfo.currentPage - 1)}
             className="px-4 py-2 rounded-lg disabled:opacity-50"
           >
             السابق
           </button>
 
           <span className="font-medium">
-            صفحة {UserSearch.info.currentPage} من {UserSearch.info.totalPages}
+            صفحة {searchInfo.currentPage} من {searchInfo.totalPages}
           </span>
 
           <button
             disabled={
-              UserSearch.info.currentPage === UserSearch.info.totalPages
+              searchInfo.currentPage === searchInfo.totalPages
             }
-            onClick={() => handlePageChange(UserSearch.info.currentPage + 1)}
+            onClick={() => handlePageChange(searchInfo.currentPage + 1)}
             className="px-4 py-2 rounded-lg disabled:opacity-50"
           >
             التالي

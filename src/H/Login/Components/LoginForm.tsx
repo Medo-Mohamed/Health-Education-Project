@@ -7,7 +7,8 @@ import { useState } from "react";
 import type { AppDispatch, RootState } from "../../../store";
 
 function LoginForm() {
-  const UserStates = useSelector((state: RootState) => state.User);
+  const loginError = useSelector((state: RootState) => state.User.error);
+  const loginLoading = useSelector((state: RootState) => state.User.loading);
   const dispatch = useDispatch<AppDispatch>();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -81,22 +82,22 @@ function LoginForm() {
         </div>
       </div>
 
-      {UserStates.error && (
+      {loginError && (
         <div className="p-4 text-sm font-medium text-red-600 bg-red-100/80 dark:bg-red-900/40 rounded-xl border border-red-200 dark:border-red-800 animate-pulse">
-          {UserStates.error}
+          {loginError}
         </div>
       )}
 
       <button
         type="submit"
-        disabled={UserStates.loading}
+        disabled={loginLoading}
         className={`w-full py-3.5 px-4 flex justify-center rounded-xl text-lg font-bold text-white transition-all duration-300 shadow-lg ${
-          UserStates.loading
+          loginLoading
             ? "bg-gray-400 cursor-not-allowed"
             : "bg-linear-to-r from-blue-600 to-red-500 hover:from-blue-700 hover:to-red-600 hover:shadow-xl hover:-translate-y-1"
         }`}
       >
-        {UserStates.loading ? (
+        {loginLoading ? (
           <svg className="animate-spin h-6 w-6 text-white" viewBox="0 0 24 24">
             <circle
               className="opacity-25"

@@ -23,13 +23,13 @@ import type { AxiosError } from "axios";
 const Register = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const UserStates = useSelector((state: RootState) => state.User);
+  const userStatus = useSelector((state: RootState) => state.User.status);
 
   useEffect(() => {
-    if (UserStates.status === "idle") {
+    if (userStatus === "idle") {
       navigate("/");
     }
-  }, [UserStates.status, navigate]);
+  }, [userStatus, navigate]);
 
   const [formData, setFormData] = useState({
     username: "",

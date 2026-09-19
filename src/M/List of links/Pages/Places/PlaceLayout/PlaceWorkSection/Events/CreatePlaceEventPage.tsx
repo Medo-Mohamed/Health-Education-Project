@@ -398,7 +398,7 @@ export const CreatePlaceEvent: React.FC = () => {
       dispatch(
         open({
           state: "success",
-          title: "تم إدخال الندوة وتحديث التفضيلات بنجاح!",
+          title: "تم تسجيل الندوة وتحديث الإنجاز بنجاح",
         }),
       );
 
@@ -444,10 +444,7 @@ export const CreatePlaceEvent: React.FC = () => {
   }
 
   return (
-    <div
-      className="max-w-4xl mx-auto sm:p-0 lg:px-8 py-6 dir-rtl"
-      dir="rtl"
-    >
+    <div className="max-w-4xl mx-auto sm:p-0 lg:px-8 py-6 dir-rtl" dir="rtl">
       {/* الهيدر */}
       <div className="flex items-center justify-between mb-6">
         <div>

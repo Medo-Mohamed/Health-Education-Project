@@ -5,8 +5,8 @@ import Login from "../H/Login/Login";
 import type { RootState } from "../store";
 
 function App() {
-  const UserStates = useSelector((state: RootState) => state.User);
-  return <div>{UserStates.status === "unAuthenticated" && <Login />}</div>;
+  const userStatus = useSelector((state: RootState) => state.User.status);
+  return <div>{userStatus === "unAuthenticated" && <Login />}</div>;
 }
 
 export default App;

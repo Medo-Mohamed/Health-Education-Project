@@ -3,7 +3,11 @@ import { useParams, useNavigate } from "react-router-dom";
 import AxiosApi from "../../../../../../AxiosApi";
 import { useDispatch } from "react-redux";
 import type { AppDispatch } from "../../../../../../store";
-import { loading, open, close } from "../../../../../Redux-Store/SuccessFaildState/SFS";
+import {
+  loading,
+  open,
+  close,
+} from "../../../../../Redux-Store/SuccessFaildState/SFS";
 import {
   Save,
   ShieldCheck,
@@ -21,59 +25,7 @@ import {
   type IPlacePermission,
   type IPlaceRole,
 } from "../../types";
-
-// ==========================================
-// 1. التعريفات المطبقة على السيرفر
-// ==========================================
-
-// 3. خريطة الصلاحيات الافتراضية المحدثة
-// export const DEFAULT_ROLE_PERMISSIONS: Record<IPlaceRole, IPlacePermission[]> =
-//   {
-//     [PlaceRole.ADMIN]: [
-//       PlacePermission.CREATE_SUB_PLACE,
-//       PlacePermission.EDIT_PLACE_INFO,
-//       PlacePermission.DELETE_PLACE,
-//       PlacePermission.MANAGE_MEMBERS,
-//       PlacePermission.VIEW_MEMBERS,
-//       PlacePermission.CREATE_PLAN,
-//       PlacePermission.EDIT_PLAN,
-//       PlacePermission.DELETE_PLAN,
-//       PlacePermission.VIEW_PLAN,
-//       PlacePermission.SUBMIT_PLAN,
-//       PlacePermission.APPROVE_PLAN,
-//       PlacePermission.MERGE_PLANS,
-//       PlacePermission.CREATE_EVENT,
-//       PlacePermission.EDIT_EVENT,
-//       PlacePermission.DELETE_EVENT,
-//       PlacePermission.VIEW_PLACE,
-//       PlacePermission.UPLOAD_MEDIA,
-//     ],
-//     [PlaceRole.SUPERVISOR]: [
-//       PlacePermission.EDIT_PLACE_INFO,
-//       PlacePermission.VIEW_MEMBERS,
-//       PlacePermission.CREATE_PLAN,
-//       PlacePermission.EDIT_PLAN,
-//       PlacePermission.DELETE_PLAN,
-//       PlacePermission.VIEW_PLAN,
-//       PlacePermission.SUBMIT_PLAN,
-//       PlacePermission.APPROVE_PLAN,
-//       PlacePermission.MERGE_PLANS,
-//       PlacePermission.CREATE_EVENT,
-//       PlacePermission.EDIT_EVENT,
-//       PlacePermission.VIEW_PLACE,
-//       PlacePermission.UPLOAD_MEDIA,
-//     ],
-//     [PlaceRole.OPERATOR]: [
-//       PlacePermission.CREATE_PLAN,
-//       PlacePermission.EDIT_PLAN,
-//       PlacePermission.VIEW_PLAN,
-//       PlacePermission.SUBMIT_PLAN,
-//       PlacePermission.CREATE_EVENT,
-//       PlacePermission.VIEW_PLACE,
-//       PlacePermission.UPLOAD_MEDIA,
-//     ],
-//     [PlaceRole.VIEWER]: [PlacePermission.VIEW_PLACE, PlacePermission.VIEW_PLAN],
-//   };
+import { usePlacePermissions } from "../../../../../Redux-Store/PlacePermissions/usePlacePermissions";
 
 // تفاصيل وسياق كل صلاحية للعرض في الشاشة باللغة العربية
 const PERMISSION_DETAILS: Record<
@@ -153,7 +105,6 @@ const PERMISSION_DETAILS: Record<
 
 // الأدوار وعناوينها
 
-
 interface CustomPermissionItem {
   permission: IPlacePermission;
   expires_at: string | null;
@@ -173,6 +124,7 @@ interface StaffInfo {
 
 const EditStaffPermissionsPage: React.FC = () => {
   const { id, userId } = useParams<{ id: string; userId: string }>();
+  const { hasPermission } = usePlacePermissions();
   // console.log("edit permis");
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
@@ -335,24 +287,33 @@ const EditStaffPermissionsPage: React.FC = () => {
       dispatch(
         open({
           state: "faild",
-          title:
-            error.response?.data?.message || "حدث خطأ أثناء حفظ التعديلات",
+          title: error.response?.data?.message || "حدث خطأ أثناء حفظ التعديلات",
         }),
       );
     }
   };
 
+  if (!hasPermission(PlacePermission.MANAGE_MEMBERS))
+    return (
+      <div className="p-4 sm:p-6 text-center text-sm font-semibold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40 rounded-2xl border border-red-200 dark:border-red-900/50 max-w-md mx-auto my-8 shadow-sm">
+        عذراً لا تملك الصلاحية للتعديل على الموظفين التابعين لهذا المكان
+      </div>
+    );
+
   return (
-    <div className="max-w-4xl mx-auto dir-rtl" dir="rtl">
+    <div
+      className="max-w-4xl mx-auto dir-rtl px-4 sm:px-6 py-6 transition-colors duration-300"
+      dir="rtl"
+    >
       {/* الهيدر وزر الحفظ والعودة */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8">
         <div className="flex items-center gap-3">
           <div>
-            <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-              <ShieldCheck className="w-6 h-6 text-blue-600" />
+            <h1 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+              <ShieldCheck className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 dark:text-blue-400 shrink-0" />
               <span>إدارة صلاحيات الموظف</span>
             </h1>
-            <p className="text-xs text-gray-500 mt-0.5">
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 sm:mt-0.5">
               تحديد الدور الوظيفي الأساسي والصلاحيات الاستثنائية وتوريث الفروع
             </p>
           </div>
@@ -360,42 +321,42 @@ const EditStaffPermissionsPage: React.FC = () => {
 
         <button
           onClick={handleSave}
-          className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl font-bold text-xs transition shadow-sm disabled:opacity-70"
+          className="w-full sm:w-auto flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-500 text-white px-5 sm:px-6 py-2.5 rounded-xl font-bold text-xs transition duration-200 shadow-sm disabled:opacity-70 active:scale-[0.98] cursor-pointer"
         >
-          <Save className="w-4 h-4" />
+          <Save className="w-4 h-4 shrink-0" />
           <span>حفظ التعديلات</span>
         </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6">
         {/* العمود الجانبي: بطاقة بيانات الموظف والإرشادات */}
-        <div className="lg:col-span-1 space-y-5">
-          <div className="bg-white p-6 rounded-2xl border border-gray-200/80 shadow-sm text-center">
+        <div className="lg:col-span-1 space-y-4 sm:space-y-5">
+          <div className="bg-white dark:bg-gray-900 p-5 sm:p-6 rounded-2xl border border-gray-200/80 dark:border-gray-800 shadow-sm text-center transition-colors">
             {staffInfo?.avatar_url ? (
               <img
                 src={staffInfo.avatar_url}
                 alt="User Avatar"
-                className="w-20 h-20 rounded-full mx-auto object-cover border-4 border-gray-50 shadow-inner"
+                className="w-20 h-20 rounded-full mx-auto object-cover border-4 border-gray-50 dark:border-gray-800 shadow-inner"
               />
             ) : (
-              <div className="w-20 h-20 rounded-full mx-auto bg-blue-100 text-blue-700 flex items-center justify-center text-xl font-bold mb-3 shadow-inner">
+              <div className="w-20 h-20 rounded-full mx-auto bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 flex items-center justify-center text-xl font-bold mb-3 shadow-inner">
                 {staffInfo?.first_name?.charAt(0) || "U"}
               </div>
             )}
-            <h2 className="text-base font-bold text-gray-900 mt-2">
+            <h2 className="text-base font-bold text-gray-900 dark:text-white mt-2">
               {staffInfo?.first_name} {staffInfo?.last_name}
             </h2>
-            <p className="text-xs text-gray-500 font-mono mt-1">
+            <p className="text-xs text-gray-500 dark:text-gray-400 font-mono mt-1 break-all">
               {staffInfo?.email}
             </p>
           </div>
 
           {/* تفعيل / تعطيل التوارث للأماكن التابعة */}
-          <div className="bg-white p-5 rounded-2xl border border-gray-200/80 shadow-sm space-y-3">
+          <div className="bg-white dark:bg-gray-900 p-5 rounded-2xl border border-gray-200/80 dark:border-gray-800 shadow-sm space-y-3 transition-colors">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <GitFork className="w-4 h-4 text-purple-600" />
-                <span className="text-xs font-bold text-gray-900">
+                <GitFork className="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0" />
+                <span className="text-xs font-bold text-gray-900 dark:text-white">
                   توارث الصلاحية للفروع
                 </span>
               </div>
@@ -403,7 +364,9 @@ const EditStaffPermissionsPage: React.FC = () => {
                 type="button"
                 onClick={() => setInheritToChildren(!inheritToChildren)}
                 className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
-                  inheritToChildren ? "bg-purple-600" : "bg-gray-200"
+                  inheritToChildren
+                    ? "bg-purple-600 dark:bg-purple-500"
+                    : "bg-gray-200 dark:bg-gray-700"
                 }`}
               >
                 <span
@@ -413,19 +376,19 @@ const EditStaffPermissionsPage: React.FC = () => {
                 />
               </button>
             </div>
-            <p className="text-[11px] text-gray-500 leading-relaxed">
+            <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed">
               عند التفعيل، سيرث الموظف نفس هذه الصلاحيات تلقائياً على جميع
               الأماكن والقطاعات التابعة لهذا المكان.
             </p>
           </div>
 
-          <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4">
-            <h4 className="flex items-center gap-2 text-amber-800 font-bold text-xs mb-1.5">
-              <ShieldAlert className="w-4 h-4" />
+          <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-800/50 rounded-2xl p-4 transition-colors">
+            <h4 className="flex items-center gap-2 text-amber-800 dark:text-amber-400 font-bold text-xs mb-1.5">
+              <ShieldAlert className="w-4 h-4 shrink-0" />
               <span>كيف تعمل الصلاحيات؟</span>
             </h4>
-            <p className="text-[11px] text-amber-700 leading-relaxed">
-              الدور الأساسي يمنح الموظف حزمة صلاحيات جاهزة. يمكنك تفعيل صلاحيات
+            <p className="text-[11px] text-amber-700 dark:text-amber-300/90 leading-relaxed">
+              الدور الأساسي يمنح الموظف حزمة صلاحياتجاهزة. يمكنك تفعيل صلاحيات
               إضافية بالأسفل لتمنحه استثناءات حساسة (Custom Permissions) وتحديد
               تاريخ انتهاء لكل منها.
             </p>
@@ -433,10 +396,10 @@ const EditStaffPermissionsPage: React.FC = () => {
         </div>
 
         {/* العمود الرئيسي: تحديد الدور والصلاحيات التفصيلية */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-5 sm:space-y-6">
           {/* 1. اختيار الدور الوظيفي (PlaceRole) وتاريخ انتهائه */}
-          <div className="bg-white p-6 rounded-2xl border border-gray-200/80 shadow-sm space-y-4">
-            <h3 className="text-sm font-bold text-gray-900 border-b pb-3">
+          <div className="bg-white dark:bg-gray-900 p-5 sm:p-6 rounded-2xl border border-gray-200/80 dark:border-gray-800 shadow-sm space-y-4 transition-colors">
+            <h3 className="text-sm font-bold text-gray-900 dark:text-white border-b border-gray-100 dark:border-gray-800 pb-3">
               الدور الوظيفي الأساسي
             </h3>
 
@@ -448,8 +411,8 @@ const EditStaffPermissionsPage: React.FC = () => {
                     key={r.id}
                     className={`flex flex-col p-3.5 border rounded-xl cursor-pointer transition-all ${
                       isSelected
-                        ? "border-blue-600 bg-blue-50/40 ring-1 ring-blue-600"
-                        : "border-gray-200 hover:border-gray-300 bg-white"
+                        ? "border-blue-600 dark:border-blue-500 bg-blue-50/40 dark:bg-blue-950/30 ring-1 ring-blue-600 dark:ring-blue-500"
+                        : "border-gray-200 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-700 bg-white dark:bg-gray-900/50"
                     }`}
                   >
                     <div className="flex items-center gap-2.5">
@@ -470,13 +433,13 @@ const EditStaffPermissionsPage: React.FC = () => {
                             ),
                           );
                         }}
-                        className="w-4 h-4 text-blue-600 focus:ring-blue-500"
+                        className="w-4 h-4 text-blue-600 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700"
                       />
-                      <span className="font-bold text-gray-900 text-xs">
+                      <span className="font-bold text-gray-900 dark:text-white text-xs">
                         {r.label}
                       </span>
                     </div>
-                    <p className="text-[11px] text-gray-500 pr-6 mt-1 leading-snug">
+                    <p className="text-[11px] text-gray-500 dark:text-gray-400 pr-6 mt-1 leading-snug">
                       {r.desc}
                     </p>
                   </label>
@@ -485,10 +448,10 @@ const EditStaffPermissionsPage: React.FC = () => {
             </div>
 
             {/* انتهاء صلاحية الدور ككل */}
-            <div className="mt-4 pt-3 border-t border-gray-100 space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-xs font-bold text-gray-800">
-                  <Clock className="w-4 h-4 text-amber-600" />
+            <div className="mt-4 pt-3 border-t border-gray-100 dark:border-gray-800 space-y-3">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2 text-xs font-bold text-gray-800 dark:text-gray-200">
+                  <Clock className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
                   <span>تحديد تاريخ انتهاء للدور الوظيفي بالكامل</span>
                 </div>
                 <button
@@ -498,7 +461,9 @@ const EditStaffPermissionsPage: React.FC = () => {
                     if (hasRoleExpiration) setRoleExpiresAt("");
                   }}
                   className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
-                    hasRoleExpiration ? "bg-amber-600" : "bg-gray-200"
+                    hasRoleExpiration
+                      ? "bg-amber-600 dark:bg-amber-500"
+                      : "bg-gray-200 dark:bg-gray-700"
                   }`}
                 >
                   <span
@@ -510,13 +475,13 @@ const EditStaffPermissionsPage: React.FC = () => {
               </div>
 
               {hasRoleExpiration && (
-                <div className="flex items-center gap-2 bg-amber-50/50 p-2.5 rounded-xl border border-amber-200/60">
-                  <Calendar className="w-4 h-4 text-amber-600 shrink-0" />
+                <div className="flex items-center gap-2 bg-amber-50/50 dark:bg-amber-950/30 p-2.5 rounded-xl border border-amber-200/60 dark:border-amber-800/40">
+                  <Calendar className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
                   <input
                     type="datetime-local"
                     value={roleExpiresAt}
                     onChange={(e) => setRoleExpiresAt(e.target.value)}
-                    className="text-xs bg-white p-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-amber-500 outline-none w-full"
+                    className="text-xs bg-white dark:bg-gray-800 text-gray-900 dark:text-white p-2 rounded-lg border border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-amber-500 outline-none w-full"
                   />
                 </div>
               )}
@@ -524,12 +489,12 @@ const EditStaffPermissionsPage: React.FC = () => {
           </div>
 
           {/* 2. الصلاحيات التفصيلية (Fine-grained Permissions) */}
-          <div className="bg-white p-6 rounded-2xl border border-gray-200/80 shadow-sm space-y-4">
+          <div className="bg-white dark:bg-gray-900 p-5 sm:p-6 rounded-2xl border border-gray-200/80 dark:border-gray-800 shadow-sm space-y-4 transition-colors">
             <div>
-              <h3 className="text-sm font-bold text-gray-900">
+              <h3 className="text-sm font-bold text-gray-900 dark:text-white">
                 الصلاحيات التفصيلية (Fine-grained Permissions)
               </h3>
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                 الصلاحيات باللون الأخضر مفعّلة تلقائياً حسب الدور المختار، بينما
                 يتاح لك تفعيل صلاحيات مخصصة باللون الأزرق وتحديد مدة زمنية لكل
                 منها.
@@ -548,38 +513,42 @@ const EditStaffPermissionsPage: React.FC = () => {
                 return (
                   <div
                     key={permCode}
-                    className={`p-3.5 rounded-xl border transition ${
+                    className={`p-3.5 rounded-xl border transition-all ${
                       isDefault
-                        ? "bg-emerald-50/50 border-emerald-200/70"
+                        ? "bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-200/70 dark:border-emerald-800/40"
                         : isCustom
-                          ? "bg-blue-50/50 border-blue-200"
-                          : "bg-white border-gray-200 hover:bg-gray-50"
+                          ? "bg-blue-50/50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800/50"
+                          : "bg-white dark:bg-gray-900/50 border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50"
                     }`}
                   >
-                    <div className="flex items-center justify-between">
-                      <div className="pl-3">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="pl-2">
                         <div className="flex items-center gap-2">
-                          <span className="text-xs font-bold text-gray-900">
+                          <span className="text-xs font-bold text-gray-900 dark:text-white">
                             {permMeta?.title || permCode}
                           </span>
                         </div>
-                        <p className="text-[11px] text-gray-500 mt-0.5">
+                        <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">
                           {permMeta?.description}
                         </p>
                       </div>
 
                       <div className="shrink-0">
                         {isDefault ? (
-                          <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-100/80 px-2.5 py-1 rounded-lg">
-                            <CheckCircle2 className="w-3.5 h-3.5" />
-                            <span>أساسية بالدور</span>
+                          <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-100/80 dark:bg-emerald-950/60 px-2.5 py-1 rounded-lg border border-emerald-200 dark:border-emerald-800/40">
+                            <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                            <span className="hidden sm:inline">
+                              أساسية بالدور
+                            </span>
                           </span>
                         ) : (
                           <button
                             type="button"
                             onClick={() => toggleCustomPermission(permCode)}
                             className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
-                              isCustom ? "bg-blue-600" : "bg-gray-200"
+                              isCustom
+                                ? "bg-blue-600 dark:bg-blue-500"
+                                : "bg-gray-200 dark:bg-gray-700"
                             }`}
                           >
                             <span
@@ -594,12 +563,12 @@ const EditStaffPermissionsPage: React.FC = () => {
 
                     {/* تاريخ انتهاء الصلاحية المخصصة إن وجدت */}
                     {isCustom && (
-                      <div className="mt-3 pt-2.5 border-t border-blue-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                      <div className="mt-3 pt-2.5 border-t border-blue-100 dark:border-blue-900/40 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
                         <span className="text-[11px] font-bold text-blue-900 dark:text-blue-300 flex items-center gap-1">
-                          <Clock className="w-3.5 h-3.5 text-blue-600" />
+                          <Clock className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 shrink-0" />
                           تاريخ انتهاء الصلاحية الاستثنائية:
                         </span>
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-wrap items-center gap-2">
                           <input
                             type="datetime-local"
                             value={customItem.expires_at || ""}
@@ -609,7 +578,7 @@ const EditStaffPermissionsPage: React.FC = () => {
                                 e.target.value || null,
                               )
                             }
-                            className="text-[11px] bg-white p-1.5 rounded-lg border border-blue-200 focus:ring-1 focus:ring-blue-500 outline-none text-gray-700"
+                            className="text-[11px] bg-white dark:bg-gray-800 dark:text-white p-1.5 rounded-lg border border-blue-200 dark:border-gray-700 focus:ring-1 focus:ring-blue-500 outline-none text-gray-700"
                           />
                           {customItem.expires_at ? (
                             <button
@@ -617,12 +586,12 @@ const EditStaffPermissionsPage: React.FC = () => {
                               onClick={() =>
                                 updateCustomPermissionExpiry(permCode, null)
                               }
-                              className="text-[10px] text-red-600 hover:underline bg-white px-2 py-1 rounded border border-red-100"
+                              className="text-[10px] text-red-600 dark:text-red-400 hover:underline bg-white dark:bg-gray-800 px-2 py-1 rounded border border-red-100 dark:border-red-900/50 cursor-pointer"
                             >
                               جعله دائم
                             </button>
                           ) : (
-                            <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded border border-emerald-200">
+                            <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 px-2 py-1 rounded border border-emerald-200 dark:border-emerald-800/40">
                               دائمة (بدون انتهاء)
                             </span>
                           )}

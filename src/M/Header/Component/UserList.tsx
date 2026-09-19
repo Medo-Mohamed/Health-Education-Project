@@ -10,7 +10,8 @@ function UserList({
   isOpen: boolean;
   handelCloseUserList: () => void;
 }) {
-  const User = useSelector((state: RootState) => state.User);
+  const UserStatus = useSelector((state: RootState) => state.User.status);
+  const UserData = useSelector((state: RootState) => state.User.data.user);
   // console.log("Rendering UserList with user data:", User);
 
   useEffect(() => {
@@ -24,7 +25,7 @@ function UserList({
     { name: "الاماكن", to: "/places" },
   ];
 
-  if (!isOpen || User.status !== "idle") return null;
+  if (!isOpen || UserStatus !== "idle") return null;
 
   return (
     <div
@@ -34,15 +35,15 @@ function UserList({
       <div className="flex items-center gap-3 p-2 rounded-lg transition-colors ">
         {/* حاوية الصورة الشخصية أو الحرف */}
         <div className="w-10 h-10 flex shrink-0 items-center justify-center rounded-full overflow-hidden bg-black/10 border border-gray-500/30 transition-colors duration-300">
-          {User.data.user?.avatar_url ? (
+          {UserData?.avatar_url ? (
             <img
-              src={User.data.user.avatar_url}
+              src={UserData.avatar_url}
               alt="avatar"
               className="w-full h-full object-cover"
             />
           ) : (
             <span className="text-lg font-bold leading-none select-none ">
-              {User.data.user?.first_name?.[0].toUpperCase()}
+              {UserData?.first_name?.[0].toUpperCase()}
             </span>
           )}
         </div>
@@ -50,10 +51,10 @@ function UserList({
         {/* حاوية النصوص (الاسم والإيميل) */}
         <div className="flex flex-col justify-center overflow-hidden min-w-0">
           <div className="text-sm font-bold  truncate leading-tight">
-            {`${User.data.user?.first_name} ${User.data.user?.last_name}`}
+            {`${UserData?.first_name} ${UserData?.last_name}`}
           </div>
           <div className="text-xs font-medium  truncate">
-            {User.data.user?.email}
+            {UserData?.email}
           </div>
         </div>
       </div>

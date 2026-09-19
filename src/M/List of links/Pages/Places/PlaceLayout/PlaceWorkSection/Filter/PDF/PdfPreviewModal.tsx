@@ -43,37 +43,30 @@ export const PdfPreviewModal: React.FC<PdfPreviewModalProps> = ({
   };
 
   return (
-    <div style={modalOverlayStyle}>
-      <div style={modalContentStyle}>
-        <div style={toolbarStyle}>
-          <div
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: "10px",
-              alignItems: "center",
-            }}
-          >
-            <label>
+    <div className="fixed inset-0 bg-black/60 dark:bg-black/80 flex justify-center items-center z-[1000]">
+      <div className="bg-white dark:bg-gray-900 w-[85%] h-[90%] rounded-lg flex flex-col overflow-hidden border border-transparent dark:border-gray-800 shadow-xl">
+        <div className="p-2.5 sm:p-3 bg-slate-50 dark:bg-gray-800 border-b border-slate-200 dark:border-gray-700 flex flex-wrap gap-2.5 justify-between items-center text-gray-800 dark:text-gray-200">
+          <div className="flex flex-wrap gap-2.5 items-center">
+            <label className="text-xs sm:text-sm font-medium flex items-center">
               حجم الورقة:
               <select
                 value={pageSize}
                 onChange={(e) => setPageSize(e.target.value as "A4" | "LETTER")}
-                style={selectStyle}
+                className="mr-2 px-2 py-1 rounded border border-slate-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-xs sm:text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
               >
                 <option value="A4">A4</option>
                 <option value="LETTER">Letter</option>
               </select>
             </label>
 
-            <label>
+            <label className="text-xs sm:text-sm font-medium flex items-center">
               الاتجاه:
               <select
                 value={orientation}
                 onChange={(e) =>
                   setOrientation(e.target.value as "portrait" | "landscape")
                 }
-                style={selectStyle}
+                className="mr-2 px-2 py-1 rounded border border-slate-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-xs sm:text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
               >
                 <option value="landscape">أفقي (Landscape)</option>
                 <option value="portrait">عمودي (Portrait)</option>
@@ -81,7 +74,7 @@ export const PdfPreviewModal: React.FC<PdfPreviewModalProps> = ({
             </label>
           </div>
 
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+          <div className="flex flex-wrap gap-2.5 items-center">
             <PDFDownloadLink
               key={`${pageSize}-${orientation}-${schedules.length}-${rawList.length}`}
               document={
@@ -92,18 +85,21 @@ export const PdfPreviewModal: React.FC<PdfPreviewModalProps> = ({
                 )
               }
               fileName={`${planeOrEvent}-report-${new Date().toISOString().slice(0, 10)}.pdf`}
-              style={downloadBtnStyle}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded text-xs sm:text-sm font-bold no-underline transition-colors"
             >
               {({ loading }) => (loading ? "جاري التجهيز..." : "تحميل PDF")}
             </PDFDownloadLink>
 
-            <button onClick={onClose} style={closeBtnStyle}>
+            <button
+              onClick={onClose}
+              className="bg-slate-500 hover:bg-slate-600 dark:bg-slate-600 dark:hover:bg-slate-500 text-white border-none px-4 py-1.5 rounded text-xs sm:text-sm font-medium cursor-pointer transition-colors"
+            >
               إغلاق
             </button>
           </div>
         </div>
 
-        <div style={{ flex: 1, width: "100%" }}>
+        <div className="flex-1 w-full bg-slate-100 dark:bg-gray-950">
           <PDFViewer width="100%" height="100%" showToolbar={true}>
             {reportType === "tables" ? (
               <MyPdfDocumentTables {...pdfProps} />
@@ -115,64 +111,4 @@ export const PdfPreviewModal: React.FC<PdfPreviewModalProps> = ({
       </div>
     </div>
   );
-};
-
-const modalOverlayStyle: React.CSSProperties = {
-  position: "fixed",
-  top: 0,
-  left: 0,
-  right: 0,
-  bottom: 0,
-  backgroundColor: "rgba(0, 0, 0, 0.6)",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  zIndex: 1000,
-};
-
-const modalContentStyle: React.CSSProperties = {
-  backgroundColor: "#FFF",
-  width: "85%",
-  height: "90%",
-  borderRadius: "8px",
-  display: "flex",
-  flexDirection: "column",
-  overflow: "hidden",
-};
-
-const toolbarStyle: React.CSSProperties = {
-  padding: "10px 12px",
-  backgroundColor: "#F8FAFC",
-  borderBottom: "1px solid #E2E8F0",
-  display: "flex",
-  flexWrap: "wrap",
-  gap: "10px",
-  justifyContent: "space-between",
-  alignItems: "center",
-};
-
-const selectStyle: React.CSSProperties = {
-  marginRight: "8px",
-  padding: "4px 8px",
-  borderRadius: "4px",
-  border: "1px solid #CBD5E1",
-};
-
-const downloadBtnStyle: React.CSSProperties = {
-  backgroundColor: "#2563EB",
-  color: "#FFF",
-  padding: "6px 16px",
-  borderRadius: "4px",
-  textDecoration: "none",
-  fontSize: "14px",
-  fontWeight: "bold",
-};
-
-const closeBtnStyle: React.CSSProperties = {
-  backgroundColor: "#64748B",
-  color: "#FFF",
-  border: "none",
-  padding: "6px 16px",
-  borderRadius: "4px",
-  cursor: "pointer",
 };

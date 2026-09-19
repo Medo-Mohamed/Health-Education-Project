@@ -10,7 +10,7 @@ import {
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../../../../../store.tsx";
 
-export const EventsAnalyticsSection: React.FC = () => {
+const EventsAnalyticsSectionInner: React.FC = () => {
   const { events, plans, filterLoading } = useSelector(
     (state: RootState) => state.eventsFilter,
   );
@@ -132,3 +132,5 @@ export const EventsAnalyticsSection: React.FC = () => {
     </div>
   );
 };
+
+export const EventsAnalyticsSection = React.memo(EventsAnalyticsSectionInner);

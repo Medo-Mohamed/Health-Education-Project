@@ -7,31 +7,42 @@ import { close } from "../M/Redux-Store/SuccessFaildState/SFS";
 function ResponseStateModal() {
   const dispatch = useDispatch<AppDispatch>();
 
-  const SFS = useSelector((state: RootState) => state.SuccFaildComponent);
+  const SFSShowComponent = useSelector(
+    (state: RootState) => state.SuccFaildComponent.showComponent,
+  );
+  const SFSstate = useSelector(
+    (state: RootState) => state.SuccFaildComponent.state,
+  );
+  const SFSTitle = useSelector(
+    (state: RootState) => state.SuccFaildComponent.title,
+  );
+  const SFSDescreption = useSelector(
+    (state: RootState) => state.SuccFaildComponent.descreption,
+  );
 
   useEffect(() => {
-    if (SFS.showComponent) {
+    if (SFSShowComponent) {
       const timer = setTimeout(() => {
         dispatch(close());
       }, 3000);
 
       return () => clearTimeout(timer);
     }
-  }, [SFS, dispatch]);
+  }, [SFSShowComponent, dispatch]);
 
-  if (!SFS.showComponent) return null;
+  if (!SFSShowComponent) return null;
 
   return (
     <div className="fixed inset-0 z-110 flex items-center justify-center bg-black/20 backdrop-blur-[2px]">
       <div className="bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-2xl border border-green-100 flex flex-col items-center gap-4 animate-in fade-in zoom-in duration-300">
         {/* أيقونة النجاح مع حركة نبض بسيطة */}
-        {SFS.state === "success" && (
+        {SFSstate === "success" && (
           <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center animate-bounce">
             <HiCheckCircle className="text-green-500 w-16 h-16" />
           </div>
         )}
 
-        {SFS.state === "faild" && (
+        {SFSstate === "faild" && (
           <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center animate-bounce">
             <HiXCircle className="text-red-500 w-16 h-16" />
           </div>
@@ -39,10 +50,10 @@ function ResponseStateModal() {
 
         <div className="text-center">
           <h3 className="text-xl font-bold text-gray-800 dark:text-white">
-            {SFS.title || ""}
+            {SFSTitle || ""}
           </h3>
           <p className="text-gray-500 dark:text-gray-400 mt-1">
-            {SFS.descreption || ""}
+            {SFSDescreption || ""}
           </p>
         </div>
 

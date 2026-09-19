@@ -1,5 +1,5 @@
 // components/EventsFilterSection.tsx
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import {
   Filter,
   SlidersHorizontal,
@@ -57,7 +57,30 @@ interface EventsFilterSectionProps {
   schedulesList?: ScheduleOption[];
 }
 
-export const EventsFilterSection: React.FC<EventsFilterSectionProps> = ({
+const EVENT_TYPE_OPTIONS = [
+  {
+    value: LocationType.INTERNAL_SEMINAR,
+    label: "ندوة داخلية",
+  },
+  {
+    value: LocationType.EXTERNAL_SEMINAR,
+    label: "ندوة خارجية",
+  },
+  {
+    value: LocationType.GENERAL_CONSULTATION,
+    label: "مشورة عامة",
+  },
+  {
+    value: LocationType.PUBLIC_MEETING,
+    label: "لقاء جماهيري",
+  },
+  {
+    value: LocationType.CONVOY_SEMINARS,
+    label: "ندوات قوافل",
+  },
+];
+
+const EventsFilterSectionInner: React.FC<EventsFilterSectionProps> = ({
   filters,
   onChangeFilters,
   showFilters,
@@ -88,8 +111,12 @@ export const EventsFilterSection: React.FC<EventsFilterSectionProps> = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const filteredPlaces = placesList.filter((p) =>
-    p.name.toLowerCase().includes(placeSearchQuery.toLowerCase()),
+  const filteredPlaces = useMemo(
+    () =>
+      placesList.filter((p) =>
+        p.name.toLowerCase().includes(placeSearchQuery.toLowerCase()),
+      ),
+    [placesList, placeSearchQuery],
   );
 
   // --- إصلاح تحديد وتراجع الأماكن ---
@@ -346,28 +373,7 @@ export const EventsFilterSection: React.FC<EventsFilterSectionProps> = ({
                   <span>كافة الأنواع (الكل)</span>
                 </label>
 
-                {[
-                  {
-                    value: LocationType.INTERNAL_SEMINAR,
-                    label: "ندوة داخلية",
-                  },
-                  {
-                    value: LocationType.EXTERNAL_SEMINAR,
-                    label: "ندوة خارجية",
-                  },
-                  {
-                    value: LocationType.GENERAL_CONSULTATION,
-                    label: "مشورة عامة",
-                  },
-                  {
-                    value: LocationType.PUBLIC_MEETING,
-                    label: "لقاء جماهيري",
-                  },
-                  {
-                    value: LocationType.CONVOY_SEMINARS,
-                    label: "ندوات قوافل",
-                  },
-                ].map((type) => (
+                {EVENT_TYPE_OPTIONS.map((type) => (
                   <label
                     key={type.value}
                     className="flex items-center gap-2 text-xs text-gray-700 cursor-pointer hover:bg-gray-50 p-0.5 rounded"
@@ -570,3 +576,5 @@ export const EventsFilterSection: React.FC<EventsFilterSectionProps> = ({
     </div>
   );
 };
+
+export const EventsFilterSection = React.memo(EventsFilterSectionInner);

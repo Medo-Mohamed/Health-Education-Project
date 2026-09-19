@@ -5,6 +5,7 @@ import {
   Sparkles,
   Lock,
 } from "lucide-react";
+import { memo, useCallback } from "react";
 import { Outlet, useLocation, NavLink } from "react-router-dom";
 import { PlacePermission, ROLES_LABELS } from "../../../types";
 import { usePlacePermissions } from "../../../../../../Redux-Store/PlacePermissions/usePlacePermissions";
@@ -20,53 +21,61 @@ export type PlanStatus =
 // 2. التبويبات الثلاث المحددة
 export type PlanTab = "BUILDER" | "REVIEW_COORDINATION" | "FINAL_APPROVAL";
 
-export default function PlanManagementLayout() {
+// قائمة التبويبات (ثابتة خارج الكومبوننت لتجنب إعادة إنشائها في كل رندر)
+const TABS: {
+  id: PlanTab;
+  label: string;
+  path: string;
+  icon: typeof FileEdit;
+}[] = [
+  {
+    id: "BUILDER",
+    label: "1. إنشاء الخطة",
+    path: ".", // الروت الأساسي (index route)
+    icon: FileEdit,
+  },
+  {
+    id: "REVIEW_COORDINATION",
+    label: "2. المراجعة والتنسيق",
+    path: "review",
+    icon: ClipboardCheck,
+  },
+  {
+    id: "FINAL_APPROVAL",
+    label: "3. الاعتماد النهائي",
+    path: "approval",
+    icon: ShieldCheck,
+  },
+];
+
+function PlanManagementLayout() {
   const location = useLocation();
 
   // جلب الصلاحيات من الـ Redux Hook
   const { hasPermission, userRole, loading, isDev } = usePlacePermissions();
 
   // التحقق الفعلي من إمكانية الوصول للتبويب بناءً على الصلاحيات فقط
-  const canAccessTab = (tab: PlanTab): boolean => {
-    switch (tab) {
-      case "BUILDER":
-        // يتطلب صلاحية إنشاء أو تعديل الخطة
-        return hasPermission(PlacePermission.CREATE_PLAN);
+  const canAccessTab = useCallback(
+    (tab: PlanTab): boolean => {
+      switch (tab) {
+        case "BUILDER":
+          // يتطلب صلاحية إنشاء أو تعديل الخطة
+          return hasPermission(PlacePermission.CREATE_PLAN);
 
-      case "REVIEW_COORDINATION":
-        // يتطلب صلاحية الرفع للمراجعة أو الدمج فقط
-        return hasPermission(PlacePermission.SUBMIT_PLAN);
+        case "REVIEW_COORDINATION":
+          // يتطلب صلاحية الرفع للمراجعة أو الدمج فقط
+          return hasPermission(PlacePermission.SUBMIT_PLAN);
 
-      case "FINAL_APPROVAL":
-        // يتطلب صلاحية اعتماد الخطط فقط
-        return hasPermission(PlacePermission.APPROVE_PLAN);
+        case "FINAL_APPROVAL":
+          // يتطلب صلاحية اعتماد الخطط فقط
+          return hasPermission(PlacePermission.APPROVE_PLAN);
 
-      default:
-        return false;
-    }
-  };
-
-  // قائمة التبويبات
-  const tabs = [
-    {
-      id: "BUILDER" as PlanTab,
-      label: "1. إنشاء الخطة",
-      path: ".", // الروت الأساسي (index route)
-      icon: FileEdit,
+        default:
+          return false;
+      }
     },
-    {
-      id: "REVIEW_COORDINATION" as PlanTab,
-      label: "2. المراجعة والتنسيق",
-      path: "review",
-      icon: ClipboardCheck,
-    },
-    {
-      id: "FINAL_APPROVAL" as PlanTab,
-      label: "3. الاعتماد النهائي",
-      path: "approval",
-      icon: ShieldCheck,
-    },
-  ];
+    [hasPermission],
+  );
 
   if (loading) {
     return null;
@@ -115,7 +124,7 @@ export default function PlanManagementLayout() {
 
         {/* ==================== 2. Tabs Navigation ==================== */}
         <div className="bg-white dark:bg-slate-900 p-1.5 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm flex items-center flex-wrap gap-1.5 overflow-x-auto no-scrollbar scroll-smooth">
-          {tabs.map((tab) => {
+          {TABS.map((tab) => {
             const hasAccess = canAccessTab(tab.id);
 
             // تحديد حالة النشاط
@@ -170,3 +179,5 @@ export default function PlanManagementLayout() {
     </div>
   );
 }
+
+export default memo(PlanManagementLayout);

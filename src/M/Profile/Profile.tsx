@@ -1,5 +1,5 @@
 import "./Profile.css";
-import React, { useState, useEffect } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState, AppDispatch } from "../../store";
 import { IoMdCreate, IoMdSave, IoMdAdd, IoMdTrash } from "react-icons/io";
@@ -67,11 +67,19 @@ const ModernProfilePage = () => {
 
   useEffect(() => {
     if (typeof userError === "object" && userError) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsEditing(true);
     }
   }, [userError]);
+  // مزامنة الخادم مع الحالة المحلية فقط خارج وضع التعديل،
+  // عبر ref كي لا يعاد إنشاء معرّف الحالة المحلية في كل رندر
+  const isEditingRef = useRef(isEditing);
   useEffect(() => {
-    setFormData(userInfo);
+    isEditingRef.current = isEditing;
+  }, [isEditing]);
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (!isEditingRef.current) setFormData(userInfo);
   }, [userInfo]);
 
   if (!formData) return <div className="p-20 text-center">جاري التحميل...</div>;

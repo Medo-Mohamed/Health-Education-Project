@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import {
   PencilSquareIcon,
@@ -61,17 +61,18 @@ export interface Table {
   table_rows: Row[];
 }
 
-const SortableRow = ({
-  row,
-  index,
-  isEditable,
-  handleEditClick,
-}: {
-  row: Row;
-  index: number;
-  isEditable: boolean;
-  handleEditClick: (index: number) => void;
-}) => {
+const SortableRow = memo(
+  ({
+    row,
+    index,
+    isEditable,
+    handleEditClick,
+  }: {
+    row: Row;
+    index: number;
+    isEditable: boolean;
+    handleEditClick: (index: number) => void;
+  }) => {
   const {
     attributes,
     listeners,
@@ -143,7 +144,8 @@ const SortableRow = ({
       )}
     </div>
   );
-};
+  },
+);
 
 const TopicTableDetails = () => {
   const navigate = useNavigate();
@@ -227,10 +229,13 @@ const TopicTableDetails = () => {
     setIsEditOpen(true);
   };
 
-  const handleEditClick = (index: number) => {
-    setSelectedRow({ index, rowData: tableData.table_rows[index] });
-    setIsEditOpen(true);
-  };
+  const handleEditClick = useCallback(
+    (index: number) => {
+      setSelectedRow({ index, rowData: tableData.table_rows[index] });
+      setIsEditOpen(true);
+    },
+    [tableData.table_rows],
+  );
 
   const handleSaveRowLocally = (index: number, newRowData: Row) => {
     const updatedRows = [...tableData.table_rows];
@@ -243,7 +248,7 @@ const TopicTableDetails = () => {
     setIsEditOpen(false);
   };
 
-  const handleDragEnd = (event: DragEndEvent) => {
+  const handleDragEnd = useCallback((event: DragEndEvent) => {
     const { active, over } = event;
     if (over && active.id !== over.id) {
       setTableData((prev) => {
@@ -259,7 +264,7 @@ const TopicTableDetails = () => {
         };
       });
     }
-  };
+  }, []);
 
   const handldeDeleteTable = async () => {
     if (window.confirm("هل انت متأكد من حذف هذا الجدول بالكامل ؟")) {
@@ -466,6 +471,7 @@ const TopicTableDetails = () => {
       )}
       {isEditOpen && (
         <EditRowModal
+          key={selectedRow.index}
           isOpen={isEditOpen}
           rowData={selectedRow}
           onClose={() => setIsEditOpen(false)}

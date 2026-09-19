@@ -71,7 +71,8 @@ const SortIcon: React.FC<{
   );
 };
 
-export const EventsListSection: React.FC = () => {
+const EventsListSectionInner: React.FC = () => {
+  // console.log("rerender comp ...");
   const { id: placeId } = useParams();
   // console.log(placeId);
   const dispatch = useDispatch<AppDispatch>();
@@ -945,3 +946,5 @@ export const EventsListSection: React.FC = () => {
     </div>
   );
 };
+
+export const EventsListSection = React.memo(EventsListSectionInner);

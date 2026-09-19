@@ -40,7 +40,10 @@ interface UserInfo {
 const ModernProfilePage = () => {
   const { userId } = useParams();
   // const location = useLocation();
-  const AuthUser = useSelector((state: RootState) => state.User);
+  const AuthUserStatus = useSelector((state: RootState) => state.User.status);
+  const AuthUserRole = useSelector(
+    (state: RootState) => state.User.data.user?.role,
+  );
   const dispatch = useDispatch<AppDispatch>();
   // نعتمد على المستخدم الممرر من صفحة البحث
   // const userId = location.state?.id as string;
@@ -147,8 +150,8 @@ const ModernProfilePage = () => {
                 </div>
               </div>
 
-              {AuthUser.status === "idle" &&
-                AuthUser.data.user?.role === "dev" && (
+              {AuthUserStatus === "idle" &&
+                AuthUserRole === "dev" && (
                   <div className="text-center md:text-right pt-2 md:pt-14">
                     <input
                       type="checkbox"

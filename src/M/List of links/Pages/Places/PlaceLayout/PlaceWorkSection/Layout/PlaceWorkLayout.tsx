@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 // import { usePlacePermissions } from "../../../../../../Redux-Store/PlacePermissions/usePlacePermissions.ts";
@@ -16,7 +16,7 @@ import {
   applyEventsFilter,
 } from "../../../../../../Redux-Store/EventsFilter/eventsFilterSlice.ts";
 
-export const PlaceWorkLayout: React.FC = () => {
+const PlaceWorkLayoutInner: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { id } = useParams<{ id: string }>();
   const placeId = id || "";
@@ -63,6 +63,8 @@ export const PlaceWorkLayout: React.FC = () => {
     }
   }, [filters, dispatch, placeId]);
 
+  const toggleShowFilters = useCallback(() => setShowFilters((prev) => !prev), []);
+
   return (
     <div className="space-y-6 dir-rtl" dir="rtl">
       <EventsActionsHeader />
@@ -71,7 +73,7 @@ export const PlaceWorkLayout: React.FC = () => {
         filters={filters}
         onChangeFilters={setFilters}
         showFilters={showFilters}
-        onToggleShowFilters={() => setShowFilters((prev) => !prev)}
+        onToggleShowFilters={toggleShowFilters}
         placesList={places}
         schedulesList={schedules}
       />
@@ -83,4 +85,5 @@ export const PlaceWorkLayout: React.FC = () => {
   );
 };
 
+export const PlaceWorkLayout = React.memo(PlaceWorkLayoutInner);
 export default PlaceWorkLayout;

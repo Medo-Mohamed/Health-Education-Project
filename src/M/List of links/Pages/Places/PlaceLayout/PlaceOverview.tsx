@@ -9,15 +9,9 @@ import {
   ChevronLeft,
   FolderTree,
   FileText,
-  Trash2,
   Edit,
 } from "lucide-react";
 import { PlacePermission, type IPlace, type IPlacePermission } from "../types";
-
-import AxiosApi from "../../../../../AxiosApi";
-import { useDispatch } from "react-redux";
-import type { AppDispatch } from "../../../../../store";
-import { loading, open } from "../../../../Redux-Store/SuccessFaildState/SFS";
 
 interface PlaceContextType {
   place: IPlace;
@@ -25,7 +19,7 @@ interface PlaceContextType {
   hasPermission: (perm: IPlacePermission) => boolean;
 }
 
-export const PlaceOverview: React.FC = () => {
+const PlaceOverviewInner: React.FC = () => {
   const { place, subPlaces, hasPermission } =
     useOutletContext<PlaceContextType>();
   const navigate = useNavigate();
@@ -243,3 +237,5 @@ export const PlaceOverview: React.FC = () => {
     </div>
   );
 };
+
+export const PlaceOverview = React.memo(PlaceOverviewInner);

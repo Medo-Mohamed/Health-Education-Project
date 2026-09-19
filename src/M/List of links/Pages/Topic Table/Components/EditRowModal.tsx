@@ -16,6 +16,14 @@ interface EditRowModalProps {
   onSave: (index: number, formData: RowData) => void;
 }
 
+const DEFAULT_ROW: RowData = {
+  mainTopic: "",
+  supTopic: "",
+  comments: "",
+  text_color: "#000000",
+  bg_color: "#ffffff",
+};
+
 // تم تصحيح طريقة التعريف هنا
 const EditRowModal: React.FC<EditRowModalProps> = ({
   isOpen,
@@ -23,13 +31,9 @@ const EditRowModal: React.FC<EditRowModalProps> = ({
   onClose,
   onSave,
 }) => {
-  const [formData, setFormData] = useState<RowData>({
-    mainTopic: "",
-    supTopic: "",
-    comments: "",
-    text_color: "#000000",
-    bg_color: "#ffffff",
-  });
+  const [formData, setFormData] = useState<RowData>(
+    () => rowData?.rowData || DEFAULT_ROW,
+  );
 
   const [errors, setErrors] = useState({
     mainTopic: "",
@@ -47,12 +51,6 @@ const EditRowModal: React.FC<EditRowModalProps> = ({
       document.body.style.overflow = "auto";
     };
   }, [isOpen]);
-
-  useEffect(() => {
-    if (rowData?.rowData) {
-      setFormData(rowData.rowData);
-    }
-  }, [rowData?.rowData]);
 
   if (!isOpen || !rowData) return null;
 

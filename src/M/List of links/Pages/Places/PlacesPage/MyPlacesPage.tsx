@@ -48,7 +48,13 @@ export const MyPlacesPage: React.FC = () => {
   const [totalCount, setTotalCount] = useState(0);
 
   // جلب بيانات المستخدم من Redux State
-  const User = useSelector((state: RootState) => state.User.data?.user);
+  const userId = useSelector(
+    (state: RootState) => state.User.data?.user?._id,
+  );
+  const userFirstName = useSelector(
+    (state: RootState) => state.User.data?.user?.first_name,
+  );
+  const userRole = useSelector((state: RootState) => state.User.data?.user?.role);
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
 
@@ -59,7 +65,7 @@ export const MyPlacesPage: React.FC = () => {
 
   // دالة جلب البيانات من السيرفر باستخدام Query Params
   const fetchPlaces = useCallback(async () => {
-    if (!User?._id) return;
+    if (!userId) return;
 
     dispatch(loading());
     try {
@@ -88,7 +94,7 @@ export const MyPlacesPage: React.FC = () => {
         }),
       );
     }
-  }, [User?._id, searchFromUrl, scopeFromUrl, pageFromUrl, dispatch]);
+  }, [userId, searchFromUrl, scopeFromUrl, pageFromUrl, dispatch]);
 
   // تنفيذ طلب الجلب عند تغيير الـ URL Params
   useEffect(() => {
@@ -171,12 +177,12 @@ export const MyPlacesPage: React.FC = () => {
             الأماكن المسندة إليك
           </h1>
           <p className="text-sm text-gray-500 mt-1">
-            أهلاً {User?.first_name || ""}، يمكنك إدارة وتصفح الأماكن التي تملك
+            أهلاً {userFirstName || ""}، يمكنك إدارة وتصفح الأماكن التي تملك
             صلاحيات عليها.
           </p>
         </div>
 
-        {User?.role === "dev" && (
+        {userRole === "dev" && (
           <button
             onClick={() => navigate("/listlinks/places/create")}
             className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg text-sm font-medium transition shadow-sm flex items-center gap-2 self-start md:self-auto"

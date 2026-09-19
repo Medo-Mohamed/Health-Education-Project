@@ -11,9 +11,12 @@ import GetPasswordBackForm from "./Components/GetPasswordBackForm";
 
 export default function Login() {
   const dispatch = useDispatch<AppDispatch>();
-  const UserStates = useSelector((state: RootState) => state.User);
+  const showLoginModal = useSelector((state: RootState) => state.User.showLoginModal);
+  const loginOrLostState = useSelector(
+    (state: RootState) => state.User.logIn_or_lostPassword.state,
+  );
 
-  if (!UserStates.showLoginModal) return null;
+  if (!showLoginModal) return null;
 
   return (
     <div
@@ -66,7 +69,7 @@ export default function Login() {
             يرجى إدخال بيانات حسابك للمتابعة
           </p>
         </div>
-        {UserStates.logIn_or_lostPassword.state === "login" ? (
+        {loginOrLostState === "login" ? (
           <LoginForm />
         ) : (
           <GetPasswordBackForm />

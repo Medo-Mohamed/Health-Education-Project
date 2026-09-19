@@ -1,4 +1,5 @@
 // usePlacePermissions.ts
+import { useCallback, useMemo } from "react";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../store";
 
@@ -10,28 +11,46 @@ export const usePlacePermissions = () => {
    * دالة للتحقق مما إذا كان المستخدم يملك صلاحية معينة أم لا
    * @param permission اسم الصلاحية المطلوبة
    */
-  const hasPermission = (permission: string): boolean => {
-    if (isDev) return true; // المطور يملك كافة الصلاحيات دائماً
-    return userPermissions.includes(permission);
-  };
+  const hasPermission = useCallback(
+    (permission: string): boolean => {
+      if (isDev) return true; // المطور يملك كافة الصلاحيات دائماً
+      return userPermissions.includes(permission);
+    },
+    [isDev, userPermissions],
+  );
 
   /**
    * دالة للتحقق مما إذا كان المستخدم يملك مجموعة كاملة من الصلاحيات
    * @param permissions قائمة الصلاحيات المطلوبة
    */
-  const hasAllPermissions = (permissions: string[]): boolean => {
-    if (isDev) return true;
-    return permissions.every((perm) => userPermissions.includes(perm));
-  };
+  const hasAllPermissions = useCallback(
+    (permissions: string[]): boolean => {
+      if (isDev) return true;
+      return permissions.every((perm) => userPermissions.includes(perm));
+    },
+    [isDev, userPermissions],
+  );
 
-  return {
-    currentPlaceId,
-    userPermissions,
-    userRole,
-    isDev,
-    loading,
-    error,
-    hasPermission,
-    hasAllPermissions,
-  };
+  return useMemo(
+    () => ({
+      currentPlaceId,
+      userPermissions,
+      userRole,
+      isDev,
+      loading,
+      error,
+      hasPermission,
+      hasAllPermissions,
+    }),
+    [
+      currentPlaceId,
+      userPermissions,
+      userRole,
+      isDev,
+      loading,
+      error,
+      hasPermission,
+      hasAllPermissions,
+    ],
+  );
 };

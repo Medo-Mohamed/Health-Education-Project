@@ -1,5 +1,5 @@
 // PlaceLayout.tsx
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { useParams, NavLink, Outlet } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -34,7 +34,9 @@ export const PlaceLayout: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const dispatch = useDispatch();
 
-  const currentUser = useSelector((state: any) => state.User?.data?.user);
+  const currentUserRole = useSelector(
+    (state: any) => state.User?.data?.user?.role,
+  );
 
   const [place, setPlace] = useState<IPlace | null>(null);
   const [userPermissions, setUserPermissions] = useState<string[]>([]);
@@ -45,10 +47,10 @@ export const PlaceLayout: React.FC = () => {
 
   const hasPermission = useCallback(
     (perm: IPlacePermission): boolean => {
-      if (currentUser?.role === "dev") return true;
+      if (currentUserRole === "dev") return true;
       return userPermissions.includes(perm);
     },
-    [userPermissions, currentUser],
+    [userPermissions, currentUserRole],
   );
 
   const fetchPlaceData = useCallback(async () => {
@@ -80,7 +82,7 @@ export const PlaceLayout: React.FC = () => {
         setPlacePermissions({
           placeId: id,
           permissions: flatPerms,
-          isDev: currentUser?.role === "dev",
+          isDev: currentUserRole === "dev",
           role: data.userRole || "",
         }),
       );
@@ -101,7 +103,7 @@ export const PlaceLayout: React.FC = () => {
       setLoading(false);
       dispatch(sfsClose());
     }
-  }, [id, dispatch, currentUser]);
+  }, [id, dispatch, currentUserRole]);
 
   useEffect(() => {
     fetchPlaceData();
@@ -111,6 +113,19 @@ export const PlaceLayout: React.FC = () => {
       dispatch(clearPlacePermissions());
     };
   }, [fetchPlaceData, dispatch]);
+
+  // 📦 سياق مستقر للمرجع (Reference-stable) حتى لا يتسبب كل render بالأب
+  // في إعادة رسم شجرة الواجهة الداخلية (PlaceOverview / Staff / WorkSection)
+  const outletContext = useMemo(
+    () => ({
+      place,
+      userPermissions,
+      subPlaces,
+      hasPermission,
+      fetchPlaceData,
+    }),
+    [place, userPermissions, subPlaces, hasPermission, fetchPlaceData],
+  );
 
   if (loading) {
     return null;
@@ -213,15 +228,7 @@ export const PlaceLayout: React.FC = () => {
       </div>
 
       {/* 🔄 المحتوى المتغير لتبويبات الصفحة */}
-      <Outlet
-        context={{
-          place,
-          userPermissions,
-          subPlaces,
-          hasPermission,
-          fetchPlaceData,
-        }}
-      />
+      <Outlet context={outletContext} />
     </div>
   );
 };
