@@ -375,7 +375,7 @@ const HealthPosts = () => {
                   )}
                 </div>
 
-                <div className="flex items-center justify-start gap-8 border-t p-3 bg-black/10">
+                {/* <div className="flex items-center justify-start gap-8 border-t p-3 bg-black/10">
                   <button
                     className={`flex items-center gap-2 group transition-all ${
                       post.likes?.includes(currentUserId)
@@ -401,7 +401,7 @@ const HealthPosts = () => {
                       {post.viewsCount} مشاهدة
                     </span>
                   </div>
-                </div>
+                </div> */}
               </div>
             );
           })}

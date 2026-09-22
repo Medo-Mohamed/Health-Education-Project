@@ -1,5 +1,5 @@
 import { NavLink, Outlet, useLocation } from "react-router-dom";
-import { MENU_DATA } from "../../main";
+import { MENU_DATA } from "../../Route";
 import "./ListOfLinks.css";
 export default function ListOfLinks() {
   const location = useLocation();

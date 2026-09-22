@@ -51,7 +51,6 @@ export const fetchUser = createAsyncThunk(
 export const RefreshUser = createAsyncThunk("User/RefreshUser", async () => {
   try {
     const response = await AxiosApi.get("/auth/withlogin/refreshauth");
-    // console.log("Refresh user response:", response.data);
     return response.data;
   } catch (err: any) {
     console.error("Error refreshing user:", err.response?.data || err);
@@ -292,6 +291,7 @@ export const UserSlice = createSlice({
       .addCase(RefreshUser.rejected, (state) => {
         state.loading = false;
         state.status = "unAuthenticated";
+        state.data.user = null;
       })
       .addCase(logOutUser.fulfilled, (state) => {
         state.loading = false;

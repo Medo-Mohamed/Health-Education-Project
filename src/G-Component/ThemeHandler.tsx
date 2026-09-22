@@ -1,26 +1,23 @@
 import { useEffect } from "react";
-import { changeTheme } from "../M/Redux-Store/ThemesControle/ThemeSlice";
 import { type RootState } from "../store";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
 function ThemeHandler() {
   const Theme = useSelector((state: RootState) => state.Theme.value);
-  const dispatch = useDispatch();
+
+  // 2. تطبيق الثيم على الـ DOM وحفظ التغييرات المستقبليّة
   useEffect(() => {
-    const savedTheme = localStorage.getItem("theme");
-    console.log(savedTheme);
-    if (savedTheme && savedTheme !== Theme) dispatch(changeTheme());
-  }, []);
-  useEffect(() => {
-    const body = document.body;
+    const root = document.documentElement; // الاستهداف الأفضل لـ Tailwind CSS
     if (Theme === "dark") {
-      body.classList.add("dark");
+      root.classList.add("dark");
     } else {
-      body.classList.remove("dark");
+      root.classList.remove("dark");
     }
+
     localStorage.setItem("theme", Theme);
   }, [Theme]);
-  return <></>;
+
+  return null;
 }
 
 export default ThemeHandler;
