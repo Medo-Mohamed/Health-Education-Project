@@ -1,19 +1,19 @@
 import "./Profile.css";
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState, AppDispatch } from "../../store";
 import { IoMdCreate, IoMdSave, IoMdAdd, IoMdTrash } from "react-icons/io";
 
 import {
-  getDataForProfile,
   RefreshUser,
   updateUserProfile,
   type UserForDisplay,
 } from "../Redux-Store/UserControle/UserDisplatSlice";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { HiEye, HiEyeOff } from "react-icons/hi";
-import { open } from "../Redux-Store/SuccessFaildState/SFS";
+import { close, loading, open } from "../Redux-Store/SuccessFaildState/SFS";
 import { MdSunny } from "react-icons/md";
+import AxiosApi from "../../AxiosApi";
 
 interface UserForDisplayForm extends UserForDisplay {
   avatar_file?: File; // لإدارة الملف الجديد عند رفع صورة جديدة
@@ -22,18 +22,63 @@ interface UserForDisplayForm extends UserForDisplay {
 }
 
 const ModernProfilePage = () => {
+  const { id } = useParams<{ id: string }>();
   const [showPassword, setShowPassword] = useState({ old: false, new: false });
   const dispatch = useDispatch<AppDispatch>();
+
   const userInfo = useSelector((state: RootState) => state.User.data.user);
   const userError = useSelector((state: RootState) => state.User.error);
   const UserCheck = useSelector((state: RootState) => state.User.status);
   const succsess = useSelector((state: RootState) => state.User.success);
-  const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState<UserForDisplayForm | null>(
-    Object.assign({ newPassword: "", oldPassword: "" }, userInfo),
+
+  const [fetchedUser, setFetchedUser] = useState<UserForDisplayForm | null>(
+    null,
   );
+  const [isLoadingData, setIsLoadingData] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
+  const [formData, setFormData] = useState<UserForDisplayForm | null>(null);
 
   const navigate = useNavigate();
+
+  // التحقق مما إذا كان للمستخدم صلاحية التعديل
+  const canEdit = Boolean(
+    userInfo && (userInfo._id === id || userInfo.role === "dev"),
+  );
+
+  // دالة جلب بيانات المستخدم بناءً على الـ id الممرر في params
+  const fetchUserProfile = useCallback(async () => {
+    if (!id) return;
+    try {
+      setIsLoadingData(true);
+      const response = await AxiosApi.get(`/auth/withlogin/profile/${id}`);
+      const userData = response.data.user || response.data;
+      const initialData = Object.assign(
+        { newPassword: "", oldPassword: "" },
+        userData,
+      );
+      setFetchedUser(initialData);
+      setFormData(initialData);
+    } catch (err: any) {
+      dispatch(
+        open({
+          state: "faild",
+          title:
+            err.response?.data?.message || "حدث خطأ أثناء جلب بيانات المستخدم",
+          descreption: "",
+        }),
+      );
+      setTimeout(() => {
+        navigate("/notfound");
+      }, 2000);
+    } finally {
+      setIsLoadingData(false);
+    }
+  }, [id, dispatch, navigate]);
+
+  useEffect(() => {
+    fetchUserProfile();
+  }, [fetchUserProfile]);
+
   useEffect(() => {
     if (succsess) {
       dispatch(
@@ -44,6 +89,7 @@ const ModernProfilePage = () => {
         }),
       );
       dispatch(RefreshUser());
+      fetchUserProfile(); // إعادة جلب البيانات بعد التحديث الناجح
     }
 
     if (
@@ -58,31 +104,27 @@ const ModernProfilePage = () => {
         }),
       );
     if (UserCheck === "unAuthenticated") navigate("/");
-  }, [UserCheck, dispatch, navigate, succsess, userError]);
-
-  // تحديث الحالة المحلية عند تغير بيانات Redux
-  useEffect(() => {
-    dispatch(getDataForProfile());
-  }, [dispatch]);
+  }, [UserCheck, dispatch, navigate, succsess, userError, fetchUserProfile]);
 
   useEffect(() => {
     if (typeof userError === "object" && userError) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsEditing(true);
     }
   }, [userError]);
-  // مزامنة الخادم مع الحالة المحلية فقط خارج وضع التعديل،
-  // عبر ref كي لا يعاد إنشاء معرّف الحالة المحلية في كل رندر
+
   const isEditingRef = useRef(isEditing);
   useEffect(() => {
     isEditingRef.current = isEditing;
   }, [isEditing]);
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (!isEditingRef.current) setFormData(userInfo);
-  }, [userInfo]);
 
-  if (!formData) return <div className="p-20 text-center">جاري التحميل...</div>;
+  useEffect(() => {
+    if (!isEditingRef.current && fetchedUser) {
+      setFormData(fetchedUser);
+    }
+  }, [fetchedUser]);
+
+  if (isLoadingData || !formData)
+    return <div className="p-20 text-center">جاري التحميل...</div>;
 
   // 1. دالة موحدة للحقول البسيطة
   const handleChangeForInputText = (
@@ -100,16 +142,17 @@ const ModernProfilePage = () => {
       return {
         ...prev,
         location: {
-          ...prev.location, // الحفاظ على بقية خصائص الموقع
-          [name]: value, // تحديث الحقل المحدد
+          ...prev.location,
+          [name]: value,
         },
       };
     });
   };
 
-  // 3. معالجة مصفوفة الهواتف بشكل صحيح
+  // 3. معالجة مصفوفة الهواتف
   const handlePhoneChange = (index: number, value: string) => {
-    const newPhones = [...formData.phone_numbers];
+    if (!formData) return;
+    const newPhones = [...(formData.phone_numbers || [])];
     newPhones[index] = value;
     setFormData((prev) =>
       prev ? { ...prev, phone_numbers: newPhones } : null,
@@ -128,7 +171,7 @@ const ModernProfilePage = () => {
   };
 
   const removePhone = (index: number) => {
-    if (!formData.phone_numbers || formData.phone_numbers.length <= 1) return;
+    if (!formData?.phone_numbers || formData.phone_numbers.length <= 1) return;
     setFormData((prev) =>
       prev
         ? {
@@ -141,16 +184,18 @@ const ModernProfilePage = () => {
     );
   };
 
-  // 4. (اختياري) دوال مماثلة للتعامل مع الروابط الاجتماعية إذا لزم الأمر
+  // 4. التعامل مع الروابط الاجتماعية
   const handleSocialLinkChange = (
     index: number,
     e: React.ChangeEvent<HTMLInputElement>,
   ) => {
+    if (!formData) return;
     const { name, value } = e.target;
-    const newLinks = [...formData.social_links];
-    newLinks[index] = { ...newLinks[index], [name]: value }; // url أو platform حسب الحقل الذي تريد تعديله
+    const newLinks = [...(formData.social_links || [])];
+    newLinks[index] = { ...newLinks[index], [name]: value };
     setFormData((prev) => (prev ? { ...prev, social_links: newLinks } : null));
   };
+
   const addSocialLink = () => {
     setFormData((prev) =>
       prev
@@ -164,12 +209,13 @@ const ModernProfilePage = () => {
         : null,
     );
   };
+
   const removeSocialLink = (index: number) => {
     setFormData((prev) =>
       prev
         ? {
             ...prev,
-            social_links: prev.social_links.filter(
+            social_links: (prev.social_links || []).filter(
               (_: unknown, i: number) => i !== index,
             ),
           }
@@ -178,47 +224,46 @@ const ModernProfilePage = () => {
   };
 
   const handleSave = async () => {
-    // 1. إنشاء حاوية البيانات
+    if (!formData) return;
+
     const data = new FormData();
 
-    // 2. إضافة النصوص (الحقول العادية)
     data.append("first_name", formData.first_name);
     data.append("last_name", formData.last_name);
     if (formData.email) data.append("email", formData.email);
     if (formData.bio) data.append("bio", formData.bio);
-    data.append("location", JSON.stringify(formData.location)); // تحويل الكائن إلى JSON string
+    data.append("location", JSON.stringify(formData.location));
 
-    // إضافة المصفوفات (مثل الهواتف) - يجب إرسالها كـ string أو تكرار الـ append
-
-    const phones = formData.phone_numbers.filter((v): v is string => !!v); // فلترة الأرقام الفارغة
+    const phones = (formData.phone_numbers || []).filter(
+      (v): v is string => !!v,
+    );
     data.append("phone_numbers", JSON.stringify(phones));
-    setFormData((prev) => (prev ? { ...prev, phone_numbers: phones } : null)); // تحديث الحالة بالروابط الصالحة فقط
+    setFormData((prev) => (prev ? { ...prev, phone_numbers: phones } : null));
 
     if (formData.social_links) {
       const validLinks = formData.social_links.filter(
         (link) => link.platform && link.url,
-      ); // فلترة الروابط غير المكتملة
+      );
       setFormData((prev) =>
         prev ? { ...prev, social_links: validLinks } : null,
-      ); // تحديث الحالة بالروابط الصالحة فقط
+      );
       data.append("social_links", JSON.stringify(validLinks));
     }
 
-    // 3. إضافة ملف الصورة (إذا قام المستخدم باختيار صورة جديدة)
     if (formData.avatar_file) {
-      data.append("avatar", formData.avatar_file); // 'avatar' هو نفس الاسم المتوقع في السيرفر (Multer)
+      data.append("avatar", formData.avatar_file);
     }
     if (formData.newPassword) {
       data.append("newPassword", formData.newPassword);
     }
 
-    data.append("oldPassword", formData.oldPassword || ""); // تأكد من إرسال الحقل حتى لو كان فارغاً
+    data.append("oldPassword", formData.oldPassword || "");
 
-    // console.log("Entries:", Array.from(data.entries()));
-    // 4. إرسال البيانات عبر الدسباتش
-    dispatch(updateUserProfile(data));
+    dispatch(loading());
+    await dispatch(updateUserProfile({ formData: data, id: id ?? "" }));
+    dispatch(close());
 
-    setIsEditing(false); // العودة لوضع العرض
+    setIsEditing(false);
   };
 
   return (
@@ -243,7 +288,7 @@ const ModernProfilePage = () => {
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-3xl font-bold text-indigo-300 select-none">
-                      {formData.first_name?.[0].toUpperCase() || "?"}
+                      {formData.first_name?.[0]?.toUpperCase() || "?"}
                     </div>
                   )}
 
@@ -271,7 +316,6 @@ const ModernProfilePage = () => {
                         const reader = new FileReader();
 
                         reader.onloadend = () => {
-                          // تحديث الـ Preview محلياً
                           setFormData({
                             ...formData,
                             avatar_url: reader.result as string,
@@ -294,46 +338,49 @@ const ModernProfilePage = () => {
               </div>
             </div>
 
-            {/* أزرار التحرير */}
-            <div className="flex gap-2">
-              {!isEditing ? (
-                <button
-                  onClick={() => setIsEditing(true)}
-                  className="flex items-center gap-2 px-6 py-2.5 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-all shadow-sm shadow-indigo-300/50"
-                >
-                  <IoMdCreate /> تعديل الحساب
-                </button>
-              ) : (
-                <>
+            {/* أزرار التحرير (تظهر فقط إذا تحققت الصلاحية canEdit) */}
+            {canEdit && (
+              <div className="flex gap-2">
+                {!isEditing ? (
                   <button
-                    onClick={() => {
-                      // console.log("Form Data : ", formData);
-                      setIsEditing(false);
-                      dispatch(getDataForProfile());
-                    }}
-                    className="px-5 py-2.5 text-gray-500 hover:bg-gray-100 rounded-xl"
+                    onClick={() => setIsEditing(true)}
+                    className="flex items-center gap-2 px-6 py-2.5 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-all shadow-sm shadow-indigo-300/50"
                   >
-                    إلغاء
+                    <IoMdCreate /> تعديل الحساب
                   </button>
-                  <button
-                    onClick={handleSave}
-                    className="flex items-center gap-2 px-6 py-2.5 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-all"
-                  >
-                    <IoMdSave /> حفظ
-                  </button>
-                </>
-              )}
-            </div>
+                ) : (
+                  <>
+                    <button
+                      onClick={() => {
+                        setIsEditing(false);
+                        if (fetchedUser) setFormData(fetchedUser);
+                      }}
+                      className="px-5 py-2.5 text-gray-500 hover:bg-gray-100 rounded-xl"
+                    >
+                      إلغاء
+                    </button>
+                    <button
+                      onClick={handleSave}
+                      className="flex items-center gap-2 px-6 py-2.5 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-all"
+                    >
+                      <IoMdSave /> حفظ
+                    </button>
+                  </>
+                )}
+              </div>
+            )}
 
-            {userInfo?.role !== "user" && (
+            {formData?.role && formData.role !== "user" && (
               <div
-                className={`absolute -top-18 -left-7 element-center ${userInfo?.role === "admin" ? "text-yellow-500" : "text-red-400"}`}
+                className={`absolute -top-18 -left-7 element-center ${
+                  formData.role === "admin" ? "text-yellow-500" : "text-red-400"
+                }`}
               >
                 <MdSunny size={100} />
                 <span className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] text-black font-extrabold -rotate-30">
-                  {userInfo?.role === "admin"
+                  {formData.role === "admin"
                     ? "مشرف"
-                    : userInfo?.role === "dev"
+                    : formData.role === "dev"
                       ? "مسئول"
                       : ""}
                 </span>
@@ -342,7 +389,6 @@ const ModernProfilePage = () => {
           </div>
 
           {/* الحقول */}
-
           <div>
             <h2 className=" mt-2 text-lg font-weight-bold text-center md:text-right">
               أنضم منذ :{" "}
@@ -356,15 +402,15 @@ const ModernProfilePage = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12">
-            {/* الاسم الاول */}
+            {/* الاسم الأول */}
             <div className="space-y-4">
-              <label className="block text-sm font-bold  pr-2">
+              <label className="block text-sm font-bold pr-2">
                 الاسم الأول
               </label>
               <input
                 name="first_name"
                 disabled={!isEditing}
-                className="w-full p-3.5  border-none rounded-2xl focus:ring-2  transition-all disabled:opacity-60"
+                className="w-full p-3.5 border-none rounded-2xl focus:ring-2 transition-all disabled:opacity-60"
                 value={formData.first_name || ""}
                 onChange={handleChangeForInputText}
               />
@@ -372,15 +418,16 @@ const ModernProfilePage = () => {
                 <p className="text-red-500 text-sm">{userError.first_name}</p>
               ) : null}
             </div>
+
             {/* الاسم الأخير */}
             <div className="space-y-4">
-              <label className="block text-sm font-bold  pr-2">
+              <label className="block text-sm font-bold pr-2">
                 الاسم الأخير
               </label>
               <input
                 name="last_name"
                 disabled={!isEditing}
-                className="w-full p-3.5  border-none rounded-2xl focus:ring-2  transition-all disabled:opacity-60"
+                className="w-full p-3.5 border-none rounded-2xl focus:ring-2 transition-all disabled:opacity-60"
                 value={formData.last_name || ""}
                 onChange={handleChangeForInputText}
               />
@@ -391,13 +438,13 @@ const ModernProfilePage = () => {
 
             {/* البريد الإلكتروني */}
             <div className="space-y-4 md:col-span-2">
-              <label className="block text-sm font-bold  pr-2">
+              <label className="block text-sm font-bold pr-2">
                 البريد الإلكتروني
               </label>
               <input
                 name="email"
                 disabled={!isEditing}
-                className="w-full p-3.5  border-none rounded-2xl focus:ring-2  transition-all disabled:opacity-60"
+                className="w-full p-3.5 border-none rounded-2xl focus:ring-2 transition-all disabled:opacity-60"
                 value={formData.email || ""}
                 onChange={handleChangeForInputText}
               />
@@ -408,43 +455,44 @@ const ModernProfilePage = () => {
 
             {/* السيرة الذاتية */}
             <div className="space-y-4 md:col-span-2">
-              <label className="block text-sm font-bold  pr-2">
+              <label className="block text-sm font-bold pr-2">
                 السيرة الذاتية
               </label>
               <textarea
                 name="bio"
                 disabled={!isEditing}
-                className="w-full p-3.5  border-none rounded-2xl focus:ring-2  transition-all disabled:opacity-60 resize-none h-24"
+                className="w-full p-3.5 border-none rounded-2xl focus:ring-2 transition-all disabled:opacity-60 resize-none h-24"
                 value={formData.bio || ""}
                 onChange={handleChangeForInputText}
               />
             </div>
 
-            {/* تحديد المكان  */}
+            {/* تحديد المكان */}
             <div className="space-y-4">
-              <label className="block text-sm font-bold  pr-2">المحافظة</label>
+              <label className="block text-sm font-bold pr-2">المحافظة</label>
               <input
                 name="governorate"
                 disabled={!isEditing}
-                className="w-full p-3.5  border-none rounded-2xl focus:ring-2  transition-all disabled:opacity-60"
+                className="w-full p-3.5 border-none rounded-2xl focus:ring-2 transition-all disabled:opacity-60"
                 value={formData.location?.governorate || ""}
                 onChange={handleChangeForLocation}
               />
             </div>
 
             <div className="space-y-4">
-              <label className="block text-sm font-bold  pr-2">المدينة</label>
+              <label className="block text-sm font-bold pr-2">المدينة</label>
               <input
                 name="city"
                 disabled={!isEditing}
-                className="w-full p-3.5  border-none rounded-2xl focus:ring-2  transition-all disabled:opacity-60"
+                className="w-full p-3.5 border-none rounded-2xl focus:ring-2 transition-all disabled:opacity-60"
                 value={formData.location?.city || ""}
                 onChange={handleChangeForLocation}
               />
             </div>
+
             {/* أرقام الهواتف */}
             <div className="md:col-span-2 space-y-3">
-              <label className="block text-sm font-bold  pr-2">
+              <label className="block text-sm font-bold pr-2">
                 أرقام الهواتف
               </label>
               {formData.phone_numbers?.map((phone: string, index: number) => (
@@ -452,7 +500,7 @@ const ModernProfilePage = () => {
                   <div className="flex gap-2">
                     <input
                       disabled={!isEditing}
-                      className="flex-1 p-3.5  border-none rounded-2xl focus:ring-2  transition-all disabled:opacity-60"
+                      className="flex-1 p-3.5 border-none rounded-2xl focus:ring-2 transition-all disabled:opacity-60"
                       value={phone}
                       onChange={(e) => handlePhoneChange(index, e.target.value)}
                     />
@@ -485,9 +533,9 @@ const ModernProfilePage = () => {
               )}
             </div>
 
-            {/* روابط التوصل الإجتماعي */}
+            {/* روابط التواصل الاجتماعي */}
             <div className="md:col-span-2 space-y-3">
-              <label className="block text-sm font-bold  pr-2">
+              <label className="block text-sm font-bold pr-2">
                 الروابط الاجتماعية
               </label>
               {formData.social_links?.map((link, index) => (
@@ -496,7 +544,7 @@ const ModernProfilePage = () => {
                     <div className="flex-1 flex-col">
                       <input
                         disabled={!isEditing}
-                        className="w-full p-3.5  border-none rounded-2xl focus:ring-2  transition-all disabled:opacity-60"
+                        className="w-full p-3.5 border-none rounded-2xl focus:ring-2 transition-all disabled:opacity-60"
                         value={link.platform}
                         name="platform"
                         placeholder="اسم المنصة"
@@ -513,7 +561,7 @@ const ModernProfilePage = () => {
                     <div className="flex-3">
                       <input
                         disabled={!isEditing}
-                        className="w-full p-3.5  border-none rounded-2xl focus:ring-2  transition-all disabled:opacity-60"
+                        className="w-full p-3.5 border-none rounded-2xl focus:ring-2 transition-all disabled:opacity-60"
                         value={link.url}
                         name="url"
                         placeholder="رابط الملف الشخصي"
@@ -548,102 +596,105 @@ const ModernProfilePage = () => {
                 </button>
               )}
             </div>
-            {/* روابط التوصل الإجتماعي */}
 
             {/* تعيين كلمة سر جديدة */}
-
-            <div className="space-y-4 md:col-span-2">
-              <label
-                className="block text-sm font-bold  pr-2"
-                htmlFor="newPassword"
-              >
-                كلمة السر الجديدة
-              </label>
-              <div className="relative w-full group">
-                <input
-                  id="newPassword"
-                  name="newPassword"
-                  // هنا يتغير النوع بناءً على الحالة
-                  type={showPassword.new ? "text" : "password"}
-                  disabled={!isEditing}
-                  className="w-full p-3.5 pl-12 border-none rounded-2xl focus:ring-2 transition-all disabled:opacity-60 bg-gray-100 dark:bg-slate-700"
-                  value={formData.newPassword || ""}
-                  onChange={handleChangeForInputText}
-                />
-
-                {/* زر العين - يظهر فقط إذا كان الحقل غير معطل */}
-                {isEditing && (
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setShowPassword((prev) => ({ ...prev, new: !prev.new }))
-                    }
-                    className="absolute left-4 top-1/2 -translate-y-1/2 transition-colors focus:outline-none show-password-btn"
+            {canEdit && isEditing && (
+              <>
+                <div className="space-y-4 md:col-span-2">
+                  <label
+                    className="block text-sm font-bold pr-2"
+                    htmlFor="newPassword"
                   >
-                    {showPassword.new ? (
-                      <HiEyeOff className="w-6 h-6" />
-                    ) : (
-                      <HiEye className="w-6 h-6" />
+                    كلمة السر الجديدة
+                  </label>
+                  <div className="relative w-full group">
+                    <input
+                      id="newPassword"
+                      name="newPassword"
+                      type={showPassword.new ? "text" : "password"}
+                      disabled={!isEditing}
+                      className="w-full p-3.5 pl-12 border-none rounded-2xl focus:ring-2 transition-all disabled:opacity-60 bg-gray-100 dark:bg-slate-700"
+                      value={formData.newPassword || ""}
+                      onChange={handleChangeForInputText}
+                    />
+
+                    {isEditing && (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setShowPassword((prev) => ({
+                            ...prev,
+                            new: !prev.new,
+                          }))
+                        }
+                        className="absolute left-4 top-1/2 -translate-y-1/2 transition-colors focus:outline-none show-password-btn"
+                      >
+                        {showPassword.new ? (
+                          <HiEyeOff className="w-6 h-6" />
+                        ) : (
+                          <HiEye className="w-6 h-6" />
+                        )}
+                      </button>
                     )}
-                  </button>
-                )}
-              </div>
-              {userError &&
-                typeof userError === "object" &&
-                userError.newPassword && (
-                  <p className="text-red-500 text-sm">
-                    {userError.newPassword}
-                  </p>
-                )}
-            </div>
-            {/* تعيين كلمة سر جديدة */}
+                  </div>
+                  {userError &&
+                    typeof userError === "object" &&
+                    userError.newPassword && (
+                      <p className="text-red-500 text-sm">
+                        {userError.newPassword}
+                      </p>
+                    )}
+                </div>
 
-            {/* التأكد من كلمة السر */}
-            <div className="space-y-4 md:col-span-2">
-              <label
-                className="block text-sm font-bold  pr-2"
-                htmlFor="oldPassword"
-              >
-                كلمة السر القديمة (للتأكيد)
-              </label>
-              <div className="relative w-full group">
-                <input
-                  id="oldPassword"
-                  name="oldPassword"
-                  // هنا يتغير النوع بناءً على الحالة
-                  type={showPassword.old ? "text" : "password"}
-                  disabled={!isEditing}
-                  className="w-full p-3.5 pl-12 border-none rounded-2xl focus:ring-2 transition-all disabled:opacity-60 bg-gray-100 dark:bg-slate-700"
-                  value={formData.oldPassword || ""}
-                  onChange={handleChangeForInputText}
-                  required
-                />
-
-                {/* زر العين - يظهر فقط إذا كان الحقل غير معطل */}
-                {isEditing && (
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setShowPassword((prev) => ({ ...prev, old: !prev.old }))
-                    }
-                    className="absolute left-4 top-1/2 -translate-y-1/2 transition-colors focus:outline-none show-password-btn"
+                {/* التأكد من كلمة السر القديمة */}
+                <div className="space-y-4 md:col-span-2">
+                  <label
+                    className="block text-sm font-bold pr-2"
+                    htmlFor="oldPassword"
                   >
-                    {showPassword.old ? (
-                      <HiEyeOff className="w-6 h-6" />
-                    ) : (
-                      <HiEye className="w-6 h-6" />
+                    كلمة السر القديمة (للتأكيد)
+                  </label>
+                  <div className="relative w-full group">
+                    <input
+                      id="oldPassword"
+                      name="oldPassword"
+                      type={showPassword.old ? "text" : "password"}
+                      disabled={!isEditing}
+                      className="w-full p-3.5 pl-12 border-none rounded-2xl focus:ring-2 transition-all disabled:opacity-60 bg-gray-100 dark:bg-slate-700"
+                      value={formData.oldPassword || ""}
+                      onChange={handleChangeForInputText}
+                      required
+                    />
+
+                    {isEditing && (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setShowPassword((prev) => ({
+                            ...prev,
+                            old: !prev.old,
+                          }))
+                        }
+                        className="absolute left-4 top-1/2 -translate-y-1/2 transition-colors focus:outline-none show-password-btn"
+                      >
+                        {showPassword.old ? (
+                          <HiEyeOff className="w-6 h-6" />
+                        ) : (
+                          <HiEye className="w-6 h-6" />
+                        )}
+                      </button>
                     )}
-                  </button>
-                )}
-              </div>
-              {userError &&
-                typeof userError === "object" &&
-                userError.oldPassword && (
-                  <p className="text-red-500 text-sm">
-                    {userError.oldPassword}
-                  </p>
-                )}
-            </div>
+                  </div>
+                  {userError &&
+                    typeof userError === "object" &&
+                    userError.oldPassword && (
+                      <p className="text-red-500 text-sm">
+                        {userError.oldPassword}
+                      </p>
+                    )}
+                </div>
+              </>
+            )}
           </div>
 
           <div className="border-t-2 mt-5 pt-5 grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-3 sm:divide-x-2 font-extrabold text-2xl text-center">

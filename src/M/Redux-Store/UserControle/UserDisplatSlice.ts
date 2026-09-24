@@ -13,7 +13,7 @@ import { AxiosError } from "axios";
 export const logOutUser = createAsyncThunk("User/logOutUser", async () => {
   try {
     const response = await AxiosApi.post("/auth/withlogin/logout");
-    console.log("Logout response:", response.data);
+    // console.log("Logout response:", response.data);
     return response.data;
   } catch (err: any) {
     console.error("Error logging out:", err.response?.data || err);
@@ -83,26 +83,26 @@ export const getDataForProfile = createAsyncThunk(
 
 export const updateUserProfile = createAsyncThunk(
   "User/updateProfile",
-  async (formData: FormData, thunkAPI) => {
-    console.log("Updating user profile with data:", formData);
+  async ({ formData, id }: { formData: FormData; id: string }, thunkAPI) => {
+    console.log("Updating user profile with data:", id);
     try {
       // إرسال الطلب للسيرفر
       // ملاحظة: Axios سيتعرف تلقائياً على FormData ويضبط الـ Headers لـ multipart/form-data
       const response = await AxiosApi.patch(
-        "/auth/withlogin/profile",
+        "/auth/withlogin/profile/" + id,
         formData,
       );
-      console.log("Update profile response:", response.data);
+      // console.log("Update profile response:", response.data);
       return response.data.user; // يعيد بيانات المستخدم المحدثة من السيرفر
     } catch (error: any) {
       if (error.status === 400) {
         console.error("Validation error:", error.response?.data);
         const message = error.response?.data || "بيانات غير صحيحة";
-        return thunkAPI.rejectWithValue(message);
+        throw thunkAPI.rejectWithValue(message);
       }
       console.error("Error updating user profile:", error.response?.data);
       const message = error.response?.data?.message || "حدث خطأ أثناء التحديث";
-      return thunkAPI.rejectWithValue(message);
+      throw thunkAPI.rejectWithValue(message);
     }
   },
 );
@@ -115,7 +115,7 @@ export const checkIfCanGetLostPasswordBack = createAsyncThunk(
         "/auth/withoutlogin/forgetpassword",
         { username },
       );
-      console.log("Response :", response.data.message);
+      // console.log("Response :", response.data.message);
       return response.data.message;
     } catch (error: any) {
       const message =
@@ -140,7 +140,7 @@ export const confirmOTP = createAsyncThunk(
         otpCode,
         username,
       });
-      console.log("Response :", response.data.message);
+      // console.log("Response :", response.data.message);
       return response.data.message;
     } catch (error: any) {
       const message =
@@ -160,7 +160,7 @@ export const confirmChangePassword = createAsyncThunk(
           newPassword,
         },
       );
-      console.log("Response :", response.data.message);
+      // console.log("Response :", response.data.message);
       return response.data.message;
     } catch (error: any) {
       const message =

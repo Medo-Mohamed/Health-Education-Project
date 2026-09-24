@@ -42,7 +42,9 @@ const ModernProfilePage = () => {
   // const location = useLocation();
   const AuthUserStatus = useSelector((state: RootState) => state.User.status);
   const AuthUserRole = useSelector(
-    (state: RootState) => state.User.data.user?.role,
+    (state: RootState) =>
+      (state.User as { data?: { user?: { role?: UserInfo["role"] } } }).data
+        ?.user?.role,
   );
   const dispatch = useDispatch<AppDispatch>();
   // نعتمد على المستخدم الممرر من صفحة البحث
@@ -55,7 +57,7 @@ const ModernProfilePage = () => {
         `/auth/withlogin/search/getuser/${userId}`,
       );
 
-      console.log(userInfo.data);
+      // console.log(userInfo.data);
       setUser(userInfo.data);
     } catch (error: any) {
       dispatch(
@@ -68,7 +70,7 @@ const ModernProfilePage = () => {
     }
   }
   useEffect(() => {
-    console.log("AMOUNT");
+    // console.log("AMOUNT");
     if (userId) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       fetchUserData();

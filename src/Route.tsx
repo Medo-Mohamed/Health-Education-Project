@@ -183,7 +183,7 @@ export const Paths = [
         element: <Register />,
       },
       {
-        path: "profile",
+        path: "profile/:id",
         element: (
           <ProtectedRoute>
             <ProfilePage />

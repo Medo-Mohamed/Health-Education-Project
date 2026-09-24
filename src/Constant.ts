@@ -1,2 +1,6 @@
-export const API_BASE_URL = "http://localhost:5000";
-export const UPLOAD_POSTS_URL = "http://localhost:5000/uploads/posts";
+const url =
+  import.meta.env.VIET_STATE === "DEVOLOP"
+    ? import.meta.env.VITE_LOCAL_API_URL
+    : import.meta.env.VITE_ONLINE_API_URL;
+
+export const API_BASE_URL = url;

@@ -104,14 +104,14 @@ const Register = () => {
         city: formData.city,
       },
     };
-    console.log("Submitting payload:", payload);
+    // console.log("Submitting payload:", payload);
     try {
       const response = await AxiosApi.post(
         "/auth/withoutlogin/register",
         payload,
       );
       setSuccess(true);
-      console.log("User created:", response.data);
+      // console.log("User created:", response.data);
       setTimeout(() => {
         dispatch(
           fetchUser({

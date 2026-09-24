@@ -65,7 +65,7 @@ function Left() {
             // onClick={handleOpenUserList}
           >
             <Link
-              to={"/profile"}
+              to={`/profile/${UserData?._id}`}
               className="flex items-center gap-2 group cursor-pointer"
               title="الصفحة الشخصية"
             >

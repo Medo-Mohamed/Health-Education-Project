@@ -392,7 +392,7 @@ const ArchiveManager = () => {
                 onClick={(e) =>
                   handleDownloadFile(e, file.fileUrl, file.fileName)
                 }
-                className="group relative bg-slate-200 text-gray-900 border border-gray-300 p-4 sm:p-5 rounded-2xl shadow-sm hover:shadow-lg hover:border-blue-300 transition-all duration-200 cursor-pointer flex flex-col justify-between"
+                className="group relative bg-white text-gray-900 border border-gray-300 p-4 sm:p-5 rounded-2xl shadow-sm hover:shadow-lg hover:border-blue-300 transition-all duration-200 cursor-pointer flex flex-col justify-between"
               >
                 {/* الجزء العلوي: الأيقونة مع نوع الملف و الحذف */}
                 <div className="flex items-start justify-between gap-2 mb-3">
@@ -408,7 +408,7 @@ const ArchiveManager = () => {
                     {(UserRole === "admin" || UserRole === "dev") && (
                       <button
                         onClick={(e) => handleDeleteFile(e, file._id)}
-                        className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition active:scale-95"
+                        className="p-1.5 text-gray-400 hover:text-red-500 dark:hover:text-red-400! hover:bg-red-50 rounded-lg transition active:scale-95"
                         title="حذف الملف"
                       >
                         <Trash2 size={16} />
