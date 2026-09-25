@@ -381,7 +381,7 @@ const ModernProfilePage = () => {
                   {formData.role === "admin"
                     ? "مشرف"
                     : formData.role === "dev"
-                      ? "مسئول"
+                      ? "مسؤول"
                       : ""}
                 </span>
               </div>
