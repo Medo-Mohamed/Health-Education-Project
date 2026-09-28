@@ -8,19 +8,35 @@ import {
 import { Link } from "react-router-dom";
 import LoginForm from "./Components/LoginForm";
 import GetPasswordBackForm from "./Components/GetPasswordBackForm";
+import { useEffect } from "react";
 
 export default function Login() {
   const dispatch = useDispatch<AppDispatch>();
-  const showLoginModal = useSelector((state: RootState) => state.User.showLoginModal);
+  const showLoginModal = useSelector(
+    (state: RootState) => state.User.showLoginModal,
+  );
   const loginOrLostState = useSelector(
     (state: RootState) => state.User.logIn_or_lostPassword.state,
   );
+
+  // 🔒 منع التمرير (Scroll) في الصفحة الرئيسية عند فتح المودال وإعادته عند الإغلاق
+  useEffect(() => {
+    if (showLoginModal) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [showLoginModal]);
 
   if (!showLoginModal) return null;
 
   return (
     <div
-      className="fixed inset-0 z-100 flex bg-black/40 backdrop-blur-sm overflow-y-auto"
+      className="fixed inset-0 z-100 flex bg-black/40 backdrop-blur-sm overflow-y-auto px-1"
       dir="rtl"
     >
       {/* خلفية ديناميكية زجاجية */}
@@ -69,11 +85,7 @@ export default function Login() {
             يرجى إدخال بيانات حسابك للمتابعة
           </p>
         </div>
-        {loginOrLostState === "login" ? (
-          <LoginForm />
-        ) : (
-          <GetPasswordBackForm />
-        )}
+        {loginOrLostState === "login" ? <LoginForm /> : <GetPasswordBackForm />}
 
         <div className="mt-8 text-center text-sm font-medium">
           <span className="opacity-70">ليس لديك حساب؟ </span>

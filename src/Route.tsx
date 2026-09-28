@@ -1,7 +1,7 @@
 import ProfilePage from "./M/Profile/Profile.tsx";
 import ModernProfilePage from "./M/List of links/Pages/Profile_view/Profile_Page.tsx";
 import ListOfLinks from "./M/List of links/ListOfLinks.tsx";
-import ProtectedRoute from "./H/ProtectedRoute.tsx";
+import ProtectedRoute from "./G-Component/ProtectedRoute.tsx";
 import { FaRegNewspaper, FaUserEdit } from "react-icons/fa";
 import { GiShadowFollower } from "react-icons/gi";
 import TablesGrid from "./M/List of links/Pages/Topic Table/Components/TablesGrid.tsx";
@@ -36,6 +36,7 @@ import Landing from "./M/Landing page/Landing.tsx";
 import NotFound from "./M/NOT FOUND PAGE/NotFound.tsx";
 import Register from "./M/Register/Register.tsx";
 import App from "./App.tsx";
+import CheckForStart from "./G-Component/CheckForStart.tsx";
 export const MENU_DATA = [
   {
     path: "search",
@@ -172,9 +173,9 @@ export const Paths = [
       {
         path: "listlinks",
         element: (
-          <ProtectedRoute>
+          <CheckForStart>
             <ListOfLinks />
-          </ProtectedRoute>
+          </CheckForStart>
         ),
         children: [...MENU_DATA],
       },
