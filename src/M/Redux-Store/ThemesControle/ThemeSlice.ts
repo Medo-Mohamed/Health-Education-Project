@@ -7,15 +7,16 @@ export type ThemeState = {
 //   value: "light",
 // };
 
-const getInitialTheme = () => {
-  if (typeof window !== "undefined") {
-    return { value: localStorage.getItem("theme") || "light" };
-  }
-  return { value: "light" };
+const initialState = {
+  value:
+    localStorage.getItem("theme") ||
+    (window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light"),
 };
 export const themeSlice = createSlice({
   name: "theme",
-  initialState: getInitialTheme(),
+  initialState: initialState,
   reducers: {
     changeTheme: (state) => {
       state.value = state.value === "light" ? "dark" : "light";

@@ -7,6 +7,7 @@ function ThemeHandler() {
 
   // 2. تطبيق الثيم على الـ DOM وحفظ التغييرات المستقبليّة
   useEffect(() => {
+    console.log("ThemeHandler useEffect", Theme);
     const root = document.documentElement; // الاستهداف الأفضل لـ Tailwind CSS
     if (Theme === "dark") {
       root.classList.add("dark");
